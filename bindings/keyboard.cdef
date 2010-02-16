@@ -1,0 +1,54 @@
+
+/*
+          Copyright Jesper Oskarsson 2009 - 2010.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+class Limbus::Keyboard
+{
+	private ptr keyboard;
+	
+	signal on_key_event( int key, bool pressed );
+	signal on_unicode( int utf32, string utf8 );
+
+	public void construct( Limbus::OpenglWindow window )
+	{
+		this.keyboard = limbus::lb_keyboard_construct();
+		limbus::lb_window_add_input_device( window.get_window_impl(), this.keyboard );
+	}
+
+	public void destruct()
+	{
+		limbus::lb_keyboard_destruct( this.keyboard );
+	}
+
+	public bool poll_events()
+	{
+		if (limbus::lb_keyboard_next_event( this.keyboard ) == 1)
+		{
+			int e;
+			e = limbus::lb_keyboard_get_event_type( this.keyboard );
+
+			if (e == limbus::LBKeyboardEvent::LBKeyboardEventKeyPress)
+			{
+				on_key_event( limbus::lb_keyboard_get_event_key( this.keyboard ), true );
+			}
+			if (e == limbus::LBKeyboardEvent::LBKeyboardEventKeyRelease)
+			{
+				on_key_event( limbus::lb_keyboard_get_event_key( this.keyboard ), false );
+			}
+			if (e == limbus::LBKeyboardEvent::LBKeyboardEventUnicode)
+			{
+				on_unicode( limbus::lb_keyboard_get_event_utf32( this.keyboard ),
+							limbus::lb_keyboard_get_event_utf8( this.keyboard ) );
+			}
+
+			return true;
+		}
+		
+		return false;
+	}
+}
+

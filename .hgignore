@@ -1,0 +1,12 @@
+syntax: glob
+
+build
+bin/*
+lib/*
+doc/*
+generated/config.lua
+generated/lua/*
+generated/ruby/*
+generated/cpp/*
+generated/python/*
+

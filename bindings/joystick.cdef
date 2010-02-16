@@ -1,0 +1,97 @@
+
+/*
+          Copyright Jesper Oskarsson 2009 - 2010.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+class Limbus::Joystick
+{
+	private ptr joystick;
+	private int joystick_id;
+	public bool constructed;
+	public bool connected;
+
+	signal on_axis( int joystick, int number, int value, int time );
+	signal on_button( int joystick, int number, int value, int time );
+	signal on_connected( int joystick );
+	signal on_disconnected( int joystick );
+
+	property string product_string
+	{
+		return placebo::lb_joystick_get_product_string( this.joystick );
+	};
+	
+	property int axes
+	{
+		return placebo::lb_joystick_axes( this.joystick );
+	};
+	
+	property int buttons
+	{
+		return placebo::lb_joystick_buttons( this.joystick );
+	};
+	
+	public void construct( int joystick_id )
+	{
+		this.joystick = placebo::lb_joystick_construct( joystick_id );
+
+		this.constructed = false;		
+		if (placebo::lb_joystick_constructed( this.joystick ) == 1)
+		{
+			this.constructed = true;
+		}
+		
+		this.connected = false;
+		if (placebo::lb_joystick_connected( this.joystick ) == 1)
+		{
+			this.connected = true;
+		}
+		
+		this.joystick_id = joystick_id;
+	}
+	
+	public void destruct()
+	{
+		placebo::lb_joystick_destruct( this.joystick );
+		this.constructed = false;
+	}
+	
+	public void send_events()
+	{
+		if (placebo::lb_joystick_next_event( this.joystick ) == 1)
+		{
+			int e;
+			e = placebo::lb_joystick_get_event_type( this.joystick );
+			
+			if (e == placebo::LBJoystickEvent::LBJoystickEventConnected)
+			{
+				on_connected( this.joystick_id );
+				this.connected = true;
+			}
+			
+			if (e == placebo::LBJoystickEvent::LBJoystickEventDisconnected)
+			{
+				on_disconnected( this.joystick_id );
+				this.connected = false;
+			}
+			
+			if (e == placebo::LBJoystickEvent::LBJoystickEventAxis)
+			{
+				on_axis( this.joystick_id,
+						 placebo::lb_joystick_get_event_number( this.joystick ),
+						 placebo::lb_joystick_get_event_value( this.joystick ),
+						 placebo::lb_joystick_get_event_time( this.joystick ) );
+			}
+			
+			if (e == placebo::LBJoystickEvent::LBJoystickEventButton)
+			{
+				on_button( this.joystick_id,
+						   placebo::lb_joystick_get_event_number( this.joystick ),
+						   placebo::lb_joystick_get_event_value( this.joystick ),
+						   placebo::lb_joystick_get_event_time( this.joystick ) );
+			}
+		}
+	}
+}

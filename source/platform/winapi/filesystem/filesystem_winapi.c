@@ -1,0 +1,94 @@
+
+/*
+          Copyright Jesper Oskarsson 2009 - 2010.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+#ifndef _CRT_SECURE_NO_WARNINGS
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
+#include "../../filesystem.h"
+
+#include <windows.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+typedef struct WinAPIFilesystemTag
+{
+	HANDLE find_handle;
+	WIN32_FIND_DATA find_data;
+	int first_find;
+} WinAPIFilesystem;
+
+void* filesystem_construct()
+{
+	return malloc( sizeof( WinAPIFilesystem ) );
+}
+
+void* filesystem_destruct( void* filesystem )
+{
+	free( filesystem );
+	return NULL;
+}
+
+int filesystem_constructed( void* filesystem )
+{
+	return (filesystem) ? 1 : 0;
+}
+
+int filesystem_query_path( void* filesystem, const char* path )
+{
+	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
+	char dir[MAX_PATH];
+
+	if (strlen( path ) >= (MAX_PATH - 3))
+		return 0;
+
+	sprintf( dir, "%s/*", path );
+	fs->find_handle = FindFirstFile( dir, &fs->find_data );
+
+	if (fs->find_handle == INVALID_HANDLE_VALUE)
+		return 0;
+
+	fs->first_find = 1;
+	return 1;
+}
+
+int filesystem_query_next_entry( void* filesystem )
+{
+	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
+
+	if (fs->first_find)
+	{
+		fs->first_find = 0;
+		if (strcmp( fs->find_data.cFileName, "." ) == 0)
+			return filesystem_query_next_entry( filesystem );
+	}
+	else
+	{
+		int result = FindNextFile( fs->find_handle, &fs->find_data );
+		if (result == 0)
+			return 0;
+
+		if (strcmp( fs->find_data.cFileName, ".." ) == 0)
+			return filesystem_query_next_entry( filesystem );
+	}
+
+	return 1;
+}
+
+const char* filesystem_query_get_entry( void* filesystem )
+{
+	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
+	return fs->find_data.cFileName;
+}
+
+unsigned int filesystem_file_size( void* filesystem, const char* path )
+{
+	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
+	FindFirstFile( path, &fs->find_data );
+	return fs->find_data.nFileSizeLow;
+}

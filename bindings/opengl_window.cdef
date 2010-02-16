@@ -1,0 +1,160 @@
+
+/*
+          Copyright Jesper Oskarsson 2009 - 2010.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+class Limbus::OpenglWindow
+{
+	private bool created;
+	private ptr screen;
+	private ptr window;
+	private ptr context;
+
+	signal on_close();
+	signal on_file_drop( string filepath, int x, int y );
+
+	property string caption
+	{
+		return limbus::lb_window_get_caption( this.window );
+	}
+	{
+		limbus::lb_window_set_caption( this.window, value );
+	};
+
+	property int width
+	{
+		return limbus::lb_window_get_width( this.window );
+	}
+	{
+		limbus::lb_window_set_width( this.window, value );
+	};
+	property int height
+	{
+		return limbus::lb_window_get_height( this.window );
+	}
+	{
+		limbus::lb_window_set_height( this.window, value );
+	};
+
+	property int screen_width
+	{
+		return limbus::lb_screen_get_width( this.screen );
+	};
+	property int screen_height
+	{
+		return limbus::lb_screen_get_height( this.screen );
+	};
+	
+	property int x
+	{
+		return limbus::lb_window_get_x( this.window );
+	}
+	{
+		limbus::lb_window_set_x( this.window, value );
+	};
+	property int y
+	{
+		return limbus::lb_window_get_y( this.window );
+	}
+	{
+		limbus::lb_window_set_y( this.window, value );
+	};
+
+	public void construct()
+	{
+		this.created = false;
+
+		this.screen = limbus::lb_screen_construct( limbus::LBScreenDefault );
+		assert( limbus::lb_screen_constructed( this.screen ) == 1 );
+
+		this.window = limbus::lb_window_construct( this.screen );
+		assert( limbus::lb_window_constructed( this.window ) == 1 );
+	}
+
+	public void destruct()
+	{
+		if (this.created == true)
+		{
+			this.destroy();
+		}
+
+		limbus::lb_window_destruct( this.window );
+		limbus::lb_screen_destruct( this.screen );
+	}
+
+	public void release_context()
+	{
+		limbus::lb_opengl_context_release( this.context );
+	}
+
+	public void swap_buffers()
+	{
+		limbus::lb_opengl_context_swap_buffers( this.context );
+	}
+
+	public void create()
+	{
+		this.context = limbus::lb_opengl_context_construct_in_window( this.window, limbus::LBOpenglContextCreateNew );
+		assert( limbus::lb_opengl_context_constructed( this.context ) == 1 );
+
+		limbus::lb_opengl_context_set_pixelformat( this.context, limbus::LBOpenglDefaultPixelformat );
+		limbus::lb_opengl_context_make_current( this.context );
+
+		this.created = true;
+	}
+
+	public void destroy()
+	{
+		limbus::lb_opengl_context_release_current( this.context );
+		limbus::lb_opengl_context_destruct( this.context );
+		this.created = false;
+	}
+
+	public ptr get_context_impl()
+	{
+		return this.context;
+	}
+
+	public ptr get_window_impl()
+	{
+		return this.window;
+	}
+
+	public bool poll_events()
+	{
+	    bool found_event;
+	    found_event = false;
+	    
+		while (limbus::lb_window_next_event( this.window ) == 1)
+		{
+			int e;
+			e = limbus::lb_window_get_event_type( this.window );
+
+			if (e == limbus::LBWindowEvent::LBWindowEventClose)
+			{
+				on_close();
+			}
+
+			if (e == limbus::LBWindowEvent::LBWindowEventFileDrop)
+			{
+				int files;
+				files = limbus::lb_window_get_event_files( this.window );
+				
+				for (i < files)
+				{
+					on_file_drop( limbus::lb_window_get_event_file( this.window, i ),
+								  limbus::lb_window_get_event_x( this.window ),
+								  limbus::lb_window_get_event_y( this.window ) );
+				}
+			}
+
+			found_event = true;
+		}
+
+		return found_event;
+	}
+}
+

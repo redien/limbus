@@ -1,0 +1,27 @@
+
+/*
+          Copyright Jesper Oskarsson 2009 - 2010.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+class Limbus::Timer
+{
+	private double time;
+
+	property double elapsed
+	{
+		return - limbus::lb_time_count_in_seconds() this.time;
+	};
+
+	public void construct()
+	{
+		this.time = limbus::lb_time_count_in_seconds();
+	}
+	
+	public void reset()
+	{
+		this.time = limbus::lb_time_count_in_seconds();
+	}
+}

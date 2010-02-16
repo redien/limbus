@@ -1,0 +1,16 @@
+
+PROJECT_NAME          = Limbus
+PROJECT_NUMBER        = 0.1
+OUTPUT_DIRECTORY      = doc/
+BRIEF_MEMBER_DESC     = YES
+JAVADOC_AUTOBRIEF     = YES
+TAB_SIZE              = 4
+OPTIMIZE_OUTPUT_FOR_C = YES
+EXTRACT_ALL           = YES
+SORT_MEMBER_DOCS      = NO
+INPUT                 = source/ include/
+FILE_PATTERNS         = *.c *.h
+RECURSIVE             = YES
+SOURCE_BROWSER        = YES
+GENERATE_LATEX        = NO
+

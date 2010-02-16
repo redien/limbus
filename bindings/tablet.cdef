@@ -1,0 +1,85 @@
+
+/*
+          Copyright Jesper Oskarsson 2009 - 2010.
+ Distributed under the Boost Software License, Version 1.0.
+    (See accompanying file LICENSE_1_0.txt or copy at
+          http://www.boost.org/LICENSE_1_0.txt)
+*/
+
+class Limbus::Tablet
+{
+	private ptr tablet;
+
+	signal on_button_event( int button, bool pressed );
+	signal on_motion_event( int x, int y, int pressure );
+	signal on_proximity_event( bool in );
+
+	property int context_width
+	{
+		return limbus::lb_tablet_get_context_width( this.tablet );
+	}
+	{
+		limbus::lb_tablet_set_context_width( this.tablet, value );
+	};
+	property int context_height
+	{
+		return limbus::lb_tablet_get_context_height( this.tablet );
+	}
+	{
+		limbus::lb_tablet_set_context_height( this.tablet, value );
+	};
+
+	public void construct( Limbus::OpenglWindow window )
+	{
+		this.tablet = limbus::lb_tablet_construct();
+		limbus::lb_window_add_input_device( window.get_window_impl(), this.tablet );
+	}
+
+	public void destruct()
+	{
+		limbus::lb_tablet_destruct( this.tablet );
+	}
+
+	public bool poll_events()
+	{
+		if (limbus::lb_tablet_next_event( this.tablet ) == 1)
+		{
+			int e;
+			e = limbus::lb_tablet_get_event_type( this.tablet );
+			
+			if (e == limbus::LBTabletEvent::LBTabletEventButtonPress)
+			{
+				on_button_event( limbus::lb_tablet_get_event_button( this.tablet ),
+								 true );
+			}
+
+			if (e == limbus::LBTabletEvent::LBTabletEventButtonRelease)
+			{
+				on_button_event( limbus::lb_tablet_get_event_button( this.tablet ),
+								 false );
+			}
+			
+			if (e == limbus::LBTabletEvent::LBTabletEventProximityIn)
+			{
+				on_proximity_event( true );
+			}
+
+			if (e == limbus::LBTabletEvent::LBTabletEventProximityOut)
+			{
+				on_proximity_event( false );
+			}
+
+			if (e == limbus::LBTabletEvent::LBTabletEventMotion)
+			{
+				on_motion_event( limbus::lb_tablet_get_event_x( this.tablet ),
+								 limbus::lb_tablet_get_event_y( this.tablet ),
+								 limbus::lb_tablet_get_event_pressure( this.tablet ) );
+			}
+
+			return true;
+		}
+		
+		return false;
+	}
+}
+
