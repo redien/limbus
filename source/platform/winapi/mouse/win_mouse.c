@@ -7,7 +7,7 @@
 */
 
 #include "../../../util/vector.h"
-#include "../../mouse.h"
+#include <limbus/mouse.h>
 #include "../winapi_input_device.h"
 
 #include <windows.h>
@@ -44,7 +44,7 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 	if (uMsg == WM_LBUTTONDOWN)
 	{
-		event.type = MouseEventButtonPress;
+		event.type = LBMouseEventButtonPress;
 		event.button = 0;
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
@@ -52,7 +52,7 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 	}
 	else if (uMsg == WM_RBUTTONDOWN)
 	{
-		event.type = MouseEventButtonPress;
+		event.type = LBMouseEventButtonPress;
 		event.button = 1;
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
@@ -60,7 +60,7 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 	}
 	else if (uMsg == WM_LBUTTONUP)
 	{
-		event.type = MouseEventButtonRelease;
+		event.type = LBMouseEventButtonRelease;
 		event.button = 0;
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
@@ -68,7 +68,7 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 	}
 	else if (uMsg == WM_RBUTTONUP)
 	{
-		event.type = MouseEventButtonRelease;
+		event.type = LBMouseEventButtonRelease;
 		event.button = 1;
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
@@ -76,7 +76,7 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 	}
 	else if (uMsg == WM_MOUSEMOVE)
 	{
-		event.type = MouseEventMotion;
+		event.type = LBMouseEventMotion;
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
@@ -85,10 +85,10 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return 0;
 }
 
-void* mouse_construct()
+void* lb_mouse_construct()
 {
 	WinAPIMouse* mouse = (WinAPIMouse*)malloc( sizeof( WinAPIMouse ) );
-	vector_construct( &mouse->events, sizeof( MouseEvent ), 3 );
+	vector_construct( &mouse->events, sizeof( MouseEvent ) );
 
 	mouse->base.construct = &construct;
 	mouse->base.handle_winapi_message = &handle_winapi_message;
@@ -96,19 +96,19 @@ void* mouse_construct()
 	return mouse;
 }
 
-void mouse_destruct( void* m )
+void lb_mouse_destruct( void* m )
 {
 	CAST_MOUSE()
 	vector_destruct( &mouse->events );
 	free( mouse );
 }
 
-int mouse_constructed( void* mouse )
+int lb_mouse_constructed( void* mouse )
 {
 	return (mouse != NULL) ? 1 : 0;
 }
 
-void mouse_set_x( void* mouse, int x )
+void lb_mouse_set_x( void* mouse, int x )
 {
 	POINT p;
 	BOOL result;
@@ -118,7 +118,7 @@ void mouse_set_x( void* mouse, int x )
 	assert( result );
 }
 
-void mouse_set_y( void* mouse, int y )
+void lb_mouse_set_y( void* mouse, int y )
 {
 	POINT p;
 	BOOL result;
@@ -128,7 +128,7 @@ void mouse_set_y( void* mouse, int y )
 	assert( result );
 }
 
-int mouse_get_x( void* mouse )
+int lb_mouse_get_x( void* mouse )
 {
 	POINT p;
 	BOOL result;
@@ -137,7 +137,7 @@ int mouse_get_x( void* mouse )
 	return p.x;
 }
 
-int mouse_get_y( void* mouse )
+int lb_mouse_get_y( void* mouse )
 {
 	POINT p;
 	BOOL result;
@@ -146,13 +146,13 @@ int mouse_get_y( void* mouse )
 	return p.y;
 }
 
-void mouse_cursor_show( void* mouse, int state )
+void lb_mouse_cursor_show( void* mouse, int state )
 {
 	ShowCursor( (state == 1) ? TRUE : FALSE );
 }
 
 
-int mouse_next_event( void* m )
+int lb_mouse_next_event( void* m )
 {
 	MouseEvent* iter;
 	CAST_MOUSE()
@@ -170,26 +170,27 @@ int mouse_next_event( void* m )
 	}
 }
 
-enum MouseEvent mouse_get_event_type( void* m )
+enum LBMouseEvent lb_mouse_get_event_type( void* m )
 {
 	CAST_MOUSE()
 	return mouse->event.type;
 }
 
-int mouse_get_event_button( void* m )
+int lb_mouse_get_event_button( void* m )
 {
 	CAST_MOUSE()
 	return mouse->event.button;
 }
 
-int mouse_get_event_x( void* m )
+int lb_mouse_get_event_x( void* m )
 {
 	CAST_MOUSE()
 	return mouse->event.x;
 }
 
-int mouse_get_event_y( void* m )
+int lb_mouse_get_event_y( void* m )
 {
 	CAST_MOUSE()
 	return mouse->event.y;
 }
+

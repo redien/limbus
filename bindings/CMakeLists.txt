@@ -152,7 +152,7 @@ if(GENERATE_LUA_BINDING)
 
 	include_directories(
 		${CMAKE_CURRENT_SOURCE_DIR}/
-		${LUA_DEP_DIR}/src/
+		${LUA_INCLUDE_DIR}
 	)
 
 	if(BUILD_STATIC)

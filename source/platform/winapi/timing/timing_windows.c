@@ -6,11 +6,11 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include "../../timing.h"
+#include <limbus/timing.h>
 
 #include <windows.h>
 
-double time_count_in_seconds( void )
+double lb_time_count_in_seconds( void )
 {
 	LARGE_INTEGER frequency;
 	

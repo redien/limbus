@@ -22,10 +22,15 @@ double lb_time_count_in_seconds( void )
 }
 
 /* TODO: Come up with a better way to support this under ANSI strict */
-int usleep( unsigned long usec );
+/*int usleep( unsigned long usec );*/
 
 void lb_msleep( unsigned int msec )
 {
     usleep( msec * 1000L );
+}
+
+void lb_usleep( unsigned int usec )
+{
+    usleep( usec );
 }
 

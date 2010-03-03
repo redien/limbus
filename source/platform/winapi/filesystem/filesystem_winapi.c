@@ -10,7 +10,7 @@
 	#define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include "../../filesystem.h"
+#include <limbus/filesystem.h>
 
 #include <windows.h>
 #include <stdlib.h>
@@ -23,23 +23,23 @@ typedef struct WinAPIFilesystemTag
 	int first_find;
 } WinAPIFilesystem;
 
-void* filesystem_construct()
+void* lb_filesystem_construct()
 {
 	return malloc( sizeof( WinAPIFilesystem ) );
 }
 
-void* filesystem_destruct( void* filesystem )
+void* lb_filesystem_destruct( void* filesystem )
 {
 	free( filesystem );
 	return NULL;
 }
 
-int filesystem_constructed( void* filesystem )
+int lb_filesystem_constructed( void* filesystem )
 {
 	return (filesystem) ? 1 : 0;
 }
 
-int filesystem_query_path( void* filesystem, const char* path )
+int lb_filesystem_directory_list( void* filesystem, const char* path )
 {
 	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
 	char dir[MAX_PATH];
@@ -57,7 +57,7 @@ int filesystem_query_path( void* filesystem, const char* path )
 	return 1;
 }
 
-int filesystem_query_next_entry( void* filesystem )
+int lb_filesystem_directory_next_entry( void* filesystem )
 {
 	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
 
@@ -80,15 +80,63 @@ int filesystem_query_next_entry( void* filesystem )
 	return 1;
 }
 
-const char* filesystem_query_get_entry( void* filesystem )
+const char* lb_filesystem_directory_get_entry( void* filesystem )
 {
 	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
 	return fs->find_data.cFileName;
 }
 
-unsigned int filesystem_file_size( void* filesystem, const char* path )
+unsigned int lb_filesystem_file_size( void* filesystem, const char* path )
 {
 	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
 	FindFirstFile( path, &fs->find_data );
 	return fs->find_data.nFileSizeLow;
 }
+
+/* TODO: Implement */
+
+int lb_filesystem_path_is_directory( void* filesystem, const char* path )
+{
+    return 0;
+}
+
+int lb_filesystem_path_is_file( void* filesystem, const char* path )
+{
+    return 0;
+}
+
+const char* lb_filesystem_get_working_directory( void* filesystem )
+{
+    return "";
+}
+
+
+int lb_filesystem_watch_path( void* filesystem, char* path )
+{
+    return 0;
+}
+
+void lb_filesystem_remove_watch( void* filesystem, int id )
+{
+}
+
+int lb_filesystem_next_watch_event( void* filesystem )
+{
+    return 0;
+}
+
+int lb_filesystem_get_watch_event_id( void* filesystem )
+{
+    return 0;
+}
+
+const char* lb_filesystem_get_watch_event_file( void* filesystem )
+{
+    return "";
+}
+
+enum LBFilesystemWatchEvent lb_filesystem_get_watch_event_type( void* filesystem )
+{
+    return 0;
+}
+

@@ -6,24 +6,26 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include "../../screen.h"
+#include <limbus/screen.h>
 #include "../win_screen.h"
 
 #include <windows.h>
 
-/* Not implemented yet */
+/* Not implemented yet... */
 
-void* screen_construct( int screen_num )
+/* TODO: Implement */
+
+void* lb_screen_construct( int screen_num )
 {
 	return (void*)1;
 }
 
-void* screen_destruct( void* screen )
+void* lb_screen_destruct( void* screen )
 {
 	return NULL;
 }
 
-int screen_constructed( void* screen )
+int lb_screen_constructed( void* screen )
 {
 	if (screen != NULL)
 		return 1;
@@ -31,12 +33,33 @@ int screen_constructed( void* screen )
 		return 0;
 }
 
-int screen_get_width( void* screen )
+int lb_screen_get_width( void* screen )
 {
 	return GetSystemMetrics( SM_CXSCREEN );
 }
 
-int screen_get_height( void* screen )
+int lb_screen_get_height( void* screen )
 {
 	return GetSystemMetrics( SM_CYSCREEN );
 }
+
+int lb_screen_modes( void* screen )
+{
+    return 0;
+}
+
+int lb_screen_get_mode_width( void* screen, int mode )
+{
+    return 0;
+}
+
+int lb_screen_get_mode_height( void* screen, int mode )
+{
+    return 0;
+}
+
+int lb_screen_change_mode( void* screen, int mode )
+{
+    return 0;
+}
+

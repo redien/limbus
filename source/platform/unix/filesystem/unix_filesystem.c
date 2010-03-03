@@ -53,7 +53,7 @@ typedef struct UnixFilesystemTag
 } UnixFilesystem;
 
 /* TODO: Come up with a better way to support this under ANSI strict */
-size_t readlink( const char* path, char* buf, size_t size );
+/*size_t readlink( const char* path, char* buf, size_t size );*/
 
 void* lb_filesystem_construct()
 {

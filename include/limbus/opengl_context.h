@@ -14,6 +14,8 @@ extern "C"
 #endif
 
 /* TODO: Change prefix from LBOpengl to LBOpenglContext for consistency */
+/* TODO: Change attribute accessor from using enumerations to standalone
+         functions to avoid crazy names as well as for consistency */
 
 enum LBOpenglAttribute
 {

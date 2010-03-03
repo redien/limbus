@@ -6,8 +6,7 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include "../../opengl_context.h"
-#include "../../opengl_ext.h"
+#include <limbus/opengl_context.h>
 #include "../wgl_opengl_context.h"
 #include "../win_window.h"
 
@@ -19,7 +18,8 @@ typedef struct
 	int number_of_pixelformats;
 	int default_pixelformat;
 	WinWindow* window;
-	int released;
+	int released,
+	    use_current;
 } wglContextData;
 
 static int get_default_pixelformat( void* con );
@@ -51,7 +51,7 @@ static void set_pixelformat_list( wglContext* context, wglContextData* context_d
 	}
 }
 
-void* opengl_context_construct_in_window( void* win )
+void* lb_opengl_context_construct_in_window( void* win, int use_current )
 {
 	wglContext* context;
 	wglContextData* context_data;
@@ -66,6 +66,7 @@ void* opengl_context_construct_in_window( void* win )
 	
 	context_data->window = window;
 	context_data->released = 0;
+	context_data->use_current = use_current;
 	context->impl_data = context_data;
 	
 	context->device_context = GetDC( context_data->window->handle );
@@ -86,7 +87,7 @@ void* opengl_context_construct_in_window( void* win )
 	context_data = (wglContextData*)context->impl_data;\
 	assert( context_data );
 
-void* opengl_context_destruct( void* con )
+void* lb_opengl_context_destruct( void* con )
 {
 	DEFINE_CONTEXT_AND_DATA();
 
@@ -105,13 +106,13 @@ void* opengl_context_destruct( void* con )
 	return NULL;
 }
 
-void opengl_context_release( void* con )
+void lb_opengl_context_release( void* con )
 {
 	DEFINE_CONTEXT_AND_DATA()
 	context_data->released = 1;
 }
 
-int opengl_context_constructed( void* con )
+int lb_opengl_context_constructed( void* con )
 {
 	if (con != NULL)
 		return 1;
@@ -119,49 +120,51 @@ int opengl_context_constructed( void* con )
 		return 0;
 }
 
-void opengl_context_swap_buffers( void* con )
+void lb_opengl_context_swap_buffers( void* con )
 {
 	DEFINE_CONTEXT_AND_DATA()
 	
 	SwapBuffers( context->device_context );
 }
 
-int opengl_context_pixelformats( void* con )
+int lb_opengl_context_pixelformats( void* con )
 {
 	DEFINE_CONTEXT_AND_DATA()
 	return context_data->number_of_pixelformats + 1;
 }
 
-int opengl_context_get_attribute( void* con, int format, enum OpenglAttribute attribute )
+int lb_opengl_context_get_attribute( void* con, int format, enum LBOpenglAttribute attribute )
 {
 	DEFINE_CONTEXT_AND_DATA()
 	
 	if (format == 0)
+	{
 		format = context_data->default_pixelformat;
+	}
 
 	format--;
 	
 	switch (attribute)
 	{
-		case OpenglAttributeDoubleBuffer:
+		case LBOpenglAttributeDoubleBuffer:
 			if (context_data->pixelformats[format].dwFlags & PFD_DOUBLEBUFFER)
 				return 1;
 			else
 				return 0;
 
-		case OpenglAttributeOpenglSupport:
+		case LBOpenglAttributeOpenglSupport:
 			if (context_data->pixelformats[format].dwFlags & PFD_SUPPORT_OPENGL)
 				return 1;
 			else
 				return 0;
 
-		case OpenglAttributeRGBA:
+		case LBOpenglAttributeRGBA:
 			if (context_data->pixelformats[format].iPixelType == PFD_TYPE_RGBA)
 				return 1;
 			else
 				return 0;
 
-		case OpenglAttributeDepthSize:
+		case LBOpenglAttributeDepthSize:
 			return context_data->pixelformats[format].cDepthBits;
 
 		default:
@@ -179,13 +182,13 @@ static int get_default_pixelformat( void* con )
 	/* iterate over every pixelformat except the default one (0) */
 	for (i = 1; i < size; i++)
 	{
-		if (opengl_context_get_attribute( context, i, OpenglAttributeOpenglSupport ) == 1)
+		if (opengl_context_get_attribute( context, i, LBOpenglAttributeOpenglSupport ) == 1)
 		{
-			if (opengl_context_get_attribute( context, i, OpenglAttributeRGBA ) == 1)
+			if (opengl_context_get_attribute( context, i, LBOpenglAttributeRGBA ) == 1)
 			{
-				if (opengl_context_get_attribute( context, i, OpenglAttributeDoubleBuffer ) == 1)
+				if (opengl_context_get_attribute( context, i, LBOpenglAttributeDoubleBuffer ) == 1)
 				{
-					if (opengl_context_get_attribute( context, i, OpenglAttributeDepthSize ) > 0)
+					if (opengl_context_get_attribute( context, i, LBOpenglAttributeDepthSize ) > 0)
 					{
 						return i;
 					}
@@ -198,13 +201,15 @@ static int get_default_pixelformat( void* con )
 	return 0;
 }
 
-void opengl_context_set_pixelformat( void* con, int format )
+void lb_opengl_context_set_pixelformat( void* con, int format )
 {
 	BOOL result;
 	DEFINE_CONTEXT_AND_DATA()
 	
 	if (format == 0)
+	{
 		format = context_data->default_pixelformat;
+	}
 
 	format--;
 	
@@ -213,11 +218,19 @@ void opengl_context_set_pixelformat( void* con, int format )
 							 &context_data->pixelformats[format] );
 	assert( result );
 	
-	context->render_context = wglCreateContext( context->device_context );
+	if (context_data->use_current)
+	{
+	    context->render_context = wglGetCurrentContext();
+	}
+	else
+	{
+    	context->render_context = wglCreateContext( context->device_context );
+	}
+
 	assert( context->render_context );
 }
 
-void opengl_context_make_current( void* con )
+void lb_opengl_context_make_current( void* con )
 {
 	BOOL result;
 	DEFINE_CONTEXT_AND_DATA()
@@ -227,7 +240,7 @@ void opengl_context_make_current( void* con )
 	assert( result );
 }
 
-void opengl_context_release_current( void* con )
+void lb_opengl_context_release_current( void* con )
 {
 	BOOL result;
 	DEFINE_CONTEXT_AND_DATA()

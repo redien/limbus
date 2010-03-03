@@ -12,7 +12,7 @@
 
 #include "../../../util/vector.h"
 
-#include "../../window.h"
+#include <limbus/window.h>
 #include "../win_window.h"
 #include "../winapi_input_device.h"
 
@@ -51,7 +51,7 @@ typedef struct
 	Vector devices;
 } WinWindowData;
 
-void* window_construct( void* screen )
+void* lb_window_construct( void* screen )
 {
 	WinWindow* window;
 	WinWindowData* window_data;
@@ -74,11 +74,11 @@ void* window_construct( void* screen )
 	window_data->width = 640;
 	window_data->height = 480;
 
-	vector_construct( &window_data->events, sizeof( WindowEvent ), 3 );
-	vector_construct( &window_data->devices, sizeof( WinAPIInputDevice* ), 3 );
+	vector_construct( &window_data->events, sizeof( WindowEvent ) );
+	vector_construct( &window_data->devices, sizeof( WinAPIInputDevice* ) );
 	window->impl_data = window_data;
 
-	vector_construct( &window_data->filepaths, MAX_FILE_PATH + 1, 3 );
+	vector_construct( &window_data->filepaths, MAX_FILE_PATH + 1 );
 
 	window_set_caption( window, "" );
 
@@ -93,7 +93,7 @@ void* window_construct( void* screen )
 	window_data = (WinWindowData*)window->impl_data;\
 	assert( window_data );
 
-void* window_destruct( void* win )
+void* lb_window_destruct( void* win )
 {
 	DECLARE_WINDOW_AND_DATA()
 
@@ -113,7 +113,7 @@ void* window_destruct( void* win )
 	return NULL;
 }
 
-void window_set_caption( void* win, const char* caption )
+void lb_window_set_caption( void* win, const char* caption )
 {
 	int size;
 	DECLARE_WINDOW_AND_DATA()
@@ -175,7 +175,7 @@ static void update_window_rect( void* win )
 }
 
 #define DEFINE_WINDOW_INT_SETTER( property )\
-	void window_set_##property( void* win, int property ) {\
+	void lb_window_set_##property( void* win, int property ) {\
 		DECLARE_WINDOW_AND_DATA()\
 		window_data->property = property;\
 		if (window_data->mapped)\
@@ -187,14 +187,14 @@ DEFINE_WINDOW_INT_SETTER( height )
 DEFINE_WINDOW_INT_SETTER( x )
 DEFINE_WINDOW_INT_SETTER( y )
 
-const char* window_get_caption( void* win )
+const char* lb_window_get_caption( void* win )
 {
 	DECLARE_WINDOW_AND_DATA()
 	return (const char*)window_data->caption;
 }
 
 #define DEFINE_WINDOW_INT_GETTER( property )\
-	int window_get_##property( void* win ) {\
+	int lb_window_get_##property( void* win ) {\
 		DECLARE_WINDOW_AND_DATA()\
 		return window_data->property;\
 	}
@@ -325,14 +325,9 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 
 
 			case WM_CLOSE:
-				event.type = WindowEventClose;
+				event.type = LBWindowEventClose;
 				vector_push_back( &window_data->events, &event );
 				return TRUE;
-
-			case WM_PAINT:
-				event.type = WindowEventRedraw;
-				vector_push_back( &window_data->events, &event );
-				break;
 
 			case WM_DROPFILES:
 				{
@@ -340,7 +335,7 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 					int i;
 					char filepath[MAX_FILE_PATH + 1];
 
-					event.type = WindowEventFileDrop;
+					event.type = LBWindowEventFileDrop;
 
 					DragQueryPoint( (HDROP)wParam, &point );
 					event.x = point.x;
@@ -369,7 +364,7 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 	return DefWindowProc( hwnd, uMsg, wParam, lParam );
 }
 
-int window_next_event( void* win )
+int lb_window_next_event( void* win )
 {
 	MSG msg;
 	WindowEvent* event_ptr;
@@ -391,14 +386,14 @@ int window_next_event( void* win )
 	return 1;
 }
 
-enum WindowEvent window_get_event_type( void* win )
+enum LBWindowEvent lb_window_get_event_type( void* win )
 {
 	DECLARE_WINDOW_AND_DATA()
 	return window_data->event.type;
 }
 
 #define DEFINE_WINDOW_EVENT_GETTER( param )\
-	int window_get_event_##param( void* win ) {\
+	int lb_window_get_event_##param( void* win ) {\
 		DECLARE_WINDOW_AND_DATA()\
 		return window_data->event.param;\
 	}
@@ -407,7 +402,7 @@ DEFINE_WINDOW_EVENT_GETTER( x )
 DEFINE_WINDOW_EVENT_GETTER( y )
 DEFINE_WINDOW_EVENT_GETTER( files )
 
-const char* window_get_event_file( void* win, int i )
+const char* lb_window_get_event_file( void* win, int i )
 {
 	const char* file;
 	DECLARE_WINDOW_AND_DATA()
@@ -416,7 +411,7 @@ const char* window_get_event_file( void* win, int i )
 	return file;
 }
 
-void window_add_input_device( void* win, void* d )
+void lb_window_add_input_device( void* win, void* d )
 {
 	WinAPIInputDevice* device = (WinAPIInputDevice*)d;
 	DECLARE_WINDOW_AND_DATA()

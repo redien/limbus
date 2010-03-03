@@ -46,7 +46,9 @@ class Limbus::Mouse
 
 	public bool poll_events()
 	{
-		if (limbus::lb_mouse_next_event( this.mouse ) == 1)
+	    bool found_event;
+		found_event = false;
+		while (limbus::lb_mouse_next_event( this.mouse ) == 1)
 		{
 			int e;
 			e = limbus::lb_mouse_get_event_type( this.mouse );
@@ -73,10 +75,10 @@ class Limbus::Mouse
 								 limbus::lb_mouse_get_event_y( this.mouse ) );
 			}
 
-			return true;
+			found_event = true;
 		}
 		
-		return false;
+		return found_event;
 	}
 }
 

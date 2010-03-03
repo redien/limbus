@@ -46,14 +46,18 @@ void* lb_screen_construct( int screen_id )
 		return 0;
 	}
 
+    /* Make sure we can assign every screen id, even
+       if LBScreenDefault is not the system's default */
 	default_id = XDefaultScreen( screen->display );
-	if (screen_id == 0)
+	if (screen_id == LBScreenDefault)
 		screen->screen = default_id;	
 	else if (screen_id == default_id)
-		screen->screen = 0;
+		screen->screen = LBScreenDefault;
 	else
 		screen->screen = screen_id;
 
+
+    /* Get a list of all available screen modes */
     {
         int not_used;
 

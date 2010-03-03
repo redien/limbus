@@ -26,7 +26,9 @@ class Limbus::Keyboard
 
 	public bool poll_events()
 	{
-		if (limbus::lb_keyboard_next_event( this.keyboard ) == 1)
+	    bool found_event;
+		found_event = false;
+		while (limbus::lb_keyboard_next_event( this.keyboard ) == 1)
 		{
 			int e;
 			e = limbus::lb_keyboard_get_event_type( this.keyboard );
@@ -45,10 +47,10 @@ class Limbus::Keyboard
 							limbus::lb_keyboard_get_event_utf8( this.keyboard ) );
 			}
 
-			return true;
+            found_event = true;
 		}
 		
-		return false;
+		return found_event;
 	}
 }
 

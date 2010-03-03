@@ -15,6 +15,7 @@ extern "C"
 
 double lb_time_count_in_seconds( void );
 void lb_msleep( unsigned int msec );
+void lb_usleep( unsigned int usec );
 
 #ifdef __cplusplus
 }

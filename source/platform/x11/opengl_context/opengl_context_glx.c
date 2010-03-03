@@ -133,7 +133,7 @@ int lb_opengl_context_get_attribute( void* con, int format, enum LBOpenglAttribu
 	DECLARE_CONTEXT_AND_DATA()
 	assert( context_data->visuals );
 	
-	if (format == 0)
+	if (format == LBOpenglDefaultPixelformat)
 		format = context_data->default_pixelformat;
 
 	format--;

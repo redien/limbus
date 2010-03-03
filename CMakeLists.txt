@@ -37,8 +37,9 @@ set( CPP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/cpp )
 set( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests )
 
 set( LUA_DEP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lua-5.1.4 )
+set( LUA_SRC_PATH ${LUA_DEP_DIR}/src )
+set( LUA_INCLUDE_DIR ${LUA_SRC_PATH} )
 set( LUA_EXE ${BIN_DIR}/${CMAKE_CFG_INTDIR}/lua )
-
 
 set( CBIND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../cbind/ )
 
@@ -203,9 +204,6 @@ if(WIN32)
 		)
 
 		include_directories( ${WINTAB_INCLUDE_PATH} )
-	else(ENABLE_TABLET_SUPPORT)
-		unset( WINTAB_LIBRARY CACHE )
-		unset( WINTAB_INCLUDE_PATH CACHE )
 	endif(ENABLE_TABLET_SUPPORT)
 elseif(UNIX)
 	set(

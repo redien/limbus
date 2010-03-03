@@ -6,7 +6,7 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include "../../joystick.h"
+#include <limbus/joystick.h>
 
 #include <windows.h>
 #include <assert.h>
@@ -27,7 +27,7 @@ typedef struct
 	int connected;
 } Joystick;
 
-void* joystick_construct( int joystick_num )
+void* lb_joystick_construct( int joystick_num )
 {
 	MMRESULT result;
 	Joystick* joystick;
@@ -54,54 +54,54 @@ void* joystick_construct( int joystick_num )
 	return joystick;
 }
 
-void joystick_destruct( void* joystick )
+void lb_joystick_destruct( void* joystick )
 {
 	assert( joystick );
 	free( joystick );
 }
 
-int joystick_constructed( void* joystick )
+int lb_joystick_constructed( void* joystick )
 {
 	return (joystick != NULL) ? 1 : 0;
 }
 
-int joystick_connected( void* joystick )
+int lb_joystick_connected( void* joystick )
 {
 	return ((Joystick*)joystick)->connected;
 }
 
-char* joystick_get_product_string( void* joystick )
+char* lb_joystick_get_product_string( void* joystick )
 {
 	assert( joystick );
 	return ((Joystick*)joystick)->caps.szPname;
 }
 
-void joystick_set_axis_max( void* joystick, int axis, int value )
+void lb_joystick_set_axis_max( void* joystick, int axis, int value )
 {
 }
 
-void joystick_set_axis_min( void* joystick, int axis, int value )
+void lb_joystick_set_axis_min( void* joystick, int axis, int value )
 {
 }
 
-int joystick_axes( void* joystick )
+int lb_joystick_axes( void* joystick )
 {
 	assert( joystick );
 	return ((Joystick*)joystick)->caps.wNumAxes;
 }
 
-int joystick_buttons( void* joystick )
+int lb_joystick_buttons( void* joystick )
 {
 	assert( joystick );
 	return ((Joystick*)joystick)->caps.wNumButtons;
 }
 
-int joystick_next_event( void* js )
+int lb_joystick_next_event( void* js )
 {
-	return joystick_next_raw_event( js );
+	return lb_joystick_next_raw_event( js );
 }
 
-int joystick_next_raw_event( void* js )
+int lb_joystick_next_raw_event( void* js )
 {
 	JOYINFOEX info;
 	MMRESULT result;
@@ -118,14 +118,14 @@ int joystick_next_raw_event( void* js )
 	{
 		joyGetDevCaps( joystick->joystick_num, &joystick->caps, sizeof( JOYCAPS ) );
 		joystick->connected = 1;
-		joystick->event.type = JoystickEventConnected;
+		joystick->event.type = LBJoystickEventConnected;
 		return 1;
 	}
 
 	if (result != JOYERR_NOERROR && joystick->connected)
 	{
 		joystick->connected = 0;
-		joystick->event.type = JoystickEventDisconnected;
+		joystick->event.type = LBJoystickEventDisconnected;
 		return 1;
 	}
 
@@ -137,7 +137,7 @@ int joystick_next_raw_event( void* js )
 #define READ_AXIS_EVENT( new_value, old_value, axis_num )\
 	if (new_value != old_value)\
 	{\
-		joystick->event.type = JoystickEventAxis;\
+		joystick->event.type = LBJoystickEventAxis;\
 		joystick->event.number = axis_num;\
 		joystick->event.value = new_value;\
 		old_value = new_value;\
@@ -157,7 +157,7 @@ int joystick_next_raw_event( void* js )
 		DWORD mask = (1 << i);
 		if ((info.dwButtons & mask) != (joystick->info.dwButtons & mask))
 		{
-			joystick->event.type = JoystickEventButton;
+			joystick->event.type = LBJoystickEventButton;
 			joystick->event.number = i;
 			if (info.dwButtons & mask)
 				joystick->event.value = 1;
@@ -171,25 +171,25 @@ int joystick_next_raw_event( void* js )
 	return 0;
 }
 
-enum JoystickEvent joystick_get_event_type( void* joystick )
+enum LBJoystickEvent lb_joystick_get_event_type( void* joystick )
 {
 	assert( joystick );
 	return ((Joystick*)joystick)->event.type;
 }
 
-int joystick_get_event_number( void* joystick )
+int lb_joystick_get_event_number( void* joystick )
 {
 	assert( joystick );
 	return ((Joystick*)joystick)->event.number;
 }
 
-int joystick_get_event_value( void* joystick )
+int lb_joystick_get_event_value( void* joystick )
 {
 	assert( joystick );
 	return ((Joystick*)joystick)->event.value;
 }
 
-int joystick_get_event_time( void* joystick )
+int lb_joystick_get_event_time( void* joystick )
 {
 	return timeGetTime();
 }
