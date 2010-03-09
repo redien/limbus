@@ -147,3 +147,4 @@ int main( int argc, char** argv )
 	screen = lb_screen_destruct( screen );
 	assert( lb_screen_constructed( screen ) == 0 );
 }
+

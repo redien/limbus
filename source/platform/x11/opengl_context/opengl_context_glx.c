@@ -97,7 +97,7 @@ void* lb_opengl_context_destruct( void* con )
 	return NULL;
 }
 
-void lb_opengl_context_release( void* con )
+void lb_opengl_context_release_ownership( void* con )
 {
 	DECLARE_CONTEXT_AND_DATA()
 	context_data->released = 1;

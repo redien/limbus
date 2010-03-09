@@ -22,81 +22,57 @@ extern "C"
  *  LBScreenDefault refers to the system's default screen if there is one.
  *  @param lb_screen_id the id of the screen to construct an object for
  *  @return a pointer to the newly created screen object if successful, else returns a pointer identifying a non-constructed screen object. Use lb_screen_constructed to find out if a screen object was constructed or not.
- *  @see lb_screen_constructed
- *  @see lb_screen_destruct
  */
 void* lb_screen_construct( int screen_id );
 
 /** Destructs a previously constructed screen object.
  *  Destructing a screen object will deallocate all the resources associated with it.
  *  @param screen a pointer to the screen object to destruct.
- *  @see lb_screen_construct
- *  @see lb_screen_constructed
- *  @return a new pointer that can be passed to lb_screen_constructed to find out if the screen was destructed or not.
+ *  @return a new pointer that can be passed to lb_screen_constructed to find out if the screen object was destructed or not.
  */
 void* lb_screen_destruct( void* screen );
 
-/** Returns 1 if screen points to a successfully constructed screen object or 0 if it doesn't.
+/** Check for successfully constructed screen objects.
  *  @param screen a pointer returned by lb_screen_construct or lb_screen_destruct
- *  @see lb_screen_construct
- *  @see lb_screen_destruct
  *  @return 1 if screen points to a successfully constructed screen object or 0 if it doesn't.
  */
 int lb_screen_constructed( void* screen );
 
-/** Returns the width of the screen in pixels.
- *  @param screen a pointer to a successfully constructed screen object returned by lb_screen_construct.
- *  @see lb_screen_construct
- *  @see lb_screen_constructed
- *  @see lb_screen_get_height
+/** Get the width of the screen in pixels.
+ *  @param screen a pointer to a successfully constructed screen object.
  *  @return the width of the screen measured in pixels
  */
 int lb_screen_get_width( void* screen );
 
-/** Returns the height of the screen in pixels.
- *  @param screen a pointer to a successfully constructed screen object returned by lb_screen_construct.
- *  @see lb_screen_construct
- *  @see lb_screen_constructed
- *  @see lb_screen_get_width
+/** Get the height of the screen in pixels.
+ *  @param screen a pointer to a successfully constructed screen object.
  *  @return the height of the screen measured in pixels
  */
 int lb_screen_get_height( void* screen );
 
-/** Returns the number of screen modes.
- *  @param screen a pointer to a successfully constructed screen object returned by lb_screen_construct.
- *  @see lb_screen_constructed
+/** Get the number of screen modes.
+ *  @param screen a pointer to a successfully constructed screen object.
  *  @return the number of screen modes available
  */
 int lb_screen_modes( void* screen );
 
-/** Returns the width of the screen mode in pixels.
- *  @param screen a pointer to a successfully constructed screen object returned by lb_screen_construct.
+/** Get the width of the screen mode in pixels.
+ *  @param screen a pointer to a successfully constructed screen object.
  *  @param mode an integer identifying the screen mode. Valid modes range from 0 to lb_screen_modes( screen ) - 1, inclusive.
- *  @see lb_screen_construct
- *  @see lb_screen_constructed
- *  @see lb_screen_modes
- *  @see lb_screen_get_mode_height
  *  @return the width of the screen mode measured in pixels
  */
 int lb_screen_get_mode_width( void* screen, int mode );
 
-/** Returns the height of the screen mode in pixels.
- *  @param screen a pointer to a successfully constructed screen object returned by lb_screen_construct.
+/** Get the height of the screen mode in pixels.
+ *  @param screen a pointer to a successfully constructed screen object.
  *  @param mode an integer identifying the screen mode. Valid modes range from 0 to lb_screen_modes( screen ) - 1, inclusive.
- *  @see lb_screen_construct
- *  @see lb_screen_constructed
- *  @see lb_screen_modes
- *  @see lb_screen_get_mode_width
  *  @return the height of the screen mode measured in pixels
  */
 int lb_screen_get_mode_height( void* screen, int mode );
 
 /** Changes the screen mode.
- *  @param screen a pointer to a successfully constructed screen object returned by lb_screen_construct.
+ *  @param screen a pointer to a successfully constructed screen object.
  *  @param mode an integer identifying the screen mode. Valid modes range from 0 to lb_screen_modes( screen ) - 1, inclusive.
- *  @see lb_screen_construct
- *  @see lb_screen_constructed
- *  @see lb_screen_modes
  *  @return 1 if successful else returns 0.
  */
 int lb_screen_change_mode( void* screen, int mode );

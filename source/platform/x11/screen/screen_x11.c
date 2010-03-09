@@ -19,28 +19,25 @@ typedef struct _X11ScreenImpl
 {
     X11Screen base;
 
-    int mode_count;
-    int previous_mode,
-        current_mode;
-    XRRScreenSize* modes;
+    int config_at_construction,
+        current_config;
+    int size_count;
+    XRRScreenSize* sizes;
     XRRScreenConfiguration* screen_config;
     Rotation current_rotation;
 } X11ScreenImpl;
 
 void* lb_screen_construct( int screen_id )
 {
-	X11Screen* screen;
-	X11ScreenImpl* screen_impl;
+	X11ScreenImpl* screen;
 	int default_id;
 	
-	screen_impl = (X11ScreenImpl*)malloc( sizeof *screen_impl );
-	if (!screen_impl)
+	screen = (X11ScreenImpl*)malloc( sizeof *screen );
+	if (!screen)
 		return 0;
-	
-	screen = &screen_impl->base;
 
-	screen->display = XOpenDisplay( 0 );
-	if (!screen->display)
+	screen->base.display = XOpenDisplay( 0 );
+	if (!screen->base.display)
 	{
 		free( screen );
 		return 0;
@@ -48,68 +45,69 @@ void* lb_screen_construct( int screen_id )
 
     /* Make sure we can assign every screen id, even
        if LBScreenDefault is not the system's default */
-	default_id = XDefaultScreen( screen->display );
+	default_id = XDefaultScreen( screen->base.display );
 	if (screen_id == LBScreenDefault)
-		screen->screen = default_id;	
+	{
+		screen->base.screen = default_id;
+	}
 	else if (screen_id == default_id)
-		screen->screen = LBScreenDefault;
+	{
+		screen->base.screen = LBScreenDefault;
+	}
 	else
-		screen->screen = screen_id;
+	{
+		screen->base.screen = screen_id;
+	}
 
 
-    /* Get a list of all available screen modes */
+    /* Get information on the available screen modes */
     {
         int not_used;
 
-        screen_impl->mode_count = 0;
+        screen->size_count = 0;
 
-        if (XQueryExtension( screen->display, "RANDR",
+        if (XQueryExtension( screen->base.display, "RANDR",
                              &not_used, &not_used, &not_used ))
         {
-            screen_impl->screen_config = XRRGetScreenInfo(
-                screen->display,
-                XRootWindow( screen->display,
-                             screen->screen )
+            screen->screen_config = XRRGetScreenInfo(
+                screen->base.display,
+                XRootWindow( screen->base.display,
+                             screen->base.screen )
             );
 
-            if (screen_impl->screen_config)
+            if (screen->screen_config)
             {
-                screen_impl->previous_mode = XRRConfigCurrentConfiguration(
-                    screen_impl->screen_config,
-                    &screen_impl->current_rotation
+                screen->current_config = XRRConfigCurrentConfiguration(
+                    screen->screen_config,
+                    &screen->current_rotation
                 );
-                
-                screen_impl->current_mode = screen_impl->previous_mode;
 
-                screen_impl->modes = XRRConfigSizes( screen_impl->screen_config,
-                                                     &screen_impl->mode_count );
+                screen->config_at_construction = screen->current_config;
+
+                screen->sizes = XRRConfigSizes( screen->screen_config,
+                                                &screen->size_count );
             }
         }
     }
 
-	return screen_impl;
+	return screen;
 }
-
-#define DECLARE_SCREEN()\
-	X11ScreenImpl* screen_impl = (X11ScreenImpl*)scr;\
-	X11Screen* screen = (X11Screen*)&screen_impl->base;\
-	screen = screen;\
-	screen_impl = screen_impl;\
-	assert( screen_impl );
 
 void* lb_screen_destruct( void* scr )
 {
-    DECLARE_SCREEN()
+	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
 
+    if (screen->current_config != screen->config_at_construction)
     {
-        if (screen_impl->current_mode != screen_impl->previous_mode)
-            lb_screen_change_mode( scr, screen_impl->previous_mode );
-
-        if (screen_impl->screen_config)
-            XRRFreeScreenConfigInfo( screen_impl->screen_config );
+        lb_screen_change_mode( screen, screen->config_at_construction );
     }
 
-	XCloseDisplay( screen->display );
+    if (screen->screen_config)
+    {
+        XRRFreeScreenConfigInfo( screen->screen_config );
+    }
+
+	XCloseDisplay( screen->base.display );
 	free( screen );
 	
 	return NULL;
@@ -125,45 +123,45 @@ int lb_screen_constructed( void* scr )
 
 int lb_screen_get_width( void* scr )
 {
-    DECLARE_SCREEN()
-	return XDisplayWidth( screen->display, screen->screen );
+	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
+	return screen->sizes[screen->current_config].width;
 }
 
 int lb_screen_get_height( void* scr )
 {
-    DECLARE_SCREEN()
-	return XDisplayHeight( screen->display, screen->screen );
+	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
+	return screen->sizes[screen->current_config].height;
 }
 
 int lb_screen_modes( void* scr )
 {
-    DECLARE_SCREEN()
-    return screen_impl->mode_count;
+	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
+    return screen->size_count;
 }
 
 int lb_screen_get_mode_width( void* scr, int mode )
 {
-    DECLARE_SCREEN()
-    return screen_impl->modes[mode].width;
+	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
+    return screen->sizes[mode].width;
 }
 
 int lb_screen_get_mode_height( void* scr, int mode )
 {
-    DECLARE_SCREEN()
-    return screen_impl->modes[mode].height;
+	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
+    return screen->sizes[mode].height;
 }
 
 int lb_screen_change_mode( void* scr, int mode )
 {
-    DECLARE_SCREEN()
-    XRRSetScreenConfig( screen->display,
-                        screen_impl->screen_config,
-                        RootWindow( screen->display, screen->screen ),
+	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
+    XRRSetScreenConfig( screen->base.display,
+                        screen->screen_config,
+                        RootWindow( screen->base.display, screen->base.screen ),
                         mode,
-                        screen_impl->current_rotation,
+                        screen->current_rotation,
                         CurrentTime );
 
-    screen_impl->current_mode = mode;
+    screen->current_config = mode;
     return 1;
 }
 

@@ -32,7 +32,7 @@ enum LBOpenglAttribute
 
 void* lb_opengl_context_construct_in_window( void* window, int use_current );
 void* lb_opengl_context_destruct( void* context );
-void lb_opengl_context_release( void* context );
+void lb_opengl_context_release_ownership( void* context );
 int lb_opengl_context_constructed( void* context );
 
 void lb_opengl_context_swap_buffers( void* context );

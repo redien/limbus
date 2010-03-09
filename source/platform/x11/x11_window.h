@@ -18,13 +18,8 @@ typedef struct
 	int screen;
 	Window window;
 	Window root_window;
-	Atom wm_delete_window;
-	XIC input_context;
-	XIM input_method;
-	long event_mask;
 	void (*create_window_impl)(void*, XVisualInfo*);
 	void (*destroy_window_impl)(void*);
-	void* impl_data;
 } X11Window;
 
 #endif
