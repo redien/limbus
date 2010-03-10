@@ -6,10 +6,10 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <platform/screen.h>
-#include <platform/window.h>
-#include <platform/opengl_context.h>
-#include <platform/tablet.h>
+#include <limbus/screen.h>
+#include <limbus/window.h>
+#include <limbus/opengl_context.h>
+#include <limbus/tablet.h>
 
 #include <stdio.h>
 
@@ -24,70 +24,73 @@ int main( int argc, char** argv )
 	void *screen, *window, *context, *tablet;
 	int running;
 
-	screen = screen_construct( 0 );
-	if (!screen_constructed( screen ))
-		return 0;
+	screen = lb_screen_construct( LBScreenDefault );
+	if (!lb_screen_constructed( screen ))
+		return -1;
 
-	window = window_construct( screen );
-	if (!window_constructed( window ))
+	window = lb_window_construct( screen );
+	if (!lb_window_constructed( window ))
 	{
-		screen_destruct( screen );
-		return 0;
+		lb_screen_destruct( screen );
+		return -1;
 	}
 
-	context = opengl_context_construct_in_window( window );
-	if (!opengl_context_constructed( context ))
+	context = lb_opengl_context_construct_in_window( window,
+	                                                 LBOpenglContextCreateNew );
+	if (!lb_opengl_context_constructed( context ))
 	{
-		window_destruct( window );
-		screen_destruct( screen );
-		return 0;
+		lb_window_destruct( window );
+		lb_screen_destruct( screen );
+		return -1;
 	}
 
-	opengl_context_set_pixelformat( context, 0 );
-	opengl_context_make_current( context );
+	lb_opengl_context_set_pixelformat( context, LBOpenglDefaultPixelformat );
+	lb_opengl_context_make_current( context );
 
-	tablet = tablet_construct();
-	window_add_input_device( window, tablet );
+	tablet = lb_tablet_construct();
+	lb_window_add_input_device( window, tablet );
 
 	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 
 	running = 1;
 	while (running)
 	{
-		while (window_next_event( window ))
+		while (lb_window_next_event( window ))
 		{
-			int type = window_get_event_type( window );
-			if (type == WindowEventClose)
+			int type = lb_window_get_event_type( window );
+			if (type == LBWindowEventClose)
 				running = 0;
 		}
 
-		while (tablet_next_event( tablet ))
+		while (lb_tablet_next_event( tablet ))
 		{
-			int type = tablet_get_event_type( tablet );
-			
-			if (type == TabletEventProximityIn)
+			int type = lb_tablet_get_event_type( tablet );
+
+			if (type == LBTabletEventProximityIn)
 				printf( "Proximity in\n" );
-			
-			if (type == TabletEventProximityOut)
+
+			if (type == LBTabletEventProximityOut)
 				printf( "Proximity out\n" );
-			
-			if (type == TabletEventMotion)
+
+			if (type == LBTabletEventMotion)
 			{
-				int x = tablet_get_event_x( tablet );
-				int y = tablet_get_event_y( tablet );
-				int pressure = tablet_get_event_pressure( tablet );
-				
+				int x = lb_tablet_get_event_x( tablet );
+				int y = lb_tablet_get_event_y( tablet );
+				int pressure = lb_tablet_get_event_pressure( tablet );
+
 				printf( "%d, %d, %d\n", x, y, pressure );
 			}
 		}
 
 		glClear( GL_COLOR_BUFFER_BIT );
-		opengl_context_swap_buffers( context );
+		lb_opengl_context_swap_buffers( context );
 	}
 
-	tablet_destruct( tablet );
-	opengl_context_destruct( context );
-	window_destruct( window );
-	screen_destruct( screen );
+	lb_tablet_destruct( tablet );
+	lb_opengl_context_destruct( context );
+	lb_window_destruct( window );
+	lb_screen_destruct( screen );
+	
+	return 0;
 }
 
