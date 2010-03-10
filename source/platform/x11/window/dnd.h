@@ -87,8 +87,8 @@ static void translate_uri( char* dest, char* str )
     dest[size] = '\0';
 }
 
-static void dnd_handle_message( X11WindowImpl* window,
-                                XEvent event )
+static void dnd_handle_event( X11WindowImpl* window,
+                              XEvent event )
 {
     if (event.type == ClientMessage)
     {
@@ -226,7 +226,6 @@ static void dnd_handle_message( X11WindowImpl* window,
                     
                     vector_push_back( &window->events, &event );
                 }
-
 
                 memset( &message, sizeof message, 0 );
                 message.type = ClientMessage;

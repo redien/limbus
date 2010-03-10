@@ -187,7 +187,6 @@ void lb_window_set_y( void* win, int y )
 	}
 }
 
-
 const char* lb_window_get_caption( void* win )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
@@ -220,70 +219,52 @@ int lb_window_get_y( void* win )
 
 int lb_window_next_event( void* win )
 {
-	XEvent event;
-	WindowEvent* iter;
-	int get_next = 1;
 	X11WindowImpl* window = (X11WindowImpl*)win;
+	WindowEvent* iter;
+	XEvent event;
 
-	iter = (WindowEvent*)vector_next( &window->events, NULL );
-	if (iter != NULL)
+	while (XPending( window->base.display ))
 	{
-		window->event = *iter;
-		vector_erase( &window->events, iter );
-		return 1;
-	}
-	
-	while (get_next)
-	{
-		get_next = 0;
-		if (XCheckWindowEvent( window->base.display,
-                               window->base.window,
-                               window->event_mask,
-                               &event ))
+	    XNextEvent( window->base.display, &event );
+	    
+	    /* Let registered input devices look at the event */
+	    {
+            X11InputDevice** iter = NULL;
+		    while ((iter = (X11InputDevice**)vector_next( &window->devices, iter )))
+		    {
+			    (*iter)->handle_x11_event( (*iter), event );
+		    }
+        }
+
+		if (event.type == ConfigureNotify)
 		{
-			X11InputDevice** iter = NULL;
-			while ((iter = (X11InputDevice**)vector_next( &window->devices, iter )))
-			{
-				(*iter)->handle_x11_event( (*iter), event );
-			}
-
-			if (event.type == ConfigureNotify)
-			{
-			    XConfigureEvent* configure_event = (XConfigureEvent*)&event;
-			    
-			    window->x = configure_event->x;
-			    window->y = configure_event->y;
-			    window->width = configure_event->width;
-			    window->height = configure_event->height;
-			}
-			
-			dnd_handle_message( window, event );
-
-			get_next = 1;
+		    XConfigureEvent* configure_event = (XConfigureEvent*)&event;
+		    
+		    window->x = configure_event->x;
+		    window->y = configure_event->y;
+		    window->width = configure_event->width;
+		    window->height = configure_event->height;
 		}
-		else if (XCheckTypedWindowEvent( window->base.display,
-										 window->base.window,
-										 ClientMessage,
-										 &event ))
+
+		if (event.type == ClientMessage)
 		{
 			if (event.xclient.data.l[0] == window->wm_delete_window)
 			{
 				window->event.type = LBWindowEventClose;
 				return 1;
 			}
-
-			dnd_handle_message( window, event );
-
-			get_next = 1;
 		}
-		else if (XCheckTypedWindowEvent( window->base.display,
-										 window->base.window,
-										 SelectionNotify,
-										 &event ))
-		{
-			dnd_handle_message( window, event );
-			get_next = 1;
-		}
+
+		dnd_handle_event( window, event );
+	}
+
+	iter = (WindowEvent*)vector_next( &window->events, NULL );
+	if (iter != NULL)
+	{
+		window->event = *iter;
+		vector_erase( &window->events, iter );
+		
+		return 1;
 	}
 
 	return 0;
@@ -339,38 +320,33 @@ void lb_window_add_input_device( void* win, void* d )
 void impl_create_window( void* win, XVisualInfo* visual_info )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
-
 	Colormap color_map;
-    XSetWindowAttributes attribs;
-    unsigned long attribute_mask = CWColormap
-                                 | CWOverrideRedirect;
-	assert( visual_info );
+    XSetWindowAttributes window_attributes;
+    unsigned long window_attribute_mask;
 
-	/* Create colormap from visual info */
     color_map = XCreateColormap( window->base.display,
     							 RootWindow( window->base.display,
 			    							 visual_info->screen ),
     							 visual_info->visual,
     							 AllocNone );
-    attribs.colormap = color_map;
 
-    attribs.override_redirect = (window->fullscreen) ? True : False;
-    
-	/* Create! */
+    window_attributes.colormap = color_map;
+    window_attributes.override_redirect = (window->fullscreen) ? True : False;
+    window_attribute_mask = CWColormap | CWOverrideRedirect;
+
+	window->base.root_window = XRootWindow( window->base.display, window->base.screen );
 	window->base.window = XCreateWindow( window->base.display,
-                                         XDefaultRootWindow( window->base.display ),
+                                         window->base.root_window,
                                          window->x, window->y,
                                          window->width, window->height,
                                          0,
                                          visual_info->depth,
                                          InputOutput,
                                          visual_info->visual,
-                                         attribute_mask,
-                                         &attribs );
+                                         window_attribute_mask,
+                                         &window_attributes );
 
-	window->base.root_window = XRootWindow( window->base.display, window->base.screen );
-
-	/* Set event settings */
+	/* Configure window events */
 	window->wm_delete_window = XInternAtom( window->base.display,
                                             "WM_DELETE_WINDOW",
                                             False );
