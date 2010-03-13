@@ -207,16 +207,13 @@ void handle_x11_event( void* t, XEvent event )
 	}
 }
 
-void null_handler( void* t, XEvent event )
-{}
-
 void* lb_tablet_construct()
 {
 	X11Tablet* tablet = (X11Tablet*)malloc( sizeof( X11Tablet ) );
 	vector_construct( &tablet->events, sizeof( TabletEvent ) );
 
 	tablet->base.construct = &construct;
-	tablet->base.handle_x11_event = &null_handler;
+	tablet->base.handle_x11_event = &handle_x11_event;
 
 	tablet->added_to_window = 0;
 
@@ -279,17 +276,6 @@ int lb_tablet_next_event( void* t )
 		tablet->event = *iter;
 		vector_erase( &tablet->events, iter );
 		return 1;
-	}
-	else
-	{
-		XEvent event;
-		if (XCheckTypedEvent( tablet->base.display, tablet->proximity_in, &event ) ||
-			XCheckTypedEvent( tablet->base.display, tablet->proximity_out, &event ) ||
-			XCheckTypedEvent( tablet->base.display, tablet->button_press, &event ) ||
-			XCheckTypedEvent( tablet->base.display, tablet->button_release, &event ) ||
-			XCheckTypedEvent( tablet->base.display, tablet->valuator_motion, &event ))
-			handle_x11_event( tablet, event );
-		return 0;
 	}
 }
 

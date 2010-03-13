@@ -128,7 +128,15 @@ int lb_window_constructed( void* window )
     return (window != NULL) ? 1 : 0;
 }
 
-void lb_window_clear_decoration( void* win )
+/* TODO: Make it possible to enable/disable decorations after a window
+         has been created. */
+void lb_window_enable_decorations( void* win )
+{
+	X11WindowImpl* window = (X11WindowImpl*)win;
+    window->fullscreen = 0;
+}
+
+void lb_window_disable_decorations( void* win )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
     window->fullscreen = 1;
@@ -173,7 +181,8 @@ void lb_window_set_x( void* win, int x )
 	window->x = x;
 	if (window->created_impl)
 	{
-		XMoveWindow( window->base.display, window->base.window, window->x, window->y );
+		XMoveWindow( window->base.display, window->base.window,
+		             window->x, window->y );
 	}
 }
 
@@ -183,7 +192,8 @@ void lb_window_set_y( void* win, int y )
 	window->y = y;
 	if (window->created_impl)
 	{
-		XMoveWindow( window->base.display, window->base.window, window->x, window->y );
+		XMoveWindow( window->base.display, window->base.window,
+		             window->x, window->y );
 	}
 }
 
@@ -230,7 +240,8 @@ int lb_window_next_event( void* win )
 	    /* Let registered input devices look at the event */
 	    {
             X11InputDevice** iter = NULL;
-		    while ((iter = (X11InputDevice**)vector_next( &window->devices, iter )))
+		    while ((iter = (X11InputDevice**)vector_next( &window->devices,
+		                                                  iter )))
 		    {
 			    (*iter)->handle_x11_event( (*iter), event );
 		    }
@@ -334,7 +345,8 @@ void impl_create_window( void* win, XVisualInfo* visual_info )
     window_attributes.override_redirect = (window->fullscreen) ? True : False;
     window_attribute_mask = CWColormap | CWOverrideRedirect;
 
-	window->base.root_window = XRootWindow( window->base.display, window->base.screen );
+	window->base.root_window = XRootWindow( window->base.display,
+	                                        window->base.screen );
 	window->base.window = XCreateWindow( window->base.display,
                                          window->base.root_window,
                                          window->x, window->y,
