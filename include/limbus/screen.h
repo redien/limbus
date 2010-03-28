@@ -13,6 +13,15 @@ extern "C"
 {
 #endif
 
+/* An enumeration of the API-specific errors. */
+enum LBScreenError
+{
+    /* No error occured */
+    LBScreenNoError,
+    /* The specified screen mode was not valid */
+    LBScreenInvalidMode
+};
+
 /**
  *  An integer identifying the default screen of the system.
  */
@@ -73,9 +82,9 @@ int lb_screen_get_mode_height( void* screen, int mode );
 /** Changes the screen mode.
  *  @param screen a pointer to a successfully constructed screen object.
  *  @param mode an integer identifying the screen mode. Valid modes range from 0 to lb_screen_modes( screen ) - 1, inclusive.
- *  @return 1 if successful else returns 0.
+ *  @return LBScreenNoError if successful else returns the error.
  */
-int lb_screen_change_mode( void* screen, int mode );
+enum LBScreenError lb_screen_change_mode( void* screen, int mode );
 
 #ifdef __cplusplus
 }
