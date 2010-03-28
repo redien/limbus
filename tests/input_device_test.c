@@ -38,10 +38,12 @@ int main( int argc, char** argv )
 	lb_window_set_height( window, 600 );
 	lb_window_set_caption( window, "Window1" );
 
-	context = lb_opengl_context_construct_in_window( window, LBOpenglContextCreateNew );
+	context = lb_opengl_context_construct_in_window( window,
+	                                                 LBOpenglContextCreateNew );
 	assert( lb_opengl_context_constructed( context ) == 1 );
 
-	lb_opengl_context_set_pixelformat( context, LBOpenglDefaultPixelformat );
+	lb_opengl_context_set_pixelformat( context,
+	                                   LBOpenglContextDefaultPixelformat );
 
 	keyboard = lb_keyboard_construct();
 	if (lb_keyboard_constructed( keyboard ) == 1)
@@ -68,7 +70,8 @@ int main( int argc, char** argv )
 				running = 0;
 		}
 
-		while (klb_eyboard_constructed( keyboard ) == 1 && lb_keyboard_next_event( keyboard ) == 1)
+		while (lb_keyboard_constructed( keyboard ) == 1 &&
+		       lb_keyboard_next_event( keyboard ) == 1)
 		{
 			int type = lb_keyboard_get_event_type( keyboard );
 			if (type == LBKeyboardEventKeyPress)
@@ -91,7 +94,8 @@ int main( int argc, char** argv )
 			}
 		}
 
-		while (lb_mouse_constructed( mouse ) == 1 && lb_mouse_next_event( mouse ) == 1)
+		while (lb_mouse_constructed( mouse ) == 1
+		    && lb_mouse_next_event( mouse ) == 1)
 		{
 			int type = lb_mouse_get_event_type( mouse );
 			if (type == LBMouseEventMotion)
@@ -105,18 +109,21 @@ int main( int argc, char** argv )
 				int button = lb_mouse_get_event_button( mouse );
 				int x = lb_mouse_get_event_x( mouse );
 				int y = lb_mouse_get_event_y( mouse );
-				printf( "MouseEventButtonPress: button:%d, x:%d, y:%d\n", button, x, y );
+				printf( "MouseEventButtonPress: button:%d, x:%d, y:%d\n",
+				        button, x, y );
 			}
 			else if (type == LBMouseEventButtonRelease)
 			{
 				int button = lb_mouse_get_event_button( mouse );
 				int x = lb_mouse_get_event_x( mouse );
 				int y = lb_mouse_get_event_y( mouse );
-				printf( "MouseEventButtonRelease: button:%d, x:%d, y:%d\n", button, x, y );
+				printf( "MouseEventButtonRelease: button:%d, x:%d, y:%d\n",
+				        button, x, y );
 			}
 		}
 
-		while (lb_tablet_constructed( tablet ) == 1 && lb_tablet_next_event( tablet ) == 1)
+		while (lb_tablet_constructed( tablet ) == 1
+		    && lb_tablet_next_event( tablet ) == 1)
 		{
 			int type = lb_tablet_get_event_type( tablet );
 			if (type == LBTabletEventMotion)
@@ -165,3 +172,4 @@ int main( int argc, char** argv )
 	screen = lb_screen_destruct( screen );
 	assert( lb_screen_constructed( screen ) == 0 );
 }
+

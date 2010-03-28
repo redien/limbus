@@ -13,19 +13,7 @@ extern "C"
 {
 #endif
 
-/* TODO: Change prefix from LBOpengl to LBOpenglContext for consistency */
-/* TODO: Change attribute accessor from using enumerations to standalone
-         functions to avoid crazy names as well as for consistency */
-
-enum LBOpenglAttribute
-{
-	LBOpenglAttributeDoubleBuffer,
-	LBOpenglAttributeOpenglSupport,
-	LBOpenglAttributeRGBA,
-	LBOpenglAttributeDepthSize
-};
-
-#define LBOpenglDefaultPixelformat 0
+#define LBOpenglContextDefaultPixelformat 0
 
 #define LBOpenglContextCreateNew 0
 #define LBOpenglContextUseCurrent 1
@@ -38,9 +26,14 @@ int lb_opengl_context_constructed( void* context );
 void lb_opengl_context_swap_buffers( void* context );
 
 int lb_opengl_context_pixelformats( void* context );
-int lb_opengl_context_get_attribute( void* context,
-                                     int pixelformat,
-                                     enum LBOpenglAttribute attribute );
+int lb_opengl_context_get_pixelformat_double_buffer( void* context,
+                                                     int pixelformat );
+int lb_opengl_context_get_pixelformat_support_opengl( void* context,
+                                                     int pixelformat );
+int lb_opengl_context_get_pixelformat_rgba( void* context,
+                                            int pixelformat );
+int lb_opengl_context_get_pixelformat_depth_size( void* context,
+                                                  int pixelformat );
 void lb_opengl_context_set_pixelformat( void* context, int pixelformat );
 
 void lb_opengl_context_make_current( void* context );

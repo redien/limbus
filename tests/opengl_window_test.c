@@ -41,10 +41,12 @@ int main( int argc, char** argv )
 	lb_window_set_y( window, 102 );
 	lb_window_set_caption( window, "No name" );
 
-	context = lb_opengl_context_construct_in_window( window, LBOpenglContextCreateNew );
+	context = lb_opengl_context_construct_in_window( window,
+	                                                 LBOpenglContextCreateNew );
 	assert( lb_opengl_context_constructed( context ) == 1 );
 
-	lb_opengl_context_set_pixelformat( context, LBOpenglDefaultPixelformat );
+	lb_opengl_context_set_pixelformat( context,
+	                                   LBOpenglContextDefaultPixelformat );
 
 	assert( lb_window_get_width( window ) == 201 );
 	assert( lb_window_get_height( window ) == 202 );
@@ -69,10 +71,12 @@ int main( int argc, char** argv )
 	window2 = lb_window_construct( screen );
 	assert( lb_window_constructed( window2 ) == 1 );
 
-	context2 = lb_opengl_context_construct_in_window( window2, LBOpenglContextCreateNew );
+	context2 = lb_opengl_context_construct_in_window( window2,
+	                                                  LBOpenglContextCreateNew );
 	assert( lb_opengl_context_constructed( context2 ) == 1 );
 
-	lb_opengl_context_set_pixelformat( context2, LBOpenglDefaultPixelformat );
+	lb_opengl_context_set_pixelformat( context2,
+	                                   LBOpenglContextDefaultPixelformat );
 	
 	assert( lb_window_get_width( window2 ) == 640 );
 	assert( lb_window_get_height( window2 ) == 480 );
@@ -86,7 +90,8 @@ int main( int argc, char** argv )
 	running = 1;
 	while (running)
 	{
-		while (lb_window_constructed( window ) == 1 && lb_window_next_event( window ) == 1)
+		while (lb_window_constructed( window ) == 1
+		    && lb_window_next_event( window ) == 1)
 		{
 			int type = lb_window_get_event_type( window );
 			if (type == LBWindowEventClose)
@@ -96,7 +101,8 @@ int main( int argc, char** argv )
 			}
 		}
 
-		while (lb_window_constructed( window2 ) == 1 && lb_window_next_event( window2 ) == 1)
+		while (lb_window_constructed( window2 ) == 1
+		    && lb_window_next_event( window2 ) == 1)
 		{
 			int type = lb_window_get_event_type( window2 );
 			if (type == LBWindowEventClose)
@@ -106,7 +112,8 @@ int main( int argc, char** argv )
 			}
 		}
 
-		if (lb_window_constructed( window ) == 0 && lb_window_constructed( window2 ) == 0)
+		if (lb_window_constructed( window ) == 0
+		 && lb_window_constructed( window2 ) == 0)
 			running = 0;
 
 		if (lb_opengl_context_constructed( context ) == 1)

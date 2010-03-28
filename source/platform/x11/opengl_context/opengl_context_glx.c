@@ -128,32 +128,24 @@ int lb_opengl_context_pixelformats( void* con )
 	return context_data->number_of_visuals + 1;
 }
 
-int lb_opengl_context_get_attribute( void* con, int format, enum LBOpenglAttribute attribute )
-{
-	DECLARE_CONTEXT_AND_DATA()
-	assert( context_data->visuals );
-	
-	if (format == LBOpenglDefaultPixelformat)
-		format = context_data->default_pixelformat;
+#define DEFINE_PIXELFORMAT_ATTRIBUTE( name, GL_name )\
+    int lb_opengl_context_get_pixelformat_##name( void* con, int format )\
+    {\
+	    DECLARE_CONTEXT_AND_DATA()\
+	    assert( context_data->visuals );\
+\
+	    if (format == LBOpenglContextDefaultPixelformat)\
+		    format = context_data->default_pixelformat;\
+\
+	    format--;\
+\
+	    return read_visual_attrib( context, format, GL_name );\
+    }
 
-	format--;
-	
-	switch (attribute)
-	{
-		case LBOpenglAttributeDoubleBuffer:
-			return read_visual_attrib( context, format, GLX_DOUBLEBUFFER );
-		case LBOpenglAttributeOpenglSupport:
-			return read_visual_attrib( context, format, GLX_USE_GL );
-		case LBOpenglAttributeRGBA:
-			return read_visual_attrib( context, format, GLX_RGBA );
-		case LBOpenglAttributeDepthSize:
-			return read_visual_attrib( context, format, GLX_DEPTH_SIZE );
-
-		default:
-			assert( 0 && "Invalid pixelformat attribute" );
-			return 0;
-	}
-}
+DEFINE_PIXELFORMAT_ATTRIBUTE( double_buffer, GLX_DOUBLEBUFFER )
+DEFINE_PIXELFORMAT_ATTRIBUTE( support_opengl, GLX_USE_GL )
+DEFINE_PIXELFORMAT_ATTRIBUTE( rgba, GLX_RGBA )
+DEFINE_PIXELFORMAT_ATTRIBUTE( depth_size, GLX_DEPTH_SIZE )
 
 static int get_default_pixelformat( void* con )
 {
@@ -164,13 +156,13 @@ static int get_default_pixelformat( void* con )
 	/* iterate over every pixelformat except the default one (0) */
 	for (i = 1; i < size; i++)
 	{
-		if (lb_opengl_context_get_attribute( context, i, LBOpenglAttributeOpenglSupport ) == 1)
+		if (lb_opengl_context_get_pixelformat_support_opengl( context, i ) == 1)
 		{
-			if (lb_opengl_context_get_attribute( context, i, LBOpenglAttributeRGBA ) == 1)
+			if (lb_opengl_context_get_pixelformat_rgba( context, i ) == 1)
 			{
-				if (lb_opengl_context_get_attribute( context, i, LBOpenglAttributeDoubleBuffer ) == 1)
+				if (lb_opengl_context_get_pixelformat_double_buffer( context, i ) == 1)
 				{
-					if (lb_opengl_context_get_attribute( context, i, LBOpenglAttributeDepthSize ) > 0)
+					if (lb_opengl_context_get_pixelformat_depth_size( context, i ) > 0)
 					{
 						return i;
 					}

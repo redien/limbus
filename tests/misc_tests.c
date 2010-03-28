@@ -22,7 +22,7 @@ int main()
     lb_window_set_caption( window, "Window test" );
 
     context = lb_opengl_context_construct_in_window( window );
-    lb_opengl_context_set_pixelformat( context, LBOpenglDefaultPixelformat );
+    lb_opengl_context_set_pixelformat( context, LBOpenglContextDefaultPixelformat );
     lb_opengl_context_make_current( context );
 
     int running = 1;
