@@ -13,6 +13,12 @@ extern "C"
 {
 #endif
 
+#include "screen.h"
+
+typedef void* LBWindow;
+
+/* TODO: Figure out a way to use the LBScreen typedef in lb_window_construct */
+
 /** An enumeration of the different window event types. */
 enum LBWindowEvent
 {
@@ -34,7 +40,7 @@ enum LBWindowEvent
   * Use lb_window_constructed to find out if a window object was
   * constructed or not.
   */
-void* lb_window_construct( void* screen );
+LBWindow lb_window_construct( void* screen );
 
 /** Destructs a previously constructed window object.
   * Destructing a window object will deallocate all the resources
@@ -43,7 +49,7 @@ void* lb_window_construct( void* screen );
   * @return a new pointer that can be passed to lb_window_constructed
   * to find out if the window object was destructed or not.
   */
-void* lb_window_destruct( void* window );
+LBWindow lb_window_destruct( LBWindow window );
 
 /** Check for successfully constructed window objects.
   * @param window a pointer returned by lb_window_construct
@@ -51,119 +57,119 @@ void* lb_window_destruct( void* window );
   * @return 1 if window points to a successfully constructed
   * window object or 0 if it doesn't.
   */
-int lb_window_constructed( void* window );
+int lb_window_constructed( LBWindow window );
 
 
 /** Enables all window decorations.
   * All window decorations are enabled by default.
   * @param window a pointer to a successfully constructed window object.
   */
-void lb_window_enable_decorations( void* window );
+void lb_window_enable_decorations( LBWindow window );
 
 /** Disables all window decorations.
   * All window decorations are enabled by default.
   * @param window a pointer to a successfully constructed window object.
   */
-void lb_window_disable_decorations( void* window );
+void lb_window_disable_decorations( LBWindow window );
 
 
 /** Set the caption of the window.
   * @param window a pointer to a successfully constructed window object.
   * @param caption the new caption as a zero-terminated UTF-8 string.
   */
-void lb_window_set_caption( void* window, const char* caption );
+void lb_window_set_caption( LBWindow window, const char* caption );
 
 /** Set the width of the window.
   * @param window a pointer to a successfully constructed window object.
   * @param width the new width in pixels.
   */
-void lb_window_set_width( void* window, int width );
+void lb_window_set_width( LBWindow window, int width );
 
 /** Set the height of the window.
   * @param window a pointer to a successfully constructed window object.
   * @param height the new height in pixels.
   */
-void lb_window_set_height( void* window, int height );
+void lb_window_set_height( LBWindow window, int height );
 
 /** Set the x-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
   * @param x the new x-coordinate measured in pixels from the left side of
   * the screen to the left side of the window.
   */
-void lb_window_set_x( void* window, int x );
+void lb_window_set_x( LBWindow window, int x );
 
 /** Set the y-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
   * @param y the new y-coordinate measured in pixels from the top side of
   * the screen to the top side of the window.
   */
-void lb_window_set_y( void* window, int y );
+void lb_window_set_y( LBWindow window, int y );
 
 /** Get the caption of the window.
   * @param window a pointer to a successfully constructed window object.
   * @return the caption as a zero-terminated UTF-8 string.
   */
-const char* lb_window_get_caption( void* window );
+const char* lb_window_get_caption( LBWindow window );
 
 /** Get the width of the window.
   * @param window a pointer to a successfully constructed window object.
   * @return the width in pixels.
   */
-int lb_window_get_width( void* window );
+int lb_window_get_width( LBWindow window );
 
 /** Get the height of the window.
   * @param window a pointer to a successfully constructed window object.
   * @return the height in pixels.
   */
-int lb_window_get_height( void* window );
+int lb_window_get_height( LBWindow window );
 
 /** Get the x-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
   * @return the x-coordinate measured in pixels from the left side of
   * the screen to the left side of the window.
   */
-int lb_window_get_x( void* window );
+int lb_window_get_x( LBWindow window );
 
 /** Get the y-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
   * @return the y-coordinate measured in pixels from the top side of
   * the screen to the top side of the window.
   */
-int lb_window_get_y( void* window );
+int lb_window_get_y( LBWindow window );
 
 
 /** Advances to the next event in the event stream if there is one.
   * @param window a pointer to a successfully constructed window object.
   * @return 1 if a new event is available else returns 0.
   */
-int lb_window_next_event( void* window );
+int lb_window_next_event( LBWindow window );
 
 /** Get the type of the current event.
   * @param window a pointer to a successfully constructed window object.
   * @return the type of the current event.
   */
-enum LBWindowEvent lb_window_get_event_type( void* window );
+enum LBWindowEvent lb_window_get_event_type( LBWindow window );
 
 /** Get the x-coordinate of the current event.
   * @param window a pointer to a successfully constructed window object.
   * @return on an LBWindowEventFileDrop event, returns the x-coordinate of
   * the position where the file was dropped.
   */
-int lb_window_get_event_x( void* window );
+int lb_window_get_event_x( LBWindow window );
 
 /** Get the y-coordinate of the current event.
   * @param window a pointer to a successfully constructed window object.
   * @return on an LBWindowEventFileDrop event, returns the y-coordinate of
   * the position where the file was dropped.
   */
-int lb_window_get_event_y( void* window );
+int lb_window_get_event_y( LBWindow window );
 
 /** Get the number of files associated with an LBWindowEventFileDrop event.
   * @param window a pointer to a successfully constructed window object.
   * @return on an LBWindowEventFileDrop event, returns the number of
   * files dropped.
   */
-int lb_window_get_event_files( void* window );
+int lb_window_get_event_files( LBWindow window );
 
 /** Get a file associated with an LBWindowEventFileDrop event.
   * @param window a pointer to a successfully constructed window object.
@@ -174,9 +180,9 @@ int lb_window_get_event_files( void* window );
   * The path is returned as a zero-terminated string.
   * The encoding of the path returned depends on the platform.
   */
-const char* lb_window_get_event_file( void* window, int file );
+const char* lb_window_get_event_file( LBWindow window, int file );
 
-void lb_window_add_input_device( void* window, void* device );
+void lb_window_add_input_device( LBWindow window, void* device );
 
 #ifdef __cplusplus
 }
