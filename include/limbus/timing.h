@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _LB_TIMING_H_
-#define _LB_TIMING_H_
+#ifndef LB_TIMING_H
+#define LB_TIMING_H
 #ifdef __cplusplus
 extern "C"
 {

@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _MOUSE_H_
-#define _MOUSE_H_
+#ifndef MOUSE_H
+#define MOUSE_H
 #ifdef __cplusplus
 extern "C"
 {

@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _LB_SCREEN_H_
-#define _LB_SCREEN_H_
+#ifndef LB_SCREEN_H
+#define LB_SCREEN_H
 #ifdef __cplusplus
 extern "C"
 {

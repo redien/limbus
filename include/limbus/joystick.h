@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _LB_JOYSTICK_H_
-#define _LB_JOYSTICK_H_
+#ifndef LB_JOYSTICK_H
+#define LB_JOYSTICK_H
 #ifdef __cplusplus
 extern "C"
 {

@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _LB_TABLET_H_
-#define _LB_TABLET_H_
+#ifndef LB_TABLET_H
+#define LB_TABLET_H
 #ifdef __cplusplus
 extern "C"
 {

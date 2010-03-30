@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _LB_STATIC_BUFFER_H_
-#define _LB_STATIC_BUFFER_H_
+#ifndef LB_STATIC_BUFFER_H
+#define LB_STATIC_BUFFER_H
 #ifdef __cplusplus
 extern "C"
 {

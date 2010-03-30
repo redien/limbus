@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _LB_SOCKET_H_
-#define _LB_SOCKET_H_
+#ifndef LB_SOCKET_H
+#define LB_SOCKET_H
 #ifdef __cplusplus
 extern "C"
 {
