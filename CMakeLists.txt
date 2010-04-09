@@ -237,6 +237,12 @@ elseif(UNIX)
 
 	if(ENABLE_FILESYSTEM_SUPPORT)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/unix/filesystem/unix_filesystem.c )
+		
+		if (FREEBSD)
+		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/freebsd/filesystem/freebsd_filesystem.c )
+		elseif (LINUX)
+		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/linux/filesystem/linux_filesystem.c )
+		endif (FREEBSD)
 	endif(ENABLE_FILESYSTEM_SUPPORT)
 
 	if(ENABLE_SOCKET_SUPPORT)
