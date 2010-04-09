@@ -11,6 +11,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Haiku")
 	set(HAIKU ON)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(LINUX ON)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+	set(FREEBSD ON)
 endif(CMAKE_SYSTEM_NAME STREQUAL "Haiku")
 
 if(CMAKE_C_COMPILER MATCHES gcc)
@@ -214,6 +216,15 @@ elseif(UNIX)
 	)
 
 	target_link_libraries( lua m )
+
+    if (FREEBSD)
+        link_directories(
+              /usr/local/lib/
+        )
+        include_directories(
+              /usr/local/include/
+        )
+    endif (FREEBSD)
 
 	set(
 		SOURCE_FILES

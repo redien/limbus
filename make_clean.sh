@@ -1,12 +1,12 @@
 
-rm bin/* -f
-rm build/* -Rf
-rm doc/* -Rf
-rm generated/*.* -f
-rm generated/cpp/* -f
-rm generated/lua/* -f
-rm generated/ruby/* -f
-rm generated/python/* -f
-rm lib/* -f
+rm -f bin/*
+rm -f -R build/*
+rm -f -R doc/*
+rm -f generated/*.*
+rm -f generated/cpp/*
+rm -f generated/lua/*
+rm -f generated/ruby/*
+rm -f generated/python/*
+rm -f lib/*
 
 
