@@ -105,14 +105,16 @@ if(ENABLE_TABLET_SUPPORT)
 	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/tablet.h )
 endif(ENABLE_TABLET_SUPPORT)
 
-set(
-	ENABLE_JOYSTICK_SUPPORT
-	ON
-	CACHE BOOL "Enable support for joysticks and gamepads."
-)
-if(ENABLE_JOYSTICK_SUPPORT)
-	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/joystick.h )
-endif(ENABLE_JOYSTICK_SUPPORT)
+if (LINUX OR WIN32)
+    set(
+	    ENABLE_JOYSTICK_SUPPORT
+	    ON
+	    CACHE BOOL "Enable support for joysticks and gamepads."
+    )
+    if(ENABLE_JOYSTICK_SUPPORT)
+	    set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/joystick.h )
+    endif(ENABLE_JOYSTICK_SUPPORT)
+endif (LINUX OR WIN32)
 
 set(
 	ENABLE_MOUSE_SUPPORT
