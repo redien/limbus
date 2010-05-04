@@ -70,7 +70,7 @@ int main( int argc, char** argv )
 		return -1;
 	}
 
-	lb_opengl_context_set_pixelformat( context, LBOpenglDefaultPixelformat );
+	lb_opengl_context_set_pixelformat( context, LBOpenglContextDefaultPixelformat );
 	lb_opengl_context_make_current( context );
 
 	keyboard = lb_keyboard_construct();

@@ -80,7 +80,7 @@ void* lb_window_construct( void* screen )
 
 	vector_construct( &window_data->filepaths, MAX_FILE_PATH + 1 );
 
-	window_set_caption( window, "" );
+	lb_window_set_caption( window, "" );
 
 	return window;
 }
@@ -111,6 +111,19 @@ void* lb_window_destruct( void* win )
 	free( window );
 
 	return NULL;
+}
+
+int lb_window_constructed( LBWindow window )
+{
+	return window != NULL;
+}
+
+void lb_window_enable_decorations( LBWindow window )
+{
+}
+
+void lb_window_disable_decorations( LBWindow window )
+{
 }
 
 void lb_window_set_caption( void* win, const char* caption )

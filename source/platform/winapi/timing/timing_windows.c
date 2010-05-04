@@ -13,7 +13,7 @@
 double lb_time_count_in_seconds( void )
 {
 	LARGE_INTEGER frequency;
-	
+
 	if (QueryPerformanceFrequency( &frequency ))
 	{
 		LARGE_INTEGER time;
@@ -24,4 +24,14 @@ double lb_time_count_in_seconds( void )
 	{
 		return (double)GetTickCount() / 1000.0;
 	}
+}
+
+void lb_msleep( unsigned int msec )
+{
+	Sleep( msec );
+}
+
+void lb_usleep( unsigned int usec )
+{
+	Sleep( usec / 1000 );
 }

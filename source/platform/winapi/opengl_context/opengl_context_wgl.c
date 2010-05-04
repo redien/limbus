@@ -106,7 +106,7 @@ void* lb_opengl_context_destruct( void* con )
 	return NULL;
 }
 
-void lb_opengl_context_release( void* con )
+void lb_opengl_context_release_ownership( void* con )
 {
 	DEFINE_CONTEXT_AND_DATA()
 	context_data->released = 1;
@@ -133,44 +133,55 @@ int lb_opengl_context_pixelformats( void* con )
 	return context_data->number_of_pixelformats + 1;
 }
 
-int lb_opengl_context_get_attribute( void* con, int format, enum LBOpenglAttribute attribute )
+int lb_opengl_context_get_pixelformat_double_buffer( void* con,
+                                                     int format )
 {
 	DEFINE_CONTEXT_AND_DATA()
-	
 	if (format == 0)
-	{
-		format = context_data->default_pixelformat;
-	}
-
+	{ format = context_data->default_pixelformat; }
 	format--;
-	
-	switch (attribute)
-	{
-		case LBOpenglAttributeDoubleBuffer:
-			if (context_data->pixelformats[format].dwFlags & PFD_DOUBLEBUFFER)
-				return 1;
-			else
-				return 0;
 
-		case LBOpenglAttributeOpenglSupport:
-			if (context_data->pixelformats[format].dwFlags & PFD_SUPPORT_OPENGL)
-				return 1;
-			else
-				return 0;
+	if (context_data->pixelformats[format].dwFlags & PFD_DOUBLEBUFFER)
+		return 1;
+	else
+		return 0;
+}
 
-		case LBOpenglAttributeRGBA:
-			if (context_data->pixelformats[format].iPixelType == PFD_TYPE_RGBA)
-				return 1;
-			else
-				return 0;
+int lb_opengl_context_get_pixelformat_support_opengl( void* con,
+                                                     int format )
+{
+	DEFINE_CONTEXT_AND_DATA()
+	if (format == 0)
+	{ format = context_data->default_pixelformat; }
+	format--;
 
-		case LBOpenglAttributeDepthSize:
-			return context_data->pixelformats[format].cDepthBits;
+	if (context_data->pixelformats[format].dwFlags & PFD_SUPPORT_OPENGL)
+		return 1;
+	else
+		return 0;
+}
+int lb_opengl_context_get_pixelformat_rgba( void* con,
+                                            int format )
+{
+	DEFINE_CONTEXT_AND_DATA()
+	if (format == 0)
+	{ format = context_data->default_pixelformat; }
+	format--;
 
-		default:
-			assert( 0 && "Invalid pixelformat attribute" );
-			return 0;
-	}
+	if (context_data->pixelformats[format].iPixelType == PFD_TYPE_RGBA)
+		return 1;
+	else
+		return 0;
+}
+int lb_opengl_context_get_pixelformat_depth_size( void* con,
+                                                  int format )
+{
+	DEFINE_CONTEXT_AND_DATA()
+	if (format == 0)
+	{ format = context_data->default_pixelformat; }
+	format--;
+
+	return context_data->pixelformats[format].cDepthBits;
 }
 
 static int get_default_pixelformat( void* con )
@@ -178,17 +189,17 @@ static int get_default_pixelformat( void* con )
 	int i, size;
 	DEFINE_CONTEXT_AND_DATA()
 
-	size = opengl_context_pixelformats( context );
+	size = lb_opengl_context_pixelformats( context );
 	/* iterate over every pixelformat except the default one (0) */
 	for (i = 1; i < size; i++)
 	{
-		if (opengl_context_get_attribute( context, i, LBOpenglAttributeOpenglSupport ) == 1)
+		if (lb_opengl_context_get_pixelformat_support_opengl( context, i ) == 1)
 		{
-			if (opengl_context_get_attribute( context, i, LBOpenglAttributeRGBA ) == 1)
+			if (lb_opengl_context_get_pixelformat_rgba( context, i ) == 1)
 			{
-				if (opengl_context_get_attribute( context, i, LBOpenglAttributeDoubleBuffer ) == 1)
+				if (lb_opengl_context_get_pixelformat_double_buffer( context, i ) == 1)
 				{
-					if (opengl_context_get_attribute( context, i, LBOpenglAttributeDepthSize ) > 0)
+					if (lb_opengl_context_get_pixelformat_depth_size( context, i ) > 0)
 					{
 						return i;
 					}

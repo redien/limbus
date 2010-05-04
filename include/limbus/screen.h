@@ -39,6 +39,7 @@ LBScreen lb_screen_construct( int screen_id );
 
 /** Destructs a previously constructed screen object.
  *  Destructing a screen object will deallocate all the resources associated with it.
+ *  If the screen mode was changed using lb_screen_change_mode, destructing the object will restore the mode current at construction.
  *  @param screen a pointer to the screen object to destruct.
  *  @return a new pointer that can be passed to lb_screen_constructed to find out if the screen object was destructed or not.
  */

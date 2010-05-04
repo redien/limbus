@@ -65,7 +65,7 @@ int lb_filesystem_directory_next_entry( void* filesystem )
 	{
 		fs->first_find = 0;
 		if (strcmp( fs->find_data.cFileName, "." ) == 0)
-			return filesystem_query_next_entry( filesystem );
+			return lb_filesystem_directory_next_entry( filesystem );
 	}
 	else
 	{
@@ -74,7 +74,7 @@ int lb_filesystem_directory_next_entry( void* filesystem )
 			return 0;
 
 		if (strcmp( fs->find_data.cFileName, ".." ) == 0)
-			return filesystem_query_next_entry( filesystem );
+			return lb_filesystem_directory_next_entry( filesystem );
 	}
 
 	return 1;

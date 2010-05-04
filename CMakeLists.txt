@@ -86,14 +86,16 @@ if(ENABLE_FILESYSTEM_SUPPORT)
 	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/filesystem.h )
 endif(ENABLE_FILESYSTEM_SUPPORT)
 
-set(
-	ENABLE_SOCKET_SUPPORT
-	ON
-	CACHE BOOL "Enable support for BSD sockets."
-)
-if(ENABLE_SOCKET_SUPPORT)
-	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/socket.h )
-endif(ENABLE_SOCKET_SUPPORT)
+if (UNIX)
+    set(
+        ENABLE_SOCKET_SUPPORT
+        ON
+        CACHE BOOL "Enable support for BSD sockets."
+    )
+    if(ENABLE_SOCKET_SUPPORT)
+        set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/socket.h )
+    endif(ENABLE_SOCKET_SUPPORT)
+endif (UNIX)
 
 
 set(
@@ -239,7 +241,7 @@ elseif(UNIX)
 
 	if(ENABLE_FILESYSTEM_SUPPORT)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/unix/filesystem/unix_filesystem.c )
-		
+
 		if (FREEBSD)
 		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/freebsd/filesystem/freebsd_filesystem.c )
 		elseif (LINUX)
@@ -392,6 +394,36 @@ if(RUN_UNITTESTS)
 		COMMENT "Unittesting..."
 	)
 endif(RUN_UNITTESTS)
+
+##
+#	Examples
+##
+
+macro( add_placebo_example name )
+	add_executable(
+		${name}
+			examples/${name}.c
+	)
+	set_target_properties(
+		${name} PROPERTIES
+			RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
+	)
+	target_link_libraries(
+		${name}
+			${SHARED_LIBRARIES}
+			limbus
+	)
+endmacro( add_placebo_example )
+
+set(
+	COMPILE_EXAMPLES
+	ON
+	CACHE BOOL "Compile examples."
+)
+if(COMPILE_EXAMPLES)
+	add_placebo_example( opengl_window )
+	add_placebo_example( screen_example )
+endif(COMPILE_EXAMPLES)
 
 
 

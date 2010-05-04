@@ -29,7 +29,7 @@ if(GENERATE_CPP_BINDING)
 
 	include_directories( ${INCLUDE_DIR} )
 	include_directories( ${CPP_DIR} )
-	
+
 	set_source_files_properties(
 		${CPP_DIR}/OpenglWindow.cpp
 		${CPP_DIR}/Keyboard.cpp
@@ -179,14 +179,27 @@ if(GENERATE_LUA_BINDING)
 		limbus_lua
 		lua_binding
 	)
-	set_target_properties(
-		limbus_lua PROPERTIES
-		OUTPUT_NAME limbus
-		ARCHIVE_OUTPUT_DIRECTORY ${LUA_DIR}
-		LIBRARY_OUTPUT_DIRECTORY ${LUA_DIR}
-		RUNTIME_OUTPUT_DIRECTORY ${LUA_DIR}
-		PREFIX ""
-	)
+
+	if(MSVC)
+		set_target_properties(
+			limbus_lua PROPERTIES
+			OUTPUT_NAME limbus
+			LINK_FLAGS /DEF:${LUA_DIR}/limbus.def
+			ARCHIVE_OUTPUT_DIRECTORY ${LUA_DIR}
+			LIBRARY_OUTPUT_DIRECTORY ${LUA_DIR}
+			RUNTIME_OUTPUT_DIRECTORY ${LUA_DIR}
+			PREFIX ""
+		)
+	else(MSVC)
+		set_target_properties(
+			limbus_lua PROPERTIES
+			OUTPUT_NAME limbus
+			ARCHIVE_OUTPUT_DIRECTORY ${LUA_DIR}
+			LIBRARY_OUTPUT_DIRECTORY ${LUA_DIR}
+			RUNTIME_OUTPUT_DIRECTORY ${LUA_DIR}
+			PREFIX ""
+		)
+	endif(MSVC)
 
 	add_custom_target(
 		lua_classes ALL
