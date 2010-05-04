@@ -17,7 +17,7 @@ int main( int argc, char** argv )
 	vector_unittest();
 	hashmap_unittest();
 	unicode_unittest();
-	
+
 	printf( "ALL TESTS PASSED!\n" );
 	return 0;
 }

@@ -43,6 +43,7 @@ typedef struct
 	int width, height;
 	int x, y;
 	int actual_x_offset, actual_y_offset;
+	DWORD style;
 
 	WindowEvent event;
 	Vector events;
@@ -58,7 +59,7 @@ void* lb_window_construct( void* screen )
 
 	window = (WinWindow*)malloc( sizeof( WinWindow ) );
 	assert( window );
-	
+
 	window->construct_impl = &construct_impl;
 
 	window_data = (WinWindowData*)malloc( sizeof( WinWindowData ) );
@@ -70,7 +71,7 @@ void* lb_window_construct( void* screen )
 	window_data->y = CW_USEDEFAULT;
 	window_data->actual_x_offset = 0;
 	window_data->actual_y_offset = 0;
-	
+
 	window_data->width = 640;
 	window_data->height = 480;
 
@@ -81,6 +82,7 @@ void* lb_window_construct( void* screen )
 	vector_construct( &window_data->filepaths, MAX_FILE_PATH + 1 );
 
 	lb_window_set_caption( window, "" );
+	lb_window_enable_decorations( window );
 
 	return window;
 }
@@ -118,12 +120,28 @@ int lb_window_constructed( LBWindow window )
 	return window != NULL;
 }
 
-void lb_window_enable_decorations( LBWindow window )
+void lb_window_enable_decorations( LBWindow win )
 {
+	DECLARE_WINDOW_AND_DATA()
+	window_data->style = WS_OVERLAPPEDWINDOW ^ WS_SIZEBOX ^ WS_MAXIMIZEBOX;
+
+	if (window_data->mapped)
+	{
+		/* Assume this works */
+		SetWindowLongPtr( window->handle, GWL_STYLE, window_data->style );
+	}
 }
 
-void lb_window_disable_decorations( LBWindow window )
+void lb_window_disable_decorations( LBWindow win )
 {
+	DECLARE_WINDOW_AND_DATA()
+	window_data->style = WS_POPUP;
+
+	if (window_data->mapped)
+	{
+		/* Assume this works */
+		SetWindowLongPtr( window->handle, GWL_STYLE, window_data->style );
+	}
 }
 
 void lb_window_set_caption( void* win, const char* caption )
@@ -242,7 +260,7 @@ static void construct_impl( void* win )
 	window->handle = CreateWindowEx( WS_EX_APPWINDOW,
 									 "GameWindowClass",
 									 window_data->caption,
-									 WS_OVERLAPPEDWINDOW ^ WS_SIZEBOX ^ WS_MAXIMIZEBOX,
+									 window_data->style,
 									 window_data->x, window_data->y,
 									 window_data->width, window_data->height,
 									 NULL, NULL,
