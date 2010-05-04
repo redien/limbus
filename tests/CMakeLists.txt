@@ -7,10 +7,6 @@
 include( CTest )
 enable_testing()
 
-if (RUN_UNITTESTS)
-	add_test( unittests ${BIN_DIR}/${CMAKE_CFG_INTDIR}/unittest${CMAKE_EXECUTABLE_SUFFIX} )
-endif (RUN_UNITTESTS)
-
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/source
 )
