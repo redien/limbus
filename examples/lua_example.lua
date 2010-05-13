@@ -4,24 +4,23 @@
 --    (See accompanying file LICENSE_1_0.txt or copy at
 --          http://www.boost.org/LICENSE_1_0.txt)
 
-require "placebo"
-require "p2dc"
+require "limbus"
 require "OpenglWindow"
 require "Timer"
 
 local window = OpenglWindow();
-window.width( 800 );
-window.height( 600 );
-window.caption( "Window" );
+window.width = 800;
+window.height = 600;
+window.caption = "Window";
 window.create();
 
 local running = true
 
-window.onWindowEvent[#window.onWindowEvent + 1] = function( event )
-	if event == WindowEventClose then
+window.onWindowEvent(function( event )
+	if event == LBWindowEventClose then
 		running = false
 	end
-end
+end)
 
 while running do
 	window.sendEvents()

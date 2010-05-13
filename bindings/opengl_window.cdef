@@ -47,7 +47,7 @@ class Limbus::OpenglWindow
 	{
 		return limbus::lb_screen_get_height( this.screen );
 	};
-	
+
 	property int x
 	{
 		return limbus::lb_window_get_x( this.window );
@@ -113,6 +113,11 @@ class Limbus::OpenglWindow
 		this.created = false;
 	}
 
+	public void set_swap_interval( int interval )
+	{
+		limbus::lb_opengl_context_set_swap_interval( this.context, interval );
+	}
+
 	public ptr get_context_impl()
 	{
 		return this.context;
@@ -127,7 +132,7 @@ class Limbus::OpenglWindow
 	{
 	    bool found_event;
 	    found_event = false;
-	    
+
 		while (limbus::lb_window_next_event( this.window ) == 1)
 		{
 			int e;
@@ -142,7 +147,7 @@ class Limbus::OpenglWindow
 			{
 				int files;
 				files = limbus::lb_window_get_event_files( this.window );
-				
+
 				for (i < files)
 				{
 					on_file_drop( limbus::lb_window_get_event_file( this.window, i ),

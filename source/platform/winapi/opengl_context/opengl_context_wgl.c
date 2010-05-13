@@ -33,11 +33,11 @@ static void set_pixelformat_list( wglContext* context, wglContextData* context_d
 	context_data->number_of_pixelformats =
 						DescribePixelFormat( context->device_context, 1, 0, NULL );
 	assert( context_data->number_of_pixelformats );
-	
+
 	context_data->pixelformats = (PIXELFORMATDESCRIPTOR*)malloc(
 						sizeof( PIXELFORMATDESCRIPTOR ) * context_data->number_of_pixelformats );
 	assert( context_data->pixelformats );
-	
+
 	for (i = 0; i < context_data->number_of_pixelformats; i++)
 	{
 		int result;
@@ -56,26 +56,26 @@ void* lb_opengl_context_construct_in_window( void* win, int use_current )
 	wglContext* context;
 	wglContextData* context_data;
 	WinWindow* window = (WinWindow*)win;
-	
+
 	context = (wglContext*)malloc( sizeof( wglContext ) );
 	assert( context );
 	context_data = (wglContextData*)malloc( sizeof( wglContextData ) );
 	assert( context_data );
-	
+
 	window->construct_impl( window );
-	
+
 	context_data->window = window;
 	context_data->released = 0;
 	context_data->use_current = use_current;
 	context->impl_data = context_data;
-	
+
 	context->device_context = GetDC( context_data->window->handle );
 	assert( context->device_context );
-	
+
 	set_pixelformat_list( context, context_data );
-	
+
 	context_data->default_pixelformat = get_default_pixelformat( context );
-	
+
 	return context;
 }
 
@@ -123,7 +123,7 @@ int lb_opengl_context_constructed( void* con )
 void lb_opengl_context_swap_buffers( void* con )
 {
 	DEFINE_CONTEXT_AND_DATA()
-	
+
 	SwapBuffers( context->device_context );
 }
 
@@ -216,19 +216,19 @@ void lb_opengl_context_set_pixelformat( void* con, int format )
 {
 	BOOL result;
 	DEFINE_CONTEXT_AND_DATA()
-	
+
 	if (format == 0)
 	{
 		format = context_data->default_pixelformat;
 	}
 
 	format--;
-	
+
 	result = SetPixelFormat( context->device_context,
 							 format + 1,
 							 &context_data->pixelformats[format] );
 	assert( result );
-	
+
 	if (context_data->use_current)
 	{
 	    context->render_context = wglGetCurrentContext();
@@ -263,3 +263,14 @@ void lb_opengl_context_release_current( void* con )
 	assert( result );
 }
 
+typedef BOOL (*WGLSWAPINTERVALEXTPROC)( int );
+void lb_opengl_context_set_swap_interval( void* con, int interval )
+{
+	WGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
+	DEFINE_CONTEXT_AND_DATA()
+	wglSwapIntervalEXT = (WGLSWAPINTERVALEXTPROC)wglGetProcAddress( "wglSwapIntervalEXT" );
+	if (wglSwapIntervalEXT)
+	{
+		wglSwapIntervalEXT( interval );
+	}
+}
