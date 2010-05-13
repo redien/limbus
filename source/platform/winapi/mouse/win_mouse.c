@@ -58,6 +58,14 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
 	}
+	else if (uMsg == WM_MBUTTONDOWN)
+	{
+		event.type = LBMouseEventButtonPress;
+		event.button = 2;
+		event.x = LOWORD( lParam );
+		event.y = HIWORD( lParam );
+		vector_push_back( &mouse->events, &event );
+	}
 	else if (uMsg == WM_LBUTTONUP)
 	{
 		event.type = LBMouseEventButtonRelease;
@@ -70,6 +78,14 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 	{
 		event.type = LBMouseEventButtonRelease;
 		event.button = 1;
+		event.x = LOWORD( lParam );
+		event.y = HIWORD( lParam );
+		vector_push_back( &mouse->events, &event );
+	}
+	else if (uMsg == WM_MBUTTONUP)
+	{
+		event.type = LBMouseEventButtonRelease;
+		event.button = 2;
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
