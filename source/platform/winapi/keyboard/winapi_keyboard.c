@@ -19,7 +19,7 @@ typedef struct KeyboardEventTag
 {
 	int type;
 	int key;
-	int unicode;
+	WCHAR unicode;
 } KeyboardEvent;
 
 typedef struct WinAPIKeyboardTag
@@ -27,6 +27,7 @@ typedef struct WinAPIKeyboardTag
 	WinAPIInputDevice base;
 	Vector events;
 	KeyboardEvent event;
+	char utf8[5];
 } WinAPIKeyboard;
 
 #define CAST_KEYBOARD()\
@@ -135,7 +136,7 @@ static int handle_winapi_message( void* kbd, UINT uMsg, WPARAM wParam, LPARAM lP
 	else if (uMsg == WM_CHAR)
 	{
 		event.type = LBKeyboardEventUnicode;
-		event.unicode = wParam; /* TODO: Actually convert to UTF-32 */
+		event.unicode = wParam;
 		vector_push_back( &keyboard->events, &event );
 		*result = FALSE;
 		return 1;
@@ -200,12 +201,14 @@ enum LBKey lb_keyboard_get_event_key( void* kbd )
 int lb_keyboard_get_event_utf32( void* kbd )
 {
 	CAST_KEYBOARD()
-	return keyboard->event.unicode;
+	return keyboard->event.unicode; /* TODO: Actually convert to UTF-32.... or use WM_UNICHAR? */
 }
 
 const char* lb_keyboard_get_event_utf8( void* kbd )
 {
-	CAST_KEYBOARD()
-	return "";
+	size_t written;
+	CAST_KEYBOARD();
+	written = WideCharToMultiByte( CP_UTF8, 0, &keyboard->event.unicode, 1, keyboard->utf8, 4, NULL, NULL );
+	keyboard->utf8[written] = '\0';
+	return keyboard->utf8;
 }
-
