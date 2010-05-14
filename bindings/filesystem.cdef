@@ -58,30 +58,35 @@ class Limbus::Filesystem
 	{
 		return limbus::lb_filesystem_directory_get_entry( this.fs );
 	}
-	
+
 	public uint file_size( string path )
 	{
 		return limbus::lb_filesystem_file_size( this.fs, path );
 	}
-	
+
 	public bool path_is_directory( string path )
 	{
 	    if (limbus::lb_filesystem_path_is_directory( this.fs, path ) == 1)
 	    {
 	        return true;
         }
-        
+
         return false;
 	}
-	
+
 	public bool path_is_file( string path )
 	{
 	    if (limbus::lb_filesystem_path_is_file( this.fs, path ) == 1)
 	    {
 	        return true;
         }
-        
+
         return false;
+	}
+
+	public string get_working_directory()
+	{
+		return limbus::lb_filesystem_get_working_directory( this.fs );
 	}
 }
 

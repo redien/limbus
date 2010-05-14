@@ -16,11 +16,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#define MAX_CWD_PATH 256
+
 typedef struct WinAPIFilesystemTag
 {
 	HANDLE find_handle;
 	WIN32_FIND_DATA find_data;
 	int first_find;
+	char cwd[MAX_CWD_PATH];
 } WinAPIFilesystem;
 
 void* lb_filesystem_construct()
@@ -107,9 +110,10 @@ int lb_filesystem_path_is_file( void* filesystem, const char* path )
 
 const char* lb_filesystem_get_working_directory( void* filesystem )
 {
-    return "";
+	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
+	GetCurrentDirectoryA( MAX_CWD_PATH, fs->cwd );
+    return fs->cwd;
 }
-
 
 int lb_filesystem_watch_path( void* filesystem, char* path )
 {
