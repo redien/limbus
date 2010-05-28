@@ -343,17 +343,16 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 			case WM_MOVE:
 				window_data->x = LOWORD( lParam ) - window_data->actual_x_offset;
 				window_data->y = HIWORD( lParam ) - window_data->actual_y_offset;
-				break;
+				return 0;
 
 			case WM_SIZE:
 				window_data->width = LOWORD( lParam );
 				window_data->height = HIWORD( lParam );
-				break;
+				return 0;
 
 			case WM_SETCURSOR:
 				SetCursor( window->cursor );
 				return TRUE;
-
 
 			case WM_CLOSE:
 				event.type = LBWindowEventClose;
@@ -388,7 +387,7 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 					vector_push_back( &window_data->events, &event );
 					DragFinish( (HDROP)wParam );
 				}
-				break;
+				return 0;
 		}
 	}
 

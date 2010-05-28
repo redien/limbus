@@ -20,6 +20,8 @@ enum LBKeyboardEvent
 	LBKeyboardEventUnicode
 };
 
+
+/* TODO: Add caps-lock */
 enum LBKey
 {
 	LBKeyReturn, LBKeyEscape, LBKeyTab, LBKeySpace, LBKeyBackspace,

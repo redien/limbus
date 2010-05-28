@@ -39,7 +39,10 @@ static void construct( void* kbd )
 	CAST_KEYBOARD()
 }
 
-int translate_winapi_vkeycode( DWORD wParam )
+#define IS_EXTENDED( lParam ) (0x1000000 & lParam)
+	int printf( const char*, ... );
+
+int translate_winapi_vkeycode( DWORD wParam, DWORD lParam )
 {
 	switch (wParam)
 	{
@@ -54,11 +57,23 @@ int translate_winapi_vkeycode( DWORD wParam )
 		case VK_UP: return LBKeyUp;
 		case VK_DOWN: return LBKeyDown;
 
-		case VK_CONTROL: return LBKeyLCtrl;
-		case VK_LSHIFT: return LBKeyLShift;
-		case VK_RSHIFT: return LBKeyRShift;
-		case VK_LMENU: return LBKeyLAlt;
-		case VK_RMENU: return LBKeyRAlt;
+		case VK_CONTROL:
+			if (IS_EXTENDED( lParam ))
+				return LBKeyRCtrl;
+			else
+				return LBKeyLCtrl;
+
+		case VK_SHIFT:
+			if (IS_EXTENDED( lParam ))
+				return LBKeyRShift;
+			else
+				return LBKeyLShift;
+
+		case VK_MENU:
+			if (IS_EXTENDED( lParam ))
+				return LBKeyRAlt;
+			else
+				return LBKeyLAlt;
 
 		case VK_F1: return LBKeyF1;
 		case VK_F2: return LBKeyF2;
@@ -121,24 +136,28 @@ static int handle_winapi_message( void* kbd, UINT uMsg, WPARAM wParam, LPARAM lP
 	KeyboardEvent event;
 	CAST_KEYBOARD()
 
-	if (uMsg == WM_KEYDOWN)
+	if (uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN)
 	{
 		event.type = LBKeyboardEventKeyPress;
-		event.key = translate_winapi_vkeycode( wParam );
+		event.key = translate_winapi_vkeycode( wParam, lParam );
 		vector_push_back( &keyboard->events, &event );
+		*result = 0;
+		return 1;
 	}
-	else if (uMsg == WM_KEYUP)
+	else if (uMsg == WM_KEYUP || uMsg == WM_SYSKEYUP)
 	{
 		event.type = LBKeyboardEventKeyRelease;
-		event.key = translate_winapi_vkeycode( wParam );
+		event.key = translate_winapi_vkeycode( wParam, lParam );
 		vector_push_back( &keyboard->events, &event );
+		*result = 0;
+		return 1;
 	}
 	else if (uMsg == WM_CHAR)
 	{
 		event.type = LBKeyboardEventUnicode;
 		event.unicode = wParam;
 		vector_push_back( &keyboard->events, &event );
-		*result = FALSE;
+		*result = 0;
 		return 1;
 	}
 

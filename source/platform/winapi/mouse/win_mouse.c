@@ -49,6 +49,8 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
+		*result = 0;
+		return 1;
 	}
 	else if (uMsg == WM_RBUTTONDOWN)
 	{
@@ -57,6 +59,8 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
+		*result = 0;
+		return 1;
 	}
 	else if (uMsg == WM_MBUTTONDOWN)
 	{
@@ -65,6 +69,8 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
+		*result = 0;
+		return 1;
 	}
 	else if (uMsg == WM_LBUTTONUP)
 	{
@@ -73,6 +79,8 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
+		*result = 0;
+		return 1;
 	}
 	else if (uMsg == WM_RBUTTONUP)
 	{
@@ -81,6 +89,8 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
+		*result = 0;
+		return 1;
 	}
 	else if (uMsg == WM_MBUTTONUP)
 	{
@@ -89,6 +99,8 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
+		*result = 0;
+		return 1;
 	}
 	else if (uMsg == WM_MOUSEMOVE)
 	{
@@ -96,6 +108,8 @@ static int handle_winapi_message( void* m, UINT uMsg, WPARAM wParam, LPARAM lPar
 		event.x = LOWORD( lParam );
 		event.y = HIWORD( lParam );
 		vector_push_back( &mouse->events, &event );
+		*result = 0;
+		return 1;
 	}
 
 	return 0;
