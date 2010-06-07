@@ -59,6 +59,10 @@ static void construct( void* m )
 	mouse->added_to_window = 1;
 }
 
+#define CONVERT_BUTTON( button ) (button == 1) ? 0 :\
+								((button == 3) ? 1 :\
+								((button == 2) ? 2 : -1))
+
 static void handle_x11_event( void* m, XEvent event )
 {
 	CAST_MOUSE()
@@ -81,7 +85,7 @@ static void handle_x11_event( void* m, XEvent event )
 		MouseEvent event;
 
 		event.type = LBMouseEventButtonPress;
-		event.button = button_event->button;
+		event.button = CONVERT_BUTTON( button_event->button );
 		event.x = button_event->x;
 		event.y = button_event->y;
 
@@ -94,7 +98,7 @@ static void handle_x11_event( void* m, XEvent event )
 		MouseEvent event;
 
 		event.type = LBMouseEventButtonRelease;
-		event.button = button_event->button;
+		event.button = CONVERT_BUTTON( button_event->button );
 		event.x = button_event->x;
 		event.y = button_event->y;
 

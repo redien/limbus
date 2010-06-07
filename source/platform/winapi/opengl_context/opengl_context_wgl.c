@@ -274,3 +274,4 @@ void lb_opengl_context_set_swap_interval( void* con, int interval )
 		wglSwapIntervalEXT( interval );
 	}
 }
+

@@ -39,7 +39,7 @@ void lb_opengl_context_set_pixelformat( void* context, int pixelformat );
 void lb_opengl_context_make_current( void* context );
 void lb_opengl_context_release_current( void* context );
 
-void lb_opengl_context_set_swap_interval( void* context, int interval );
+int lb_opengl_context_set_swap_interval( void* context, int interval );
 
 #ifdef __cplusplus
 }

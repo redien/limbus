@@ -87,7 +87,7 @@ class Limbus::OpenglWindow
 
 	public void release_context()
 	{
-		limbus::lb_opengl_context_release( this.context );
+		limbus::lb_opengl_context_release_ownership( this.context );
 	}
 
 	public void swap_buffers()
@@ -113,9 +113,14 @@ class Limbus::OpenglWindow
 		this.created = false;
 	}
 
-	public void set_swap_interval( int interval )
+	public bool set_swap_interval( int interval )
 	{
-		limbus::lb_opengl_context_set_swap_interval( this.context, interval );
+		if (limbus::lb_opengl_context_set_swap_interval( this.context, interval ) == 1)
+		{
+			return true;
+		}
+		
+		return false;
 	}
 
 	public ptr get_context_impl()

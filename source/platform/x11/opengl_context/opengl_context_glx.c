@@ -14,11 +14,12 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <GL/gl.h>
+#include <limbus/opengl.h>
 #include <GL/glx.h>
 
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 typedef struct
 {
@@ -295,5 +296,29 @@ int read_visual_attrib( glXContext* context,
 				  attrib,
 				  &result );
 	return result;
+}
+
+
+typedef int (APIENTRY *GLXSWAPINTERVALSGIPROC)( int interval );
+int lb_opengl_context_set_swap_interval( void* con, int interval )
+{
+	GLXSWAPINTERVALSGIPROC glxSwapIntervalSGI;
+	char* extensions;
+	
+	while (*extensions)
+	{
+		if (strcmp( extensions, "GLX_SGI_swap_control" ) == 0)
+		{
+			glxSwapIntervalSGI = (GLXSWAPINTERVALSGIPROC)glGetProcAddress( "glxSwapIntervalSGI" );
+			if (glxSwapIntervalSGI)
+			{
+				glxSwapIntervalSGI( interval );
+			}
+			return 1;
+		}
+		extensions += 1;
+	}
+	
+	return 0;
 }
 

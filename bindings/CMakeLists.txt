@@ -9,12 +9,21 @@ option(
 	"Generate C++ class files"
 )
 if(GENERATE_CPP_BINDING)
+
+	set( CPP_BINDING_CLASS_FILES
+		${CPP_DIR}/OpenglWindow.cpp
+	    ${CPP_DIR}/Keyboard.cpp
+	    ${CPP_DIR}/Mouse.cpp
+		${CPP_DIR}/Timer.cpp
+	    ${CPP_DIR}/Joystick.cpp
+	    ${CPP_DIR}/Filesystem.cpp
+	)
+
 	add_custom_target(
 		cpp_binding ALL
 		COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_cpp_class.lua bindings/opengl_window.cdef OpenglWindow ${CPP_DIR}/ ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua ${GENERATED_CONFIG}
 		COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_cpp_class.lua bindings/keyboard.cdef Keyboard ${CPP_DIR}/ ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua ${GENERATED_CONFIG}
 		COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_cpp_class.lua bindings/mouse.cdef Mouse ${CPP_DIR}/ ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua ${GENERATED_CONFIG}
-		COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_cpp_class.lua bindings/tablet.cdef Tablet ${CPP_DIR}/ ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua ${GENERATED_CONFIG}
 		COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_cpp_class.lua bindings/timer.cdef Timer ${CPP_DIR}/ ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua ${GENERATED_CONFIG}
 		COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_cpp_class.lua bindings/joystick.cdef Joystick ${CPP_DIR}/ ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua ${GENERATED_CONFIG}
 		COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_cpp_class.lua bindings/filesystem.cdef Filesystem ${CPP_DIR}/ ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua ${GENERATED_CONFIG}
@@ -27,29 +36,34 @@ if(GENERATE_CPP_BINDING)
 			lua
 	)
 
+	if (ENABLE_TABLET_SUPPORT)
+		add_custom_target(
+			cpp_binding_tablet ALL
+			COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_cpp_class.lua bindings/tablet.cdef Tablet ${CPP_DIR}/ ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua ${GENERATED_CONFIG}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+		)
+		add_dependencies(
+			cpp_binding_tablet
+				limbus
+				lua
+		)
+		set( CPP_BINDING_CLASS_FILES
+			${CPP_BINDING_CLASS_FILES}
+			${CPP_DIR}/Timer.cpp
+		)
+	endif (ENABLE_TABLET_SUPPORT)
+
 	include_directories( ${INCLUDE_DIR} )
 	include_directories( ${CPP_DIR} )
 
 	set_source_files_properties(
-		${CPP_DIR}/OpenglWindow.cpp
-		${CPP_DIR}/Keyboard.cpp
-		${CPP_DIR}/Mouse.cpp
-		${CPP_DIR}/Tablet.cpp
-		${CPP_DIR}/Timer.cpp
-		${CPP_DIR}/Joystick.cpp
-		${CPP_DIR}/Filesystem.cpp
+		${CPP_BINDING_CLASS_FILES}
 		PROPERTIES GENERATED TRUE
 	)
 
 	add_library(
 		limbus_cpp
-			${CPP_DIR}/OpenglWindow.cpp
-		    ${CPP_DIR}/Keyboard.cpp
-		    ${CPP_DIR}/Mouse.cpp
-		    ${CPP_DIR}/Tablet.cpp
-			${CPP_DIR}/Timer.cpp
-		    ${CPP_DIR}/Joystick.cpp
-		    ${CPP_DIR}/Filesystem.cpp
+			${CPP_BINDING_CLASS_FILES}
 	)
 	set_target_properties(
 		limbus_cpp PROPERTIES
@@ -60,6 +74,7 @@ if(GENERATE_CPP_BINDING)
 	add_dependencies(
 		limbus_cpp
 			cpp_binding
+			cpp_binding_tablet
 	)
 endif(GENERATE_CPP_BINDING)
 

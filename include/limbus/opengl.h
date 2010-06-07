@@ -22,7 +22,6 @@ extern "C"
 	#include <GL/gl.h>
 
 	#define glGetProcAddress glXGetProcAddress
-	#define APIENTRY
 #endif
 
 #ifdef __cplusplus
