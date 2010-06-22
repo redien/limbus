@@ -25,12 +25,16 @@ if(CMAKE_C_COMPILER MATCHES gcc)
 endif(CMAKE_C_COMPILER MATCHES gcc)
 
 set( INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include )
-set( INCLUDE_SUB_DIR ${INCLUDE_DIR}/limbus )
+set( INCLUDE_SUB_NAME limbus )
+set( INCLUDE_SUB_DIR ${INCLUDE_DIR}/${INCLUDE_SUB_NAME} )
 include_directories( ${INCLUDE_DIR} )
+
+set( BINDINGS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bindings )
 
 set( BIN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin )
 set( LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
+set( GENERATED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated )
 set( LUA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/lua )
 set( PYTHON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/python )
 set( RUBY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby )
@@ -65,11 +69,23 @@ set(
 
 set(
 	BIND_HEADERS
-		${INCLUDE_SUB_DIR}/timing.h
-		${INCLUDE_SUB_DIR}/window.h
-		${INCLUDE_SUB_DIR}/screen.h
-		${INCLUDE_SUB_DIR}/opengl_context.h
-		${INCLUDE_SUB_DIR}/static_buffer.h
+		${INCLUDE_SUB_NAME}/timing.h
+		${INCLUDE_SUB_NAME}/window.h
+		${INCLUDE_SUB_NAME}/screen.h
+		${INCLUDE_SUB_NAME}/opengl_context.h
+		${INCLUDE_SUB_NAME}/static_buffer.h
+)
+
+set(
+	BIND_SOURCES
+		opengl_window.cdef
+		timer.cdef
+)
+
+set(
+	GENERATED_CPP_SOURCES
+		${CPP_DIR}/OpenglWindow.cpp
+		${CPP_DIR}/Timer.cpp
 )
 
 include( dependencies/CMakeLists.txt )
@@ -83,7 +99,17 @@ set(
 	CACHE BOOL "Enable support for querying the filesystem."
 )
 if(ENABLE_FILESYSTEM_SUPPORT)
-	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/filesystem.h )
+	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/filesystem.h )
+	set(
+		BIND_SOURCES
+			${BIND_SOURCES}
+			filesystem.cdef
+	)
+	set(
+		GENERATED_CPP_SOURCES
+			${BIND_SOURCES}
+			${CPP_DIR}/Filesystem.cpp
+	)
 endif(ENABLE_FILESYSTEM_SUPPORT)
 
 if (UNIX)
@@ -93,7 +119,7 @@ if (UNIX)
         CACHE BOOL "Enable support for BSD sockets."
     )
     if(ENABLE_SOCKET_SUPPORT)
-        set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/socket.h )
+        set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/socket.h )
     endif(ENABLE_SOCKET_SUPPORT)
 endif (UNIX)
 
@@ -104,7 +130,17 @@ set(
 	CACHE BOOL "Enable support for pressure-sensitive tablets."
 )
 if(ENABLE_TABLET_SUPPORT)
-	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/tablet.h )
+	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/tablet.h )
+	set(
+		BIND_SOURCES
+			${BIND_SOURCES}
+			tablet.cdef
+	)
+	set(
+		GENERATED_CPP_SOURCES
+			${BIND_SOURCES}
+			${CPP_DIR}/Tablet.cpp
+	)
 endif(ENABLE_TABLET_SUPPORT)
 
 if (LINUX OR WIN32)
@@ -114,7 +150,17 @@ if (LINUX OR WIN32)
 	    CACHE BOOL "Enable support for joysticks and gamepads."
     )
     if(ENABLE_JOYSTICK_SUPPORT)
-	    set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/joystick.h )
+	    set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/joystick.h )
+		set(
+			BIND_SOURCES
+				${BIND_SOURCES}
+				joystick.cdef
+		)
+		set(
+			GENERATED_CPP_SOURCES
+				${BIND_SOURCES}
+				${CPP_DIR}/Joystick.cpp
+		)
     endif(ENABLE_JOYSTICK_SUPPORT)
 endif (LINUX OR WIN32)
 
@@ -124,7 +170,17 @@ set(
 	CACHE BOOL "Enable support for standard mice-like pointing devices."
 )
 if(ENABLE_MOUSE_SUPPORT)
-	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/mouse.h )
+	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/mouse.h )
+	set(
+		BIND_SOURCES
+			${BIND_SOURCES}
+			mouse.cdef
+	)
+	set(
+		GENERATED_CPP_SOURCES
+			${BIND_SOURCES}
+			${CPP_DIR}/Mouse.cpp
+	)
 endif(ENABLE_MOUSE_SUPPORT)
 
 set(
@@ -133,7 +189,17 @@ set(
 	CACHE BOOL "Enable support for keyboard devices."
 )
 if(ENABLE_KEYBOARD_SUPPORT)
-	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_DIR}/keyboard.h )
+	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/keyboard.h )
+	set(
+		BIND_SOURCES
+			${BIND_SOURCES}
+			keyboard.cdef
+	)
+	set(
+		GENERATED_CPP_SOURCES
+			${BIND_SOURCES}
+			${CPP_DIR}/Keyboard.cpp
+	)
 endif(ENABLE_KEYBOARD_SUPPORT)
 
 
@@ -398,34 +464,7 @@ endif(RUN_UNITTESTS)
 ##
 #	Examples
 ##
-
-macro( add_placebo_example name )
-	add_executable(
-		${name}
-			examples/${name}.c
-	)
-	set_target_properties(
-		${name} PROPERTIES
-			RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
-	)
-	target_link_libraries(
-		${name}
-			${SHARED_LIBRARIES}
-			limbus
-	)
-endmacro( add_placebo_example )
-
-set(
-	COMPILE_EXAMPLES
-	ON
-	CACHE BOOL "Compile examples."
-)
-if(COMPILE_EXAMPLES)
-	add_placebo_example( opengl_window )
-	add_placebo_example( screen_example )
-endif(COMPILE_EXAMPLES)
-
-
+include( examples/CMakeLists.txt )
 
 ##
 #	Language bindings

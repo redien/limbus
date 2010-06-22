@@ -1,56 +1,47 @@
 
-/*
-          Copyright Jesper Oskarsson 2009 - 2010.
- Distributed under the Boost Software License, Version 1.0.
-    (See accompanying file LICENSE_1_0.txt or copy at
-          http://www.boost.org/LICENSE_1_0.txt)
-*/
+#          Copyright Jesper Oskarsson 2009 - 2010.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
 
 class Limbus::Keyboard
-{
-	private ptr keyboard;
+	var keyboard : ptr
 	
-	signal on_key_event( int key, bool pressed );
-	signal on_unicode( int utf32, string utf8 );
+	signal on_key_event( key : int, pressed : bool )
+	signal on_unicode( utf32 : int, utf8 : string )
 
-	public void construct( Limbus::OpenglWindow window )
-	{
-		this.keyboard = limbus::lb_keyboard_construct();
-		limbus::lb_window_add_input_device( window.get_window_impl(), this.keyboard );
-	}
+	def construct( window : Limbus::OpenglWindow ) : void
+		this.keyboard = limbus::lb_keyboard_construct()
+		limbus::lb_window_add_input_device( window.get_window_impl(), this.keyboard )
+	end
 
-	public void destruct()
-	{
-		limbus::lb_keyboard_destruct( this.keyboard );
-	}
+	def destruct() : void
+		limbus::lb_keyboard_destruct( this.keyboard )
+	end
 
-	public bool poll_events()
-	{
-	    bool found_event;
-		found_event = false;
-		while (limbus::lb_keyboard_next_event( this.keyboard ) == 1)
-		{
-			int e;
-			e = limbus::lb_keyboard_get_event_type( this.keyboard );
+	def poll_events() : bool
+	    var found_event : bool
+		found_event = false
 
-			if (e == limbus::LBKeyboardEvent::LBKeyboardEventKeyPress)
-			{
-				on_key_event( limbus::lb_keyboard_get_event_key( this.keyboard ), true );
-			}
-			if (e == limbus::LBKeyboardEvent::LBKeyboardEventKeyRelease)
-			{
-				on_key_event( limbus::lb_keyboard_get_event_key( this.keyboard ), false );
-			}
-			if (e == limbus::LBKeyboardEvent::LBKeyboardEventUnicode)
-			{
+		while limbus::lb_keyboard_next_event( this.keyboard ) == 1 do
+			var e : int
+			e = limbus::lb_keyboard_get_event_type( this.keyboard )
+
+			if e == limbus::LBKeyboardEvent::LBKeyboardEventKeyPress then
+				on_key_event( limbus::lb_keyboard_get_event_key( this.keyboard ), true )
+			end
+			if e == limbus::LBKeyboardEvent::LBKeyboardEventKeyRelease then
+				on_key_event( limbus::lb_keyboard_get_event_key( this.keyboard ), false )
+			end
+			if e == limbus::LBKeyboardEvent::LBKeyboardEventUnicode then
 				on_unicode( limbus::lb_keyboard_get_event_utf32( this.keyboard ),
-							limbus::lb_keyboard_get_event_utf8( this.keyboard ) );
-			}
+							limbus::lb_keyboard_get_event_utf8( this.keyboard ) )
+			end
 
-            found_event = true;
-		}
-		
-		return found_event;
-	}
-}
+            found_event = true
+		end
+
+		return found_event
+	end
+end
 

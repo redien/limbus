@@ -12,34 +12,27 @@ local function parse_cmake_list( list )
 	return tbl
 end
 
-include_directory = "${INCLUDE_DIR}"
 
-local function make_cpp_includes( list )
-	local tbl = {}
-	for _, header in ipairs( list ) do
-		tbl[#tbl + 1] = header:match( "^" .. include_directory .. "%/(.*)" )
-	end
-	return tbl
-end
+verbose = true
+write_debug_output = false
+lua_enable_argument_type_checking = false
 
-bind_headers = "${BIND_HEADERS}"
-bind_dependancies = "${BIND_HEADERS}"
+name = "limbus"
 
-bind_headers = parse_cmake_list( bind_headers )
-bind_dependancies = parse_cmake_list( bind_dependancies )
+c_source_path = "${INCLUDE_DIR}/"
+cdef_source_path = "${BINDINGS_DIR}/"
 
-cpp_includes = make_cpp_includes( bind_headers )
-cpp_imports = ""
-for _, header in ipairs( cpp_includes ) do
-	cpp_imports = cpp_imports .. "\
-#include <" .. header .. ">"
-end
+output_path = "${GENERATED_DIR}/"
 
-options = {}
-options.enum_filters = {
-    "^LB(%w+)$",
+languages = parse_cmake_list( "${BIND_LANGUAGES}" )
+c_source_files = parse_cmake_list( "${BIND_HEADERS}" )
+cdef_source_files = parse_cmake_list( "${BIND_SOURCES}" )
+
+enum_filters = {
+	"^LB(%w+)$",
 }
-options.function_filters = {
-    "^lb_([%w_]+)$",
+
+function_filters = {
+	"^lb_([%w_]+)$",
 }
 

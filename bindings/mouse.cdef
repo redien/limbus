@@ -1,84 +1,71 @@
 
-/*
-          Copyright Jesper Oskarsson 2009 - 2010.
- Distributed under the Boost Software License, Version 1.0.
-    (See accompanying file LICENSE_1_0.txt or copy at
-          http://www.boost.org/LICENSE_1_0.txt)
-*/
+#          Copyright Jesper Oskarsson 2009 - 2010.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
 
 class Limbus::Mouse
-{
-	private ptr mouse;
+	var mouse : ptr
 
-	signal on_button_event( int button, bool pressed, int x, int y );
-	signal on_motion_event( int x, int y );
+	signal on_button_event( button : int, pressed : bool, x : int, y : int )
+	signal on_motion_event( x : int, y : int )
 
-	property int x
-	{
-		return limbus::lb_mouse_get_x( this.mouse );
-	}
-	{
-		limbus::lb_mouse_set_x( this.mouse, value );
-	};
-	property int y
-	{
-		return limbus::lb_mouse_get_y( this.mouse );
-	}
-	{
-		limbus::lb_mouse_set_y( this.mouse, value );
-	};
+	property x : int
+	get
+		return limbus::lb_mouse_get_x( this.mouse )
+	set
+		limbus::lb_mouse_set_x( this.mouse, value )
+	end
+	property y : int
+	get
+		return limbus::lb_mouse_get_y( this.mouse )
+	set
+		limbus::lb_mouse_set_y( this.mouse, value )
+	end
 
-	public void construct( Limbus::OpenglWindow window )
-	{
-		this.mouse = limbus::lb_mouse_construct();
-		limbus::lb_window_add_input_device( window.get_window_impl(), this.mouse );
-	}
+	def construct( window : Limbus::OpenglWindow ) : void
+		this.mouse = limbus::lb_mouse_construct()
+		limbus::lb_window_add_input_device( window.get_window_impl(), this.mouse )
+	end
 
-	public void destruct()
-	{
-		limbus::lb_mouse_destruct( this.mouse );
-	}
+	def destruct() : void
+		limbus::lb_mouse_destruct( this.mouse )
+	end
 
-	public void show_cursor( bool state )
-	{
-		limbus::lb_mouse_cursor_show( this.mouse, state );
-	}
+	def show_cursor( state : bool ) : void
+		limbus::lb_mouse_cursor_show( this.mouse, state )
+	end
 
-	public bool poll_events()
-	{
-	    bool found_event;
-		found_event = false;
-		while (limbus::lb_mouse_next_event( this.mouse ) == 1)
-		{
-			int e;
-			e = limbus::lb_mouse_get_event_type( this.mouse );
+	def poll_events() : bool
+	    var found_event : bool
+		found_event = false
+		while limbus::lb_mouse_next_event( this.mouse ) == 1 do
+			var e : int
+			e = limbus::lb_mouse_get_event_type( this.mouse )
 			
-			if (e == limbus::LBMouseEvent::LBMouseEventButtonPress)
-			{
+			if e == limbus::LBMouseEvent::LBMouseEventButtonPress then
 				on_button_event( limbus::lb_mouse_get_event_button( this.mouse ),
 								 true,
 								 limbus::lb_mouse_get_event_x( this.mouse ),
-								 limbus::lb_mouse_get_event_y( this.mouse ) );
-			}
+								 limbus::lb_mouse_get_event_y( this.mouse ) )
+			end
 
-			if (e == limbus::LBMouseEvent::LBMouseEventButtonRelease)
-			{
+			if e == limbus::LBMouseEvent::LBMouseEventButtonRelease then
 				on_button_event( limbus::lb_mouse_get_event_button( this.mouse ),
 								 false,
 								 limbus::lb_mouse_get_event_x( this.mouse ),
-								 limbus::lb_mouse_get_event_y( this.mouse ) );
-			}
+								 limbus::lb_mouse_get_event_y( this.mouse ) )
+			end
 
-			if (e == limbus::LBMouseEvent::LBMouseEventMotion)
-			{
+			if e == limbus::LBMouseEvent::LBMouseEventMotion then
 				on_motion_event( limbus::lb_mouse_get_event_x( this.mouse ),
-								 limbus::lb_mouse_get_event_y( this.mouse ) );
-			}
+								 limbus::lb_mouse_get_event_y( this.mouse ) )
+			end
 
-			found_event = true;
-		}
+			found_event = true
+		end
 		
-		return found_event;
-	}
-}
+		return found_event
+	end
+end
 

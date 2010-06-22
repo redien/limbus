@@ -1,170 +1,149 @@
 
-/*
-          Copyright Jesper Oskarsson 2009 - 2010.
- Distributed under the Boost Software License, Version 1.0.
-    (See accompanying file LICENSE_1_0.txt or copy at
-          http://www.boost.org/LICENSE_1_0.txt)
-*/
+#          Copyright Jesper Oskarsson 2009 - 2010.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
 
 class Limbus::OpenglWindow
-{
-	private bool created;
-	private ptr screen;
-	private ptr window;
-	private ptr context;
+	var created : bool,
+		screen : ptr,
+		window : ptr,
+		context : ptr
 
-	signal on_close();
-	signal on_file_drop( string filepath, int x, int y );
+	signal on_close()
+	signal on_file_drop( filepath : string, x : int, y : int )
 
-	property string caption
-	{
-		return limbus::lb_window_get_caption( this.window );
-	}
-	{
-		limbus::lb_window_set_caption( this.window, value );
-	};
+	property caption : string
+	get
+		return limbus::lb_window_get_caption( this.window )
+	set
+		limbus::lb_window_set_caption( this.window, value )
+	end
 
-	property int width
-	{
-		return limbus::lb_window_get_width( this.window );
-	}
-	{
-		limbus::lb_window_set_width( this.window, value );
-	};
-	property int height
-	{
-		return limbus::lb_window_get_height( this.window );
-	}
-	{
-		limbus::lb_window_set_height( this.window, value );
-	};
+	property width : int
+	get
+		return limbus::lb_window_get_width( this.window )
+	set
+		limbus::lb_window_set_width( this.window, value )
+	end
+	property height : int
+	get
+		return limbus::lb_window_get_height( this.window )
+	set
+		limbus::lb_window_set_height( this.window, value )
+	end
 
-	property int screen_width
-	{
-		return limbus::lb_screen_get_width( this.screen );
-	};
-	property int screen_height
-	{
-		return limbus::lb_screen_get_height( this.screen );
-	};
+	property screen_width : int
+	get
+		return limbus::lb_screen_get_width( this.screen )
+	end
+	property screen_height : int
+	get
+		return limbus::lb_screen_get_height( this.screen )
+	end
 
-	property int x
-	{
-		return limbus::lb_window_get_x( this.window );
-	}
-	{
-		limbus::lb_window_set_x( this.window, value );
-	};
-	property int y
-	{
-		return limbus::lb_window_get_y( this.window );
-	}
-	{
-		limbus::lb_window_set_y( this.window, value );
-	};
+	property x : int
+	get
+		return limbus::lb_window_get_x( this.window )
+	set
+		limbus::lb_window_set_x( this.window, value )
+	end
+	property y : int
+	get
+		return limbus::lb_window_get_y( this.window )
+	set
+		limbus::lb_window_set_y( this.window, value )
+	end
 
-	public void construct()
-	{
-		this.created = false;
+	def construct() : void
+		this.created = false
 
-		this.screen = limbus::lb_screen_construct( limbus::LBScreenDefault );
-		assert( limbus::lb_screen_constructed( this.screen ) == 1 );
+		this.screen = limbus::lb_screen_construct( limbus::LBScreenDefault )
+		assert( limbus::lb_screen_constructed( this.screen ) == 1 )
 
-		this.window = limbus::lb_window_construct( this.screen );
-		assert( limbus::lb_window_constructed( this.window ) == 1 );
-	}
+		this.window = limbus::lb_window_construct( this.screen )
+		assert( limbus::lb_window_constructed( this.window ) == 1 )
+	end
 
-	public void destruct()
-	{
-		if (this.created == true)
-		{
-			this.destroy();
-		}
+	def destruct() : void
+		if this.created == true then
+			this.destroy()
+		end
 
-		limbus::lb_window_destruct( this.window );
-		limbus::lb_screen_destruct( this.screen );
-	}
+		limbus::lb_window_destruct( this.window )
+		limbus::lb_screen_destruct( this.screen )
+	end
 
-	public void release_context()
-	{
-		limbus::lb_opengl_context_release_ownership( this.context );
-	}
+	def release_context() : void
+		limbus::lb_opengl_context_release_ownership( this.context )
+	end
 
-	public void swap_buffers()
-	{
-		limbus::lb_opengl_context_swap_buffers( this.context );
-	}
+	def swap_buffers() : void
+		limbus::lb_opengl_context_swap_buffers( this.context )
+	end
 
-	public void create()
-	{
-		this.context = limbus::lb_opengl_context_construct_in_window( this.window, limbus::LBOpenglContextCreateNew );
-		assert( limbus::lb_opengl_context_constructed( this.context ) == 1 );
+	def create() : void
+		this.context = limbus::lb_opengl_context_construct_in_window( this.window, limbus::LBOpenglContextCreateNew )
+		assert( limbus::lb_opengl_context_constructed( this.context ) == 1 )
 
-		limbus::lb_opengl_context_set_pixelformat( this.context, limbus::LBOpenglContextDefaultPixelformat );
-		limbus::lb_opengl_context_make_current( this.context );
+		limbus::lb_opengl_context_set_pixelformat( this.context, limbus::LBOpenglContextDefaultPixelformat )
+		limbus::lb_opengl_context_make_current( this.context )
 
-		this.created = true;
-	}
+		this.created = true
+	end
 
-	public void destroy()
-	{
-		limbus::lb_opengl_context_release_current( this.context );
-		limbus::lb_opengl_context_destruct( this.context );
-		this.created = false;
-	}
+	def destroy() : void
+		limbus::lb_opengl_context_release_current( this.context )
+		limbus::lb_opengl_context_destruct( this.context )
+		this.created = false
+	end
 
-	public bool set_swap_interval( int interval )
-	{
-		if (limbus::lb_opengl_context_set_swap_interval( this.context, interval ) == 1)
-		{
-			return true;
-		}
+	def set_swap_interval( interval : int ) : bool
+		if limbus::lb_opengl_context_set_swap_interval( this.context, interval ) == 1 then
+			return true
+		end
 		
-		return false;
-	}
+		return false
+	end
 
-	public ptr get_context_impl()
-	{
-		return this.context;
-	}
+	def get_context_impl() : ptr
+		return this.context
+	end
 
-	public ptr get_window_impl()
-	{
-		return this.window;
-	}
+	def get_window_impl() : ptr
+		return this.window
+	end
 
-	public bool poll_events()
-	{
-	    bool found_event;
-	    found_event = false;
+	def poll_events() : bool
+	    var found_event : bool
+	    found_event = false
 
-		while (limbus::lb_window_next_event( this.window ) == 1)
-		{
-			int e;
-			e = limbus::lb_window_get_event_type( this.window );
+		while limbus::lb_window_next_event( this.window ) == 1 do
+			var e : int
+			e = limbus::lb_window_get_event_type( this.window )
 
-			if (e == limbus::LBWindowEvent::LBWindowEventClose)
-			{
-				on_close();
-			}
+			if e == limbus::LBWindowEvent::LBWindowEventClose then
+				on_close()
+			end
 
-			if (e == limbus::LBWindowEvent::LBWindowEventFileDrop)
-			{
-				int files;
-				files = limbus::lb_window_get_event_files( this.window );
+			if e == limbus::LBWindowEvent::LBWindowEventFileDrop then
+				var files : int
+				files = limbus::lb_window_get_event_files( this.window )
 
-				for (i < files)
-				{
+				var i : int
+				i = 0
+				while i < files do
 					on_file_drop( limbus::lb_window_get_event_file( this.window, i ),
 								  limbus::lb_window_get_event_x( this.window ),
-								  limbus::lb_window_get_event_y( this.window ) );
-				}
-			}
+								  limbus::lb_window_get_event_y( this.window ) )
+					i = i + 1
+				end
+			end
 
-			found_event = true;
-		}
+			found_event = true
+		end
 
-		return found_event;
-	}
-}
+		return found_event
+	end
+end
 

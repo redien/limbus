@@ -1,92 +1,74 @@
 
-/*
-          Copyright Jesper Oskarsson 2009 - 2010.
- Distributed under the Boost Software License, Version 1.0.
-    (See accompanying file LICENSE_1_0.txt or copy at
-          http://www.boost.org/LICENSE_1_0.txt)
-*/
+#          Copyright Jesper Oskarsson 2009 - 2010.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
 
 class Limbus::Filesystem
-{
-	private ptr fs;
-	public bool constructed;
+	var fs : ptr,
+		constructed : bool
 
-	public void construct()
-	{
-		this.fs = limbus::lb_filesystem_construct();
+	def construct() : void
+		this.fs = limbus::lb_filesystem_construct()
 
-		this.constructed = false;
-		if (limbus::lb_filesystem_constructed( this.fs ) == 1)
-		{
-			this.constructed = true;
-		}
-	}
+		this.constructed = false
+		if limbus::lb_filesystem_constructed( this.fs ) == 1 then
+			this.constructed = true
+		end
+	end
 
-	public void destruct()
-	{
-		if (limbus::lb_filesystem_constructed( this.fs ) == 1)
-		{
-			limbus::lb_filesystem_destruct( this.fs );
-		}
+	def destruct() : void
+		if limbus::lb_filesystem_constructed( this.fs ) == 1 then
+			limbus::lb_filesystem_destruct( this.fs )
+		end
 
-		this.constructed = false;
-	}
+		this.constructed = false
+	end
 
-	list_factory string directory_entries( string path ) list_directory next_directory_entry get_directory_entry_name;
+	#list_factory string directory_entries( string path ) list_directory next_directory_entry get_directory_entry_name;
 
-	public bool list_directory( string path )
-	{
-		if (limbus::lb_filesystem_directory_list( this.fs, path ) == 1)
-		{
-			return true;
-		}
+	def list_directory( path : string ) : bool
+		if limbus::lb_filesystem_directory_list( this.fs, path ) == 1 then
+			return true
+		end
 
-		return false;
-	}
+		return false
+	end
 
-	public bool next_directory_entry()
-	{
-		if (limbus::lb_filesystem_directory_next_entry( this.fs ) == 1)
-		{
-			return true;
-		}
+	def next_directory_entry() : bool
+		if limbus::lb_filesystem_directory_next_entry( this.fs ) == 1 then
+			return true
+		end
 
-		return false;
-	}
+		return false
+	end
 
-	public string get_directory_entry_name()
-	{
-		return limbus::lb_filesystem_directory_get_entry( this.fs );
-	}
+	def get_directory_entry_name() : string
+		return limbus::lb_filesystem_directory_get_entry( this.fs )
+	end
 
-	public uint file_size( string path )
-	{
-		return limbus::lb_filesystem_file_size( this.fs, path );
-	}
+	def file_size( path : string ) : uint
+		return limbus::lb_filesystem_file_size( this.fs, path )
+	end
 
-	public bool path_is_directory( string path )
-	{
-	    if (limbus::lb_filesystem_path_is_directory( this.fs, path ) == 1)
-	    {
-	        return true;
-        }
+	def path_is_directory( path : string ) : bool
+	    if limbus::lb_filesystem_path_is_directory( this.fs, path ) == 1 then
+	        return true
+        end
 
-        return false;
-	}
+        return false
+	end
 
-	public bool path_is_file( string path )
-	{
-	    if (limbus::lb_filesystem_path_is_file( this.fs, path ) == 1)
-	    {
-	        return true;
-        }
+	def path_is_file( path : string ) : bool
+	    if limbus::lb_filesystem_path_is_file( this.fs, path ) == 1 then
+	        return true
+        end
 
-        return false;
-	}
+        return false
+	end
 
-	public string get_working_directory()
-	{
-		return limbus::lb_filesystem_get_working_directory( this.fs );
-	}
-}
+	def get_working_directory() : string
+		return limbus::lb_filesystem_get_working_directory( this.fs )
+	end
+end
 

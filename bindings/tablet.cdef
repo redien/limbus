@@ -1,85 +1,73 @@
 
-/*
-          Copyright Jesper Oskarsson 2009 - 2010.
- Distributed under the Boost Software License, Version 1.0.
-    (See accompanying file LICENSE_1_0.txt or copy at
-          http://www.boost.org/LICENSE_1_0.txt)
-*/
+
+#          Copyright Jesper Oskarsson 2009 - 2010.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
 
 class Limbus::Tablet
-{
-	private ptr tablet;
+	var tablet : ptr
 
-	signal on_button_event( int button, bool pressed );
-	signal on_motion_event( int x, int y, int pressure );
-	signal on_proximity_event( bool in );
+	signal on_button_event( button : int, pressed : bool )
+	signal on_motion_event( x : int, y : int, pressure : int )
+	signal on_proximity_event( in : bool )
 
-	property int context_width
-	{
-		return limbus::lb_tablet_get_context_width( this.tablet );
-	}
-	{
-		limbus::lb_tablet_set_context_width( this.tablet, value );
-	};
-	property int context_height
-	{
-		return limbus::lb_tablet_get_context_height( this.tablet );
-	}
-	{
-		limbus::lb_tablet_set_context_height( this.tablet, value );
-	};
+	property context_width : int
+	get
+		return limbus::lb_tablet_get_context_width( this.tablet )
+	set
+		limbus::lb_tablet_set_context_width( this.tablet, value )
+	end
 
-	public void construct( Limbus::OpenglWindow window )
-	{
-		this.tablet = limbus::lb_tablet_construct();
-		limbus::lb_window_add_input_device( window.get_window_impl(), this.tablet );
-	}
+	property context_height : int
+	get
+		return limbus::lb_tablet_get_context_height( this.tablet )
+	set
+		limbus::lb_tablet_set_context_height( this.tablet, value )
+	end
 
-	public void destruct()
-	{
-		limbus::lb_tablet_destruct( this.tablet );
-	}
+	def construct( window : Limbus::OpenglWindow ) : void
+		this.tablet = limbus::lb_tablet_construct()
+		limbus::lb_window_add_input_device( window.get_window_impl(), this.tablet )
+	end
 
-	public bool poll_events()
-	{
-		if (limbus::lb_tablet_next_event( this.tablet ) == 1)
-		{
-			int e;
-			e = limbus::lb_tablet_get_event_type( this.tablet );
+	def destruct() : void
+		limbus::lb_tablet_destruct( this.tablet )
+	end
+
+	def poll_events() : bool
+		if limbus::lb_tablet_next_event( this.tablet ) == 1 then
+			var e : int
+			e = limbus::lb_tablet_get_event_type( this.tablet )
 			
-			if (e == limbus::LBTabletEvent::LBTabletEventButtonPress)
-			{
+			if e == limbus::LBTabletEvent::LBTabletEventButtonPress then
 				on_button_event( limbus::lb_tablet_get_event_button( this.tablet ),
-								 true );
-			}
+								 true )
+			end
 
-			if (e == limbus::LBTabletEvent::LBTabletEventButtonRelease)
-			{
+			if e == limbus::LBTabletEvent::LBTabletEventButtonRelease then
 				on_button_event( limbus::lb_tablet_get_event_button( this.tablet ),
-								 false );
-			}
+								 false )
+			end
 			
-			if (e == limbus::LBTabletEvent::LBTabletEventProximityIn)
-			{
-				on_proximity_event( true );
-			}
+			if e == limbus::LBTabletEvent::LBTabletEventProximityIn then
+				on_proximity_event( true )
+			end
 
-			if (e == limbus::LBTabletEvent::LBTabletEventProximityOut)
-			{
-				on_proximity_event( false );
-			}
+			if e == limbus::LBTabletEvent::LBTabletEventProximityOut then
+				on_proximity_event( false )
+			end
 
-			if (e == limbus::LBTabletEvent::LBTabletEventMotion)
-			{
+			if e == limbus::LBTabletEvent::LBTabletEventMotion then
 				on_motion_event( limbus::lb_tablet_get_event_x( this.tablet ),
 								 limbus::lb_tablet_get_event_y( this.tablet ),
-								 limbus::lb_tablet_get_event_pressure( this.tablet ) );
-			}
+								 limbus::lb_tablet_get_event_pressure( this.tablet ) )
+			end
 
-			return true;
-		}
+			return true
+		end
 		
-		return false;
-	}
-}
+		return false
+	end
+end
 
