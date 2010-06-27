@@ -14,6 +14,7 @@ extern "C"
 #endif
 
 double lb_time_count_in_seconds( void );
+unsigned long lb_time_count_in_milliseconds( void );
 void lb_msleep( unsigned int msec );
 void lb_usleep( unsigned int usec );
 

@@ -21,6 +21,15 @@ double lb_time_count_in_seconds( void )
 		   time_now.tv_usec / 1000000.0;
 }
 
+unsigned long lb_time_count_in_milliseconds( void )
+{
+	struct timeval time_now;
+	gettimeofday( &time_now, NULL );
+	
+	return time_now.tv_sec * 1000 +
+		   time_now.tv_usec / 1000;
+}
+
 /* TODO: Come up with a better way to support this under ANSI strict */
 /*int usleep( unsigned long usec );*/
 

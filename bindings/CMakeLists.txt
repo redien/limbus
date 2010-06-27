@@ -5,6 +5,15 @@
 #          http://www.boost.org/LICENSE_1_0.txt)
 
 add_custom_target(
+	binding_make_directories ALL
+	COMMAND cmake -E make_directory ${PYTHON_DIR}
+	COMMAND cmake -E make_directory ${RUBY_DIR}
+	COMMAND cmake -E make_directory ${CPP_DIR}
+	COMMAND cmake -E make_directory ${LUA_DIR}
+	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+add_custom_target(
 	generate_binding ALL
 	COMMAND ${LUA_EXE} generator.lua ${GENERATED_CONFIG}
 	COMMENT "Generating bindings..."
@@ -13,6 +22,7 @@ add_custom_target(
 add_dependencies(
 	generate_binding
 		lua
+		binding_make_directories
 )
 
 option(
@@ -61,8 +71,8 @@ if(GENERATE_PYTHON_BINDING)
 			python
 	)
 	add_custom_target(
-		python_binding_make_directory ALL
-		COMMAND cmake -E make_directory ${PYTHON_DIR}
+		python_binding_copy_lib ALL
+		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${PYTHON_DIR}/
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	)
 endif(GENERATE_PYTHON_BINDING)
@@ -78,8 +88,8 @@ if(GENERATE_RUBY_BINDING)
 			ruby
 	)
 	add_custom_target(
-		ruby_binding_make_directory ALL
-		COMMAND cmake -E make_directory ${RUBY_DIR}
+		ruby_binding_copy_lib ALL
+		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${RUBY_DIR}/
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	)
 endif(GENERATE_RUBY_BINDING)
