@@ -8,6 +8,8 @@
 
 #include <limbus/timing.h>
 
+#define _XOPEN_SOURCE 500
+#include <sys/types.h>
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>

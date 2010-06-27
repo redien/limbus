@@ -45,7 +45,7 @@ set( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests )
 set( LUA_DEP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lua-5.1.4 )
 set( LUA_SRC_PATH ${LUA_DEP_DIR}/src )
 set( LUA_INCLUDE_DIR ${LUA_SRC_PATH} )
-set( LUA_EXE ${BIN_DIR}/${CMAKE_CFG_INTDIR}/lua )
+set( LUA_EXE ${BIN_DIR}/lua )
 
 set( CBIND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../cbind/ )
 
@@ -346,9 +346,10 @@ endif(WIN32)
 
 
 
+set( BUILD_SHARED_DESC "Build as a shared library" )
 option(
 	BUILD_SHARED
-	"Build as a shared library"
+	${BUILD_SHARED_DESC}
 )
 if(BUILD_SHARED)
 	if(MSVC)

@@ -21,7 +21,7 @@ extern "C"
 #else
 	#include <GL/gl.h>
 
-	#define glGetProcAddress glXGetProcAddress
+	#define glGetProcAddress( s ) glXGetProcAddress( (const GLubyte *)s )
 #endif
 
 #ifdef __cplusplus

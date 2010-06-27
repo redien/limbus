@@ -65,6 +65,7 @@ option(
 	"Generate Python binding and class files"
 )
 if(GENERATE_PYTHON_BINDING)
+	set( BUILD_SHARED ON CACHE BOOL ${BUILD_SHARED_DESC} FORCE )
 	set(
 		BIND_LANGUAGES
 			${BIND_LANGUAGES}
@@ -75,6 +76,10 @@ if(GENERATE_PYTHON_BINDING)
 		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${PYTHON_DIR}/
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	)
+	add_dependencies(
+		python_binding_copy_lib
+			limbus_shared
+	)
 endif(GENERATE_PYTHON_BINDING)
 
 option(
@@ -82,6 +87,7 @@ option(
 	"Generate Ruby binding and class files"
 )
 if(GENERATE_RUBY_BINDING)
+	set( BUILD_SHARED ON CACHE BOOL ${BUILD_SHARED_DESC} FORCE )
 	set(
 		BIND_LANGUAGES
 			${BIND_LANGUAGES}
@@ -91,6 +97,10 @@ if(GENERATE_RUBY_BINDING)
 		ruby_binding_copy_lib ALL
 		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${RUBY_DIR}/
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	)
+	add_dependencies(
+		ruby_binding_copy_lib
+			limbus_shared
 	)
 endif(GENERATE_RUBY_BINDING)
 
