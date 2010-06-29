@@ -10,6 +10,7 @@ add_custom_target(
 	COMMAND cmake -E make_directory ${RUBY_DIR}
 	COMMAND cmake -E make_directory ${CPP_DIR}
 	COMMAND cmake -E make_directory ${LUA_DIR}
+	COMMAND cmake -E make_directory ${CSHARP_DIR}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -59,6 +60,28 @@ if(GENERATE_CPP_BINDING)
 			generate_binding
 	)
 endif(GENERATE_CPP_BINDING)
+
+option(
+	GENERATE_CSHARP_BINDING
+	"Generate C# binding and class files"
+)
+if(GENERATE_CSHARP_BINDING)
+	set( BUILD_SHARED ON CACHE BOOL ${BUILD_SHARED_DESC} FORCE )
+	set(
+		BIND_LANGUAGES
+			${BIND_LANGUAGES}
+			csharp
+	)
+	add_custom_target(
+		csharp_binding_copy_lib ALL
+		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${CSHARP_DIR}/
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	)
+	add_dependencies(
+		csharp_binding_copy_lib
+			limbus_shared
+	)
+endif(GENERATE_CSHARP_BINDING)
 
 option(
 	GENERATE_PYTHON_BINDING

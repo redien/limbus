@@ -5,24 +5,16 @@
 #          http://www.boost.org/LICENSE_1_0.txt)
 
 class Limbus::Filesystem
-	var fs : ptr,
-		constructed : bool
+	var fs : ptr
 
 	def construct() : void
 		this.fs = limbus::lb_filesystem_construct()
-
-		this.constructed = false
-		if limbus::lb_filesystem_constructed( this.fs ) == 1 then
-			this.constructed = true
-		end
 	end
 
 	def destruct() : void
 		if limbus::lb_filesystem_constructed( this.fs ) == 1 then
 			limbus::lb_filesystem_destruct( this.fs )
 		end
-
-		this.constructed = false
 	end
 
 	#list_factory string directory_entries( string path ) list_directory next_directory_entry get_directory_entry_name;

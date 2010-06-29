@@ -9,4 +9,5 @@ generated/lua/*
 generated/ruby/*
 generated/cpp/*
 generated/python/*
+generated/csharp/*
 

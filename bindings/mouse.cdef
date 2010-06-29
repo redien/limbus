@@ -33,7 +33,12 @@ class Limbus::Mouse
 	end
 
 	def show_cursor( state : bool ) : void
-		limbus::lb_mouse_cursor_show( this.mouse, state )
+		if state == true then
+			limbus::lb_mouse_cursor_show( this.mouse, 1 )
+		end
+		if state == false then
+			limbus::lb_mouse_cursor_show( this.mouse, 0 )
+		end
 	end
 
 	def poll_events() : bool

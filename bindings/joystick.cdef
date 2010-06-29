@@ -6,9 +6,7 @@
 
 class Limbus::Joystick
 	var joystick : ptr,
-		joystick_id : int,
-		constructed : bool,
-		connected : bool
+		joystick_id : int
 
 	signal on_axis( joystick : int, number : int, value : int, time : int )
 	signal on_button( joystick : int, number : int, value : int, time : int )
@@ -17,67 +15,53 @@ class Limbus::Joystick
 
 	property product_string : string
 	get
-		return placebo::lb_joystick_get_product_string( this.joystick )
+		return limbus::lb_joystick_get_product_string( this.joystick )
 	end
 
 	property axes : int
 	get
-		return placebo::lb_joystick_axes( this.joystick )
+		return limbus::lb_joystick_axes( this.joystick )
 	end
 	
 	property buttons : int
 	get
-		return placebo::lb_joystick_buttons( this.joystick )
+		return limbus::lb_joystick_buttons( this.joystick )
 	end
 	
 	def construct( joystick_id : int ) : void
-		this.joystick = placebo::lb_joystick_construct( joystick_id )
-
-		this.constructed = false
-		if placebo::lb_joystick_constructed( this.joystick ) == 1 then
-			this.constructed = true
-		end
-
-		this.connected = false
-		if placebo::lb_joystick_connected( this.joystick ) == 1 then
-			this.connected = true
-		end
-
+		this.joystick = limbus::lb_joystick_construct( joystick_id )
 		this.joystick_id = joystick_id
 	end
 	
 	def destruct() : void
-		placebo::lb_joystick_destruct( this.joystick )
-		this.constructed = false
+		limbus::lb_joystick_destruct( this.joystick )
 	end
 	
 	def send_events() : void
-		if placebo::lb_joystick_next_event( this.joystick ) == 1 then
+		if limbus::lb_joystick_next_event( this.joystick ) == 1 then
 			var e : int
-			e = placebo::lb_joystick_get_event_type( this.joystick )
+			e = limbus::lb_joystick_get_event_type( this.joystick )
 			
-			if e == placebo::LBJoystickEvent::LBJoystickEventConnected then
+			if e == limbus::LBJoystickEvent::LBJoystickEventConnected then
 				on_connected( this.joystick_id )
-				this.connected = true
 			end
 
-			if e == placebo::LBJoystickEvent::LBJoystickEventDisconnected then
+			if e == limbus::LBJoystickEvent::LBJoystickEventDisconnected then
 				on_disconnected( this.joystick_id )
-				this.connected = false
 			end
 			
-			if e == placebo::LBJoystickEvent::LBJoystickEventAxis then
+			if e == limbus::LBJoystickEvent::LBJoystickEventAxis then
 				on_axis( this.joystick_id,
-						 placebo::lb_joystick_get_event_number( this.joystick ),
-						 placebo::lb_joystick_get_event_value( this.joystick ),
-						 placebo::lb_joystick_get_event_time( this.joystick ) )
+						 limbus::lb_joystick_get_event_number( this.joystick ),
+						 limbus::lb_joystick_get_event_value( this.joystick ),
+						 limbus::lb_joystick_get_event_time( this.joystick ) )
 			end
 
-			if e == placebo::LBJoystickEvent::LBJoystickEventButton then
+			if e == limbus::LBJoystickEvent::LBJoystickEventButton then
 				on_button( this.joystick_id,
-						   placebo::lb_joystick_get_event_number( this.joystick ),
-						   placebo::lb_joystick_get_event_value( this.joystick ),
-						   placebo::lb_joystick_get_event_time( this.joystick ) )
+						   limbus::lb_joystick_get_event_number( this.joystick ),
+						   limbus::lb_joystick_get_event_value( this.joystick ),
+						   limbus::lb_joystick_get_event_time( this.joystick ) )
 			end
 		end
 	end
