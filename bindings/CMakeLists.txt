@@ -4,6 +4,25 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
+macro( add_simple_binding lang lang_dir )
+	set( BUILD_SHARED ON CACHE BOOL ${BUILD_SHARED_DESC} FORCE )
+	set(
+		BIND_LANGUAGES
+			${BIND_LANGUAGES}
+			${lang}
+	)
+	add_custom_target(
+		${lang}_binding_copy_lib ALL
+		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${lang_dir}/
+		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+	)
+	add_dependencies(
+		${lang}_binding_copy_lib
+			limbus_shared
+	)
+endmacro( add_simple_binding )
+
+
 add_custom_target(
 	binding_make_directories ALL
 	COMMAND cmake -E make_directory ${PYTHON_DIR}
@@ -60,72 +79,6 @@ if(GENERATE_CPP_BINDING)
 			generate_binding
 	)
 endif(GENERATE_CPP_BINDING)
-
-option(
-	GENERATE_CSHARP_BINDING
-	"Generate C# binding and class files"
-)
-if(GENERATE_CSHARP_BINDING)
-	set( BUILD_SHARED ON CACHE BOOL ${BUILD_SHARED_DESC} FORCE )
-	set(
-		BIND_LANGUAGES
-			${BIND_LANGUAGES}
-			csharp
-	)
-	add_custom_target(
-		csharp_binding_copy_lib ALL
-		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${CSHARP_DIR}/
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	)
-	add_dependencies(
-		csharp_binding_copy_lib
-			limbus_shared
-	)
-endif(GENERATE_CSHARP_BINDING)
-
-option(
-	GENERATE_PYTHON_BINDING
-	"Generate Python binding and class files"
-)
-if(GENERATE_PYTHON_BINDING)
-	set( BUILD_SHARED ON CACHE BOOL ${BUILD_SHARED_DESC} FORCE )
-	set(
-		BIND_LANGUAGES
-			${BIND_LANGUAGES}
-			python
-	)
-	add_custom_target(
-		python_binding_copy_lib ALL
-		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${PYTHON_DIR}/
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	)
-	add_dependencies(
-		python_binding_copy_lib
-			limbus_shared
-	)
-endif(GENERATE_PYTHON_BINDING)
-
-option(
-	GENERATE_RUBY_BINDING
-	"Generate Ruby binding and class files"
-)
-if(GENERATE_RUBY_BINDING)
-	set( BUILD_SHARED ON CACHE BOOL ${BUILD_SHARED_DESC} FORCE )
-	set(
-		BIND_LANGUAGES
-			${BIND_LANGUAGES}
-			ruby
-	)
-	add_custom_target(
-		ruby_binding_copy_lib ALL
-		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${RUBY_DIR}/
-		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-	)
-	add_dependencies(
-		ruby_binding_copy_lib
-			limbus_shared
-	)
-endif(GENERATE_RUBY_BINDING)
 
 option(
 	GENERATE_LUA_BINDING
@@ -188,4 +141,28 @@ if(GENERATE_LUA_BINDING)
 		)
 	endif(MSVC)
 endif(GENERATE_LUA_BINDING)
+
+option(
+	GENERATE_CSHARP_BINDING
+	"Generate C# binding and class files"
+)
+if(GENERATE_CSHARP_BINDING)
+	add_simple_binding( csharp ${CSHARP_DIR} )
+endif(GENERATE_CSHARP_BINDING)
+
+option(
+	GENERATE_PYTHON_BINDING
+	"Generate Python binding and class files"
+)
+if(GENERATE_PYTHON_BINDING)
+	add_simple_binding( python ${PYTHON_DIR} )
+endif(GENERATE_PYTHON_BINDING)
+
+option(
+	GENERATE_RUBY_BINDING
+	"Generate Ruby binding and class files"
+)
+if(GENERATE_RUBY_BINDING)
+	add_simple_binding( ruby ${RUBY_DIR} )
+endif(GENERATE_RUBY_BINDING)
 

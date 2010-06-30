@@ -167,12 +167,22 @@ void lb_window_set_width( void* win, int width )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
 	window->width = width;
+	if (window->created_impl)
+	{
+		XResizeWindow( window->base.display, window->base.window,
+		               window->width, window->height );
+	}
 }
 
 void lb_window_set_height( void* win, int height )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
 	window->height = height;
+	if (window->created_impl)
+	{
+		XResizeWindow( window->base.display, window->base.window,
+		               window->width, window->height );
+	}
 }
 
 void lb_window_set_x( void* win, int x )
