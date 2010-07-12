@@ -13,7 +13,7 @@ extern "C"
 {
 #endif
 
-#include "screen.h"
+#include <limbus/screen.h>
 
 typedef void* LBWindow;
 
@@ -27,6 +27,7 @@ enum LBWindowEvent
 	/** Event sent when a file is dragged to the window. */
 	LBWindowEventFileDrop
 };
+typedef enum LBWindowEvent LBWindowEvent;
 
 /** Constructs a new window object.
   * Simply calling this function might not create an actual window.
@@ -40,7 +41,7 @@ enum LBWindowEvent
   * Use lb_window_constructed to find out if a window object was
   * constructed or not.
   */
-LBWindow lb_window_construct( void* screen );
+LBWindow lb_window_construct( LBScreen screen );
 
 /** Destructs a previously constructed window object.
   * Destructing a window object will deallocate all the resources
@@ -148,7 +149,7 @@ int lb_window_next_event( LBWindow window );
   * @param window a pointer to a successfully constructed window object.
   * @return the type of the current event.
   */
-enum LBWindowEvent lb_window_get_event_type( LBWindow window );
+LBWindowEvent lb_window_get_event_type( LBWindow window );
 
 /** Get the x-coordinate of the current event.
   * @param window a pointer to a successfully constructed window object.

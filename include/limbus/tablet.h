@@ -15,6 +15,8 @@ extern "C"
 
 /* Experimental */
 
+typedef void* LBTablet;
+
 enum LBTabletEvent
 {
 	LBTabletEventMotion,
@@ -23,23 +25,24 @@ enum LBTabletEvent
 	LBTabletEventProximityIn,
 	LBTabletEventProximityOut
 };
+typedef enum LBTabletEvent LBTabletEvent;
 
-void* lb_tablet_construct( void );
-void lb_tablet_destruct( void* tablet );
-int lb_tablet_constructed( void* tablet );
+LBTablet lb_tablet_construct( void );
+void lb_tablet_destruct( LBTablet tablet );
+int lb_tablet_constructed( LBTablet tablet );
 
-void lb_tablet_set_context_width( void* tablet, int width );
-void lb_tablet_set_context_height( void* tablet, int height );
+void lb_tablet_set_context_width( LBTablet tablet, int width );
+void lb_tablet_set_context_height( LBTablet tablet, int height );
 
-int lb_tablet_get_context_width( void* tablet );
-int lb_tablet_get_context_height( void* tablet );
+int lb_tablet_get_context_width( LBTablet tablet );
+int lb_tablet_get_context_height( LBTablet tablet );
 
-int lb_tablet_next_event( void* tablet );
-enum LBTabletEvent lb_tablet_get_event_type( void* tablet );
-int lb_tablet_get_event_button( void* tablet );
-int lb_tablet_get_event_pressure( void* tablet );
-int lb_tablet_get_event_x( void* tablet );
-int lb_tablet_get_event_y( void* tablet );
+int lb_tablet_next_event( LBTablet tablet );
+LBTabletEvent lb_tablet_get_event_type( LBTablet tablet );
+int lb_tablet_get_event_button( LBTablet tablet );
+int lb_tablet_get_event_pressure( LBTablet tablet );
+int lb_tablet_get_event_x( LBTablet tablet );
+int lb_tablet_get_event_y( LBTablet tablet );
 
 #ifdef __cplusplus
 }

@@ -15,27 +15,30 @@ extern "C"
 
 /* Experimental */
 
+typedef void* LBSocket;
+
 enum LBSocketType
 {
     LBSocketTypeDatagram,
     LBSocketTypeStream,
     LBSocketTypeRaw
 };
+typedef enum LBSocketType LBSocketType;
 
-void* lb_socket_construct( enum LBSocketType type );
-void lb_socket_destruct( void* socket );
-int lb_socket_constructed( void* socket );
+LBSocket lb_socket_construct( LBSocketType type );
+void lb_socket_destruct( LBSocket socket );
+int lb_socket_constructed( LBSocket socket );
 
-int lb_socket_bind( void* socket, int port );
-int lb_socket_listen( void* socket, int max_connections );
-int lb_socket_connect( void* socket, char* address, int port );
-void* lb_socket_accept( void* socket );
+int lb_socket_bind( LBSocket socket, int port );
+int lb_socket_listen( LBSocket socket, int max_connections );
+int lb_socket_connect( LBSocket socket, char* address, int port );
+LBSocket lb_socket_accept( LBSocket socket );
 
-int lb_socket_send_string( void* socket, char* string );
-const char* lb_socket_recv_string( void* socket, int len );
+int lb_socket_send_string( LBSocket socket, char* string );
+const char* lb_socket_recv_string( LBSocket socket, int len );
 
-int lb_socket_close( void* socket );
-int lb_socket_closed( void* socket );
+int lb_socket_close( LBSocket socket );
+int lb_socket_closed( LBSocket socket );
 
 #ifdef __cplusplus
 }

@@ -15,32 +15,35 @@ extern "C"
 
 /* Experimental */
 
+typedef void* LBFilesystem;
+
 enum LBFilesystemWatchEvent
 {
     LBFilesystemWatchEventModified
 };
+typedef enum LBFilesystemWatchEvent LBFilesystemWatchEvent;
 
-void* lb_filesystem_construct( void );
-void* lb_filesystem_destruct( void* filesystem );
-int lb_filesystem_constructed( void* filesystem );
+LBFilesystem lb_filesystem_construct( void );
+LBFilesystem lb_filesystem_destruct( LBFilesystem filesystem );
+int lb_filesystem_constructed( LBFilesystem filesystem );
 
-int lb_filesystem_path_is_directory( void* filesystem, const char* path );
-int lb_filesystem_path_is_file( void* filesystem, const char* path );
+int lb_filesystem_path_is_directory( LBFilesystem filesystem, const char* path );
+int lb_filesystem_path_is_file( LBFilesystem filesystem, const char* path );
 
-int lb_filesystem_directory_list( void* filesystem, const char* directory );
-int lb_filesystem_directory_next_entry( void* filesystem );
-const char* lb_filesystem_directory_get_entry( void* filesystem );
+int lb_filesystem_directory_list( LBFilesystem filesystem, const char* directory );
+int lb_filesystem_directory_next_entry( LBFilesystem filesystem );
+const char* lb_filesystem_directory_get_entry( LBFilesystem filesystem );
 
-const char* lb_filesystem_get_working_directory( void* filesystem );
+const char* lb_filesystem_get_working_directory( LBFilesystem filesystem );
 
-unsigned int lb_filesystem_file_size( void* filesystem, const char* path );
+unsigned int lb_filesystem_file_size( LBFilesystem filesystem, const char* path );
 
-int lb_filesystem_watch_path( void* filesystem, char* path );
-void lb_filesystem_remove_watch( void* filesystem, int id );
-int lb_filesystem_next_watch_event( void* filesystem );
-int lb_filesystem_get_watch_event_id( void* filesystem );
-const char* lb_filesystem_get_watch_event_file( void* filesystem );
-enum LBFilesystemWatchEvent lb_filesystem_get_watch_event_type( void* filesystem );
+int lb_filesystem_watch_path( LBFilesystem filesystem, char* path );
+void lb_filesystem_remove_watch( LBFilesystem filesystem, int id );
+int lb_filesystem_next_watch_event( LBFilesystem filesystem );
+int lb_filesystem_get_watch_event_id( LBFilesystem filesystem );
+const char* lb_filesystem_get_watch_event_file( LBFilesystem filesystem );
+LBFilesystemWatchEvent lb_filesystem_get_watch_event_type( LBFilesystem filesystem );
 
 #ifdef __cplusplus
 }

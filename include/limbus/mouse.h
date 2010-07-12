@@ -13,29 +13,32 @@ extern "C"
 {
 #endif
 
+typedef void* LBMouse;
+
 enum LBMouseEvent
 {
 	LBMouseEventMotion,
 	LBMouseEventButtonPress,
 	LBMouseEventButtonRelease
 };
+typedef enum LBMouseEvent LBMouseEvent;
 
-void* lb_mouse_construct( void );
-void lb_mouse_destruct( void* mouse );
-int lb_mouse_constructed( void* mouse );
+LBMouse lb_mouse_construct( void );
+void lb_mouse_destruct( LBMouse mouse );
+int lb_mouse_constructed( LBMouse mouse );
 
-void lb_mouse_set_x( void* mouse, int x );
-void lb_mouse_set_y( void* mouse, int y );
-int lb_mouse_get_x( void* mouse );
-int lb_mouse_get_y( void* mouse );
+void lb_mouse_set_x( LBMouse mouse, int x );
+void lb_mouse_set_y( LBMouse mouse, int y );
+int lb_mouse_get_x( LBMouse mouse );
+int lb_mouse_get_y( LBMouse mouse );
 
-void lb_mouse_cursor_show( void* mouse, int state );
+void lb_mouse_cursor_show( LBMouse mouse, int state );
 
-int lb_mouse_next_event( void* mouse );
-enum LBMouseEvent lb_mouse_get_event_type( void* mouse );
-int lb_mouse_get_event_button( void* mouse );
-int lb_mouse_get_event_x( void* mouse );
-int lb_mouse_get_event_y( void* mouse );
+int lb_mouse_next_event( LBMouse mouse );
+LBMouseEvent lb_mouse_get_event_type( LBMouse mouse );
+int lb_mouse_get_event_button( LBMouse mouse );
+int lb_mouse_get_event_x( LBMouse mouse );
+int lb_mouse_get_event_y( LBMouse mouse );
 
 #ifdef __cplusplus
 }

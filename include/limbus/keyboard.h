@@ -13,12 +13,15 @@ extern "C"
 {
 #endif
 
+typedef void* LBKeyboard;
+
 enum LBKeyboardEvent
 {
 	LBKeyboardEventKeyPress,
 	LBKeyboardEventKeyRelease,
 	LBKeyboardEventUnicode
 };
+typedef enum LBKeyboardEvent LBKeyboardEvent;
 
 
 /* TODO: Add caps-lock */
@@ -36,16 +39,17 @@ enum LBKey
 	LBKey9, LBKeyF1, LBKeyF2, LBKeyF3, LBKeyF4, LBKeyF5, LBKeyF6, LBKeyF7,
 	LBKeyF8, LBKeyF9, LBKeyF10, LBKeyF11, LBKeyF12
 };
+typedef enum LBKey LBKey;
 
-void* lb_keyboard_construct( void );
-void lb_keyboard_destruct( void* keyboard );
-int lb_keyboard_constructed( void* keyboard );
+LBKeyboard lb_keyboard_construct( void );
+void lb_keyboard_destruct( LBKeyboard keyboard );
+int lb_keyboard_constructed( LBKeyboard keyboard );
 
-int lb_keyboard_next_event( void* keyboard );
-enum LBKeyboardEvent lb_keyboard_get_event_type( void* keyboard );
-enum LBKey lb_keyboard_get_event_key( void* keyboard );
-int lb_keyboard_get_event_utf32( void* keyboard );
-const char* lb_keyboard_get_event_utf8( void* keyboard );
+int lb_keyboard_next_event( LBKeyboard keyboard );
+LBKeyboardEvent lb_keyboard_get_event_type( LBKeyboard keyboard );
+LBKey lb_keyboard_get_event_key( LBKeyboard keyboard );
+int lb_keyboard_get_event_utf32( LBKeyboard keyboard );
+const char* lb_keyboard_get_event_utf8( LBKeyboard keyboard );
 
 #ifdef __cplusplus
 }

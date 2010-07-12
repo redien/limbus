@@ -18,30 +18,33 @@ extern "C"
 #define LBOpenglContextCreateNew 0
 #define LBOpenglContextUseCurrent 1
 
-void* lb_opengl_context_construct_in_window( void* window, int use_current );
-void* lb_opengl_context_destruct( void* context );
-void lb_opengl_context_release_ownership( void* context );
-int lb_opengl_context_constructed( void* context );
+typedef void* LBOpenglContext;
 
-void lb_opengl_context_swap_buffers( void* context );
+LBOpenglContext lb_opengl_context_construct_in_window( LBOpenglContext window, int use_current );
+LBOpenglContext lb_opengl_context_destruct( LBOpenglContext context );
+void lb_opengl_context_release_ownership( LBOpenglContext context );
+int lb_opengl_context_constructed( LBOpenglContext context );
 
-int lb_opengl_context_pixelformats( void* context );
-int lb_opengl_context_get_pixelformat_double_buffer( void* context,
+void lb_opengl_context_swap_buffers( LBOpenglContext context );
+
+int lb_opengl_context_pixelformats( LBOpenglContext context );
+int lb_opengl_context_get_pixelformat_double_buffer( LBOpenglContext context,
                                                      int pixelformat );
-int lb_opengl_context_get_pixelformat_support_opengl( void* context,
+int lb_opengl_context_get_pixelformat_support_opengl( LBOpenglContext context,
                                                      int pixelformat );
-int lb_opengl_context_get_pixelformat_rgba( void* context,
+int lb_opengl_context_get_pixelformat_rgba( LBOpenglContext context,
                                             int pixelformat );
-int lb_opengl_context_get_pixelformat_depth_size( void* context,
+int lb_opengl_context_get_pixelformat_depth_size( LBOpenglContext context,
                                                   int pixelformat );
-void lb_opengl_context_set_pixelformat( void* context, int pixelformat );
+void lb_opengl_context_set_pixelformat( LBOpenglContext context, int pixelformat );
 
-void lb_opengl_context_make_current( void* context );
-void lb_opengl_context_release_current( void* context );
+void lb_opengl_context_make_current( LBOpenglContext context );
+void lb_opengl_context_release_current( LBOpenglContext context );
 
-int lb_opengl_context_set_swap_interval( void* context, int interval );
+int lb_opengl_context_set_swap_interval( LBOpenglContext context, int interval );
 
 #ifdef __cplusplus
 }
 #endif
 #endif
+

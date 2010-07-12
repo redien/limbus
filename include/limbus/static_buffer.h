@@ -15,14 +15,16 @@ extern "C"
 
 /* Experimental */
 
-void* lb_static_buffer_construct( unsigned int size );
-void lb_static_buffer_destruct( void* buffer );
+typedef void* LBStaticBuffer;
 
-void lb_static_buffer_setf32( void* buffer, unsigned int offset, float value );
-void lb_static_buffer_setui8( void* buffer, unsigned int offset, unsigned char value );
+LBStaticBuffer lb_static_buffer_construct( unsigned int size );
+void lb_static_buffer_destruct( LBStaticBuffer buffer );
 
-float lb_static_buffer_getf32( void* buffer, unsigned int offset );
-unsigned char lb_static_buffer_getui8( void* buffer, unsigned int offset );
+void lb_static_buffer_setf32( LBStaticBuffer buffer, unsigned int offset, float value );
+void lb_static_buffer_setui8( LBStaticBuffer buffer, unsigned int offset, unsigned char value );
+
+float lb_static_buffer_getf32( LBStaticBuffer buffer, unsigned int offset );
+unsigned char lb_static_buffer_getui8( LBStaticBuffer buffer, unsigned int offset );
 
 #ifdef __cplusplus
 }

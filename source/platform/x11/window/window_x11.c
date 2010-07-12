@@ -163,6 +163,7 @@ void lb_window_set_caption( void* win, const char* caption )
 	}
 }
 
+/* TODO: Make sure that setting width or height to 0 to generate an error */
 void lb_window_set_width( void* win, int width )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;

@@ -16,6 +16,9 @@ class Limbus::Timer
 		this.time = limbus::lb_time_count_in_seconds()
 	end
 	
+	def destruct() : void
+	end
+	
 	def reset() : void
 		this.time = limbus::lb_time_count_in_seconds()
 	end

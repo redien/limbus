@@ -15,6 +15,8 @@ extern "C"
 
 /* Experimental */
 
+typedef void* LBJoystick;
+
 enum LBJoystickEvent
 {
 	LBJoystickEventAxis,
@@ -22,28 +24,30 @@ enum LBJoystickEvent
 	LBJoystickEventConnected,
 	LBJoystickEventDisconnected
 };
+typedef enum LBJoystickEvent LBJoystickEvent;
 
-void* lb_joystick_construct( int joystick_id );
-void lb_joystick_destruct( void* joystick );
-int lb_joystick_constructed( void* joystick );
-int lb_joystick_connected( void* joystick );
+LBJoystick lb_joystick_construct( int joystick_id );
+void lb_joystick_destruct( LBJoystick joystick );
+int lb_joystick_constructed( LBJoystick joystick );
+int lb_joystick_connected( LBJoystick joystick );
 
-char* lb_joystick_get_product_string( void* joystick );
+char* lb_joystick_get_product_string( LBJoystick joystick );
 
-int lb_joystick_axes( void* joystick );
-int lb_joystick_buttons( void* joystick );
+int lb_joystick_axes( LBJoystick joystick );
+int lb_joystick_buttons( LBJoystick joystick );
 
-void lb_joystick_set_axis_max( void* joystick, int axis, int value );
-void lb_joystick_set_axis_min( void* joystick, int axis, int value );
+void lb_joystick_set_axis_max( LBJoystick joystick, int axis, int value );
+void lb_joystick_set_axis_min( LBJoystick joystick, int axis, int value );
 
-int lb_joystick_next_event( void* joystick );
-int lb_joystick_next_raw_event( void* joystick );
-enum LBJoystickEvent lb_joystick_get_event_type( void* joystick );
-int lb_joystick_get_event_number( void* joystick );
-int lb_joystick_get_event_value( void* joystick );
-int lb_joystick_get_event_time( void* joystick );
+int lb_joystick_next_event( LBJoystick joystick );
+int lb_joystick_next_raw_event( LBJoystick joystick );
+LBJoystickEvent lb_joystick_get_event_type( LBJoystick joystick );
+int lb_joystick_get_event_number( LBJoystick joystick );
+int lb_joystick_get_event_value( LBJoystick joystick );
+int lb_joystick_get_event_time( LBJoystick joystick );
 
 #ifdef __cplusplus
 }
 #endif
 #endif
+
