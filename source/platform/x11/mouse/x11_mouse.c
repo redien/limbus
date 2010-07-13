@@ -30,11 +30,11 @@ typedef struct X11MouseTag
 
 	Vector events;
 	MouseEvent event;
+	int visible;
 
 	Cursor default_cursor;
 	Cursor null_cursor;
 	Pixmap null_pixmap;
-	int lb_mouse_cursor_show_state;
 } X11Mouse;
 
 #define CAST_MOUSE()\
@@ -54,7 +54,7 @@ static void construct( void* m )
 											  &black, &black, 0, 0 );
 	mouse->default_cursor = XCreateFontCursor( mouse->base.display, XC_left_ptr );
 
-	lb_mouse_cursor_show( mouse, mouse->lb_mouse_cursor_show_state );
+	lb_mouse_set_visibility( mouse, mouse->visible );
 
 	mouse->added_to_window = 1;
 }
@@ -112,7 +112,7 @@ void* lb_mouse_construct()
 	vector_construct( &mouse->events, sizeof( MouseEvent ) );
 
 	mouse->added_to_window = 0;
-	mouse->lb_mouse_cursor_show_state = 1;
+	mouse->visible = 1;
 
 	mouse->base.construct = &construct;
 	mouse->base.handle_x11_event = &handle_x11_event;
@@ -186,7 +186,7 @@ int lb_mouse_get_y( void* m )
 	return y;
 }
 
-void lb_mouse_cursor_show( void* m, int state )
+void lb_mouse_set_visibility( void* m, int state )
 {
 	CAST_MOUSE()
 
@@ -196,10 +196,14 @@ void lb_mouse_cursor_show( void* m, int state )
 					   mouse->base.window,
 					   (state == 0) ? mouse->null_cursor : mouse->default_cursor );
 	}
-	else
-	{
-		mouse->lb_mouse_cursor_show_state = state;
-	}
+	
+	mouse->visible = state;
+}
+
+int lb_mouse_get_visibility( void* m )
+{
+	CAST_MOUSE()
+	return mouse->visible;
 }
 
 int lb_mouse_next_event( void* m )
@@ -226,7 +230,7 @@ enum LBMouseEvent lb_mouse_get_event_type( void* m )
 	return mouse->event.type;
 }
 
-int lb_mouse_get_event_button( void* m )
+LBMouseButton lb_mouse_get_event_button( void* m )
 {
 	CAST_MOUSE()
 	return mouse->event.button;

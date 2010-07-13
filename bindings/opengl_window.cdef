@@ -12,6 +12,7 @@ class Limbus::OpenglWindow
 
 	signal on_close()
 	signal on_file_drop( filepath : string, x : int, y : int )
+	signal on_resize()
 
 	property caption : string
 	get
@@ -97,6 +98,15 @@ class Limbus::OpenglWindow
 		limbus::lb_opengl_context_destruct( this.context )
 		this.created = false
 	end
+	
+	def set_resize_border( state : bool ) : void
+		if state == true then
+			limbus::lb_window_set_resize_border( this.window, 1 )
+		end
+		if state == false then
+			limbus::lb_window_set_resize_border( this.window, 0 )
+		end
+	end
 
 	def set_swap_interval( interval : int ) : bool
 		if limbus::lb_opengl_context_set_swap_interval( this.context, interval ) == 1 then
@@ -138,6 +148,10 @@ class Limbus::OpenglWindow
 								  limbus::lb_window_get_event_y( this.window ) )
 					i = i + 1
 				end
+			end
+
+			if e == limbus::LBWindowEvent::LBWindowEventResize then
+				on_resize()
 			end
 
 			found_event = true

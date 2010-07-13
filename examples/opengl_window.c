@@ -20,42 +20,23 @@
 
 #include <GL/gl.h>
 
-void *screen = NULL,
-     *window = NULL,
-     *context = NULL,
-     *keyboard = NULL,
-     *mouse = NULL;
-
-void cleanup( void )
-{
-    if (lb_mouse_constructed( mouse ))
-        lb_mouse_destruct( mouse );
-
-    if (lb_keyboard_constructed( keyboard ))
-        lb_keyboard_destruct( keyboard );
-
-    if (lb_opengl_context_constructed( context ))
-    	lb_opengl_context_destruct( context );
-
-    if (lb_window_constructed( window ))
-		lb_window_destruct( window );
-
-    if (lb_screen_constructed( screen ))
-		lb_screen_destruct( screen );
-}
-
 int main( int argc, char** argv )
 {
+	LBScreen screen;
+	LBWindow window;
+	LBOpenglContext context;
+	LBKeyboard keyboard;
+	LBMouse mouse;
 	int running;
 
 	screen = lb_screen_construct( LBScreenDefault );
-	if (!lb_screen_constructed( screen ))
+	if (lb_screen_constructed( screen ) == 0)
 		return -1;
 
 	window = lb_window_construct( screen );
-	if (!lb_window_constructed( window ))
+	if (lb_window_constructed( window ) == 0)
 	{
-	    cleanup();
+		lb_screen_destruct( screen );
 		return -1;
 	}
 
@@ -64,9 +45,10 @@ int main( int argc, char** argv )
 	lb_window_set_caption( window, "Window name" );
 
 	context = lb_opengl_context_construct_in_window( window, LBOpenglContextCreateNew );
-	if (!lb_opengl_context_constructed( context ))
+	if (lb_opengl_context_constructed( context ) == 0)
 	{
-		cleanup();
+		lb_window_destruct( window );
+		lb_screen_destruct( screen );
 		return -1;
 	}
 
@@ -74,17 +56,22 @@ int main( int argc, char** argv )
 	lb_opengl_context_make_current( context );
 
 	keyboard = lb_keyboard_construct();
-	if (!lb_keyboard_constructed( keyboard ))
+	if (lb_keyboard_constructed( keyboard ) == 0)
 	{
-	    cleanup();
+		lb_opengl_context_destruct( context );
+		lb_window_destruct( window );
+		lb_screen_destruct( screen );
 	    return -1;
 	}
 	lb_window_add_input_device( window, keyboard );
 
 	mouse = lb_mouse_construct();
-	if (!lb_mouse_constructed( mouse ))
+	if (lb_mouse_constructed( mouse ) == 0)
 	{
-	    cleanup();
+	    lb_keyboard_destruct( keyboard );
+		lb_opengl_context_destruct( context );
+		lb_window_destruct( window );
+		lb_screen_destruct( screen );
 	    return -1;
 	}
 	lb_window_add_input_device( window, mouse );
@@ -94,14 +81,14 @@ int main( int argc, char** argv )
 	running = 1;
 	while (running)
 	{
-		while (lb_window_next_event( window ))
+		while (lb_window_next_event( window ) == 1)
 		{
 			int type = lb_window_get_event_type( window );
 			if (type == LBWindowEventClose)
 				running = 0;
 		}
 
-		while (lb_keyboard_next_event( keyboard ))
+		while (lb_keyboard_next_event( keyboard ) == 1)
 		{
 			int type = lb_keyboard_get_event_type( keyboard );
 			int key = lb_keyboard_get_event_key( keyboard );
@@ -109,7 +96,7 @@ int main( int argc, char** argv )
 				running = 0;
 		}
 
-		while (lb_mouse_next_event( mouse ))
+		while (lb_mouse_next_event( mouse ) == 1)
 		{
 			int type = lb_mouse_get_event_type( mouse );
 			int x = lb_mouse_get_event_x( mouse );
@@ -119,10 +106,17 @@ int main( int argc, char** argv )
 		}
 
 		glClear( GL_COLOR_BUFFER_BIT );
+		
+		/* Render OpenGL primitives here! */
+
 		lb_opengl_context_swap_buffers( context );
 	}
 
-	cleanup();
+    lb_mouse_destruct( mouse );
+    lb_keyboard_destruct( keyboard );
+	lb_opengl_context_destruct( context );
+	lb_window_destruct( window );
+	lb_screen_destruct( screen );
 	return 0;
 }
 

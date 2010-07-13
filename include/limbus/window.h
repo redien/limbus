@@ -17,15 +17,15 @@ extern "C"
 
 typedef void* LBWindow;
 
-/* TODO: Figure out a way to use the LBScreen typedef in lb_window_construct */
-
 /** An enumeration of the different window event types. */
 enum LBWindowEvent
 {
     /** Event sent when the window has been closed by the user. */
 	LBWindowEventClose,
 	/** Event sent when a file is dragged to the window. */
-	LBWindowEventFileDrop
+	LBWindowEventFileDrop,
+	/** Event sent when the window's size is changed by the user */
+	LBWindowEventResize
 };
 typedef enum LBWindowEvent LBWindowEvent;
 
@@ -62,17 +62,21 @@ int lb_window_constructed( LBWindow window );
 
 
 /** Enables all window decorations.
-  * All window decorations are enabled by default.
   * @param window a pointer to a successfully constructed window object.
   */
 void lb_window_enable_decorations( LBWindow window );
 
+/** Enables/Disables the window's resize border decoration.
+  * The resize border is disabled by default.
+  * @param window a pointer to a successfully constructed window object.
+  * @param state 1 enables and 0 disables the resize border.
+  */
+void lb_window_set_resize_border( LBWindow window, int state );
+
 /** Disables all window decorations.
-  * All window decorations are enabled by default.
   * @param window a pointer to a successfully constructed window object.
   */
 void lb_window_disable_decorations( LBWindow window );
-
 
 /** Set the caption of the window.
   * @param window a pointer to a successfully constructed window object.
@@ -101,8 +105,8 @@ void lb_window_set_x( LBWindow window, int x );
 
 /** Set the y-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
-  * @param y the new y-coordinate measured in pixels from the top side of
-  * the screen to the top side of the window.
+  * @param y the new y-coordinate measured in pixels from the top of
+  * the screen to the top of the window.
   */
 void lb_window_set_y( LBWindow window, int y );
 
@@ -133,8 +137,8 @@ int lb_window_get_x( LBWindow window );
 
 /** Get the y-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
-  * @return the y-coordinate measured in pixels from the top side of
-  * the screen to the top side of the window.
+  * @return the y-coordinate measured in pixels from the top of
+  * the screen to the top of the window.
   */
 int lb_window_get_y( LBWindow window );
 
@@ -151,14 +155,14 @@ int lb_window_next_event( LBWindow window );
   */
 LBWindowEvent lb_window_get_event_type( LBWindow window );
 
-/** Get the x-coordinate of the current event.
+/** Get the x-coordinate associated with the current event.
   * @param window a pointer to a successfully constructed window object.
   * @return on an LBWindowEventFileDrop event, returns the x-coordinate of
   * the position where the file was dropped.
   */
 int lb_window_get_event_x( LBWindow window );
 
-/** Get the y-coordinate of the current event.
+/** Get the y-coordinate associated with the current event.
   * @param window a pointer to a successfully constructed window object.
   * @return on an LBWindowEventFileDrop event, returns the y-coordinate of
   * the position where the file was dropped.
@@ -172,6 +176,20 @@ int lb_window_get_event_y( LBWindow window );
   */
 int lb_window_get_event_files( LBWindow window );
 
+/** Get the width associated with the current event.
+  * @param window a pointer to a successfully constructed window object.
+  * @return on an LBWindowEventResize event, returns the width of the window
+  * before being resized.
+  */
+int lb_window_get_event_width( LBWindow window );
+
+/** Get the height associated with the current event.
+  * @param window a pointer to a successfully constructed window object.
+  * @return on an LBWindowEventResize event, returns the height of the window
+  * before being resized.
+  */
+int lb_window_get_event_height( LBWindow window );
+
 /** Get a file associated with an LBWindowEventFileDrop event.
   * @param window a pointer to a successfully constructed window object.
   * @param file an integer identifying the file to be returned.
@@ -183,6 +201,12 @@ int lb_window_get_event_files( LBWindow window );
   */
 const char* lb_window_get_event_file( LBWindow window, int file );
 
+/** Adds an input device to the window's device list. The device will get
+  * events propagated to it after being added.
+  * Currently the available devices are LBKeyboard, LBMouse and LBTablet.
+  * @param window a pointer to a successfully constructed window object.
+  * @param device a pointer to a successfully constructed input device.
+  */
 void lb_window_add_input_device( LBWindow window, void* device );
 
 #ifdef __cplusplus

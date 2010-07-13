@@ -26,6 +26,7 @@ typedef struct WinAPIMouseTag
 
 	Vector events;
 	MouseEvent event;
+	int visible;
 } WinAPIMouse;
 
 #define CAST_MOUSE()\
@@ -122,6 +123,7 @@ void* lb_mouse_construct()
 
 	mouse->base.construct = &construct;
 	mouse->base.handle_winapi_message = &handle_winapi_message;
+	mouse->visible = 1;
 
 	return mouse;
 }
@@ -176,11 +178,18 @@ int lb_mouse_get_y( void* mouse )
 	return p.y;
 }
 
-void lb_mouse_cursor_show( void* mouse, int state )
+void lb_mouse_set_visibility( void* m, int state )
 {
+	CAST_MOUSE()
 	ShowCursor( (state == 1) ? TRUE : FALSE );
+	mouse->visible = state;
 }
 
+int lb_mouse_get_visibility( void* m )
+{
+	CAST_MOUSE()
+	return mouse->visible;
+}
 
 int lb_mouse_next_event( void* m )
 {

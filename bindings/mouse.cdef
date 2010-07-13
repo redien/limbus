@@ -22,6 +22,18 @@ class Limbus::Mouse
 	set
 		limbus::lb_mouse_set_y( this.mouse, value )
 	end
+	
+	property visible : bool
+	get
+		return limbus::lb_mouse_get_visibility( this.mouse )
+	set
+		if value == true then
+			limbus::lb_mouse_set_visibility( this.mouse, 1 )
+		end
+		if value == false then
+			limbus::lb_mouse_set_visibility( this.mouse, 0 )
+		end
+	end
 
 	def construct( window : Limbus::OpenglWindow ) : void
 		this.mouse = limbus::lb_mouse_construct()
@@ -30,15 +42,6 @@ class Limbus::Mouse
 
 	def destruct() : void
 		limbus::lb_mouse_destruct( this.mouse )
-	end
-
-	def show_cursor( state : bool ) : void
-		if state == true then
-			limbus::lb_mouse_cursor_show( this.mouse, 1 )
-		end
-		if state == false then
-			limbus::lb_mouse_cursor_show( this.mouse, 0 )
-		end
 	end
 
 	def poll_events() : bool

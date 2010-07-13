@@ -27,8 +27,19 @@
 typedef struct
 {
 	int type;
-	int files;
-	int x, y;
+	union
+	{
+		struct
+		{
+			int files;
+			int x, y;
+		} file_drop;
+		
+		struct
+		{
+			int width, height;
+		} resize;
+	} u;
 } WindowEvent;
 
 typedef struct
@@ -41,6 +52,7 @@ typedef struct
 	long event_mask;
 
 	int fullscreen;
+	int resizable;
 	char* caption;
 	int width, height;
 	int x, y,
@@ -98,6 +110,7 @@ void* lb_window_construct( void* scr )
 	window->width = 640;
 	window->height = 480;
 	window->fullscreen = 0;
+	window->resizable = 0;
 
 	lb_window_set_caption( window, "" );
 
@@ -134,12 +147,20 @@ void lb_window_enable_decorations( void* win )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
     window->fullscreen = 0;
+    window->resizable = 1;
+}
+
+void lb_window_set_resize_border( LBWindow win, int state )
+{
+	X11WindowImpl* window = (X11WindowImpl*)win;
+	window->resizable = state;
 }
 
 void lb_window_disable_decorations( void* win )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
     window->fullscreen = 1;
+    window->resizable = 0;
 }
 
 void lb_window_set_caption( void* win, const char* caption )
@@ -262,6 +283,16 @@ int lb_window_next_event( void* win )
 		{
 		    XConfigureEvent* configure_event = (XConfigureEvent*)&event;
 		    
+		    if (configure_event->width != window->width ||
+		    	configure_event->height != window->height)
+		    {
+		        WindowEvent event;
+		        event.type = LBWindowEventResize;
+		        event.u.resize.width = window->width;
+		        event.u.resize.height = window->height;
+                vector_push_back( &window->events, &event );
+		    }
+
 		    window->x = configure_event->x;
 		    window->y = configure_event->y;
 		    window->width = configure_event->width;
@@ -301,19 +332,31 @@ enum LBWindowEvent lb_window_get_event_type( void* win )
 int lb_window_get_event_x( void* win )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
-	return window->event.x;
+	return window->event.u.file_drop.x;
 }
 
 int lb_window_get_event_y( void* win )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
-	return window->event.y;
+	return window->event.u.file_drop.y;
 }
 
 int lb_window_get_event_files( void* win )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
-	return window->event.files;
+	return window->event.u.file_drop.files;
+}
+
+int lb_window_get_event_width( void* win )
+{
+	X11WindowImpl* window = (X11WindowImpl*)win;
+	return window->event.u.resize.width;
+}
+
+int lb_window_get_event_height( void* win )
+{
+	X11WindowImpl* window = (X11WindowImpl*)win;
+	return window->event.u.resize.height;
 }
 
 const char* lb_window_get_event_file( void* win, int i )
@@ -400,6 +443,19 @@ void impl_create_window( void* win, XVisualInfo* visual_info )
                                        XIMPreeditNothing | XIMStatusNothing,
                                        NULL );
 	assert( window->input_context != NULL );
+	
+	/* Enable/Disable decorations */
+	if (!window->resizable)
+	{
+		XSizeHints* size_hints = XAllocSizeHints();
+		
+		size_hints->flags = PMaxSize | PMinSize;
+		size_hints->min_width = size_hints->max_width = window->width;
+		size_hints->min_height = size_hints->max_height = window->height;
+		XSetWMNormalHints( window->base.display, window->base.window, size_hints );
+
+		XFree( size_hints );
+	}
 
 	XMapWindow( window->base.display,
 				window->base.window );

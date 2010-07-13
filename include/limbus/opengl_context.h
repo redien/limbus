@@ -20,6 +20,7 @@ extern "C"
 
 typedef void* LBOpenglContext;
 
+
 LBOpenglContext lb_opengl_context_construct_in_window( LBOpenglContext window, int use_current );
 LBOpenglContext lb_opengl_context_destruct( LBOpenglContext context );
 void lb_opengl_context_release_ownership( LBOpenglContext context );

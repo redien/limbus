@@ -212,16 +212,16 @@ static void dnd_handle_event( X11WindowImpl* window,
                     strncmp( uri, "file://", 7 ) == 0)
                 {
                     event.type = LBWindowEventFileDrop;
-                    event.files = 0;
-                    event.x = window->dnd_x;
-                    event.y = window->dnd_y;
+                    event.u.file_drop.files = 0;
+                    event.u.file_drop.x = window->dnd_x;
+                    event.u.file_drop.y = window->dnd_y;
 
                     vector_clear( &window->files );
                     do
                     {
                         translate_uri( tmp, uri );
                         vector_push_back( &window->files, tmp );
-                        event.files++;
+                        event.u.file_drop.files++;
                     } while ((uri = find_next_line( uri )));
                     
                     vector_push_back( &window->events, &event );
