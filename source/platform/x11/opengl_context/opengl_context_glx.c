@@ -303,7 +303,7 @@ typedef int (APIENTRY *GLXSWAPINTERVALSGIPROC)( int interval );
 int lb_opengl_context_set_swap_interval( void* con, int interval )
 {
 	GLXSWAPINTERVALSGIPROC glxSwapIntervalSGI;
-	char* extensions;
+	char* extensions = (char*)glGetString( GL_EXTENSIONS );
 	
 	while (*extensions)
 	{

@@ -205,6 +205,25 @@ if(ENABLE_KEYBOARD_SUPPORT)
 	)
 endif(ENABLE_KEYBOARD_SUPPORT)
 
+set(
+	ENABLE_AUDIO_STREAM_SUPPORT
+	ON
+	CACHE BOOL "Enable support for audio streams."
+)
+if(ENABLE_AUDIO_STREAM_SUPPORT)
+	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/audio_stream.h )
+	set(
+		BIND_SOURCES
+			${BIND_SOURCES}
+			audio_stream.cdef
+	)
+	set(
+		GENERATED_CPP_SOURCES
+			${GENERATED_CPP_SOURCES}
+			${CPP_DIR}/AudioStream.cpp
+	)
+endif(ENABLE_AUDIO_STREAM_SUPPORT)
+
 
 ##
 #	Platform specific files
@@ -345,6 +364,15 @@ elseif(UNIX)
 		)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/x11/tablet/x11_tablet.c )
 	endif(ENABLE_TABLET_SUPPORT)
+
+	if(ENABLE_AUDIO_STREAM_SUPPORT)
+		set(
+			SHARED_LIBRARIES
+				${SHARED_LIBRARIES}
+				asound
+		)
+		set( SOURCE_FILES ${SOURCE_FILES} source/platform/alsa/audio_stream/audio_stream_alsa.c )
+	endif(ENABLE_AUDIO_STREAM_SUPPORT)
 endif(WIN32)
 
 

@@ -25,14 +25,17 @@ class Limbus::Mouse
 	
 	property visible : bool
 	get
-		return limbus::lb_mouse_get_visibility( this.mouse )
+		var result : int
+		result = limbus::lb_mouse_get_visibility( this.mouse )
+		if result == 0 then
+			return false
+		end
+		return true
 	set
 		if value == true then
 			limbus::lb_mouse_set_visibility( this.mouse, 1 )
 		end
-		if value == false then
-			limbus::lb_mouse_set_visibility( this.mouse, 0 )
-		end
+		limbus::lb_mouse_set_visibility( this.mouse, 0 )
 	end
 
 	def construct( window : Limbus::OpenglWindow ) : void

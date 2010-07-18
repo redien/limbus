@@ -1,0 +1,42 @@
+
+#          Copyright Jesper Oskarsson 2009 - 2010.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
+
+class Limbus::AudioStream
+	var stream : ptr
+	
+	def construct( bits : int, sample_rate : int, channels : int ) : void
+		this.stream = limbus::lb_audio_stream_construct( bits, sample_rate, channels )
+	end
+
+	def destruct() : void
+		limbus::lb_audio_stream_destruct( this.stream )
+	end
+
+    property channels : int
+    get
+        return limbus::lb_audio_stream_get_channels( this.stream )
+    end
+
+    property rate : int
+    get
+        return limbus::lb_audio_stream_get_rate( this.stream )
+    end
+    
+    property buffer : ptr
+    get
+        return limbus::lb_audio_stream_get_buffer( this.stream )
+    end
+    
+    property buffer_size : uint
+    get
+        return limbus::lb_audio_stream_get_buffer_size( this.stream )
+    end
+    
+    def write() : int
+        return limbus::lb_audio_stream_write( this.stream )
+    end
+end
+
