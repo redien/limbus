@@ -22,7 +22,8 @@ typedef struct _AlsaAudioStream
 
 LBAudioStream lb_audio_stream_construct( int bits,
                                          int sample_rate,
-                                         int channels )
+                                         int channels,
+                                         unsigned int buffer_size )
 {
     int status, format;
     unsigned int size;
@@ -81,7 +82,19 @@ LBAudioStream lb_audio_stream_construct( int bits,
     snd_pcm_hw_params_set_channels_near( self->pcm_handle,
                                          pcm_hw_params,
                                          &self->channels );
-    self->frames = 32;
+
+    if (buffer_size == LBAudioStreamDefaultBufferSize)
+    {
+        snd_pcm_hw_params_get_period_size_min( pcm_hw_params, &self->frames, NULL );
+        buffer_size = self->frames;
+    }
+    else
+    {
+        snd_pcm_hw_params_get_period_size_max( pcm_hw_params, &self->frames, NULL );
+        if (buffer_size > self->frames)
+            buffer_size = self->frames;
+    }
+    self->frames = buffer_size;
     snd_pcm_hw_params_set_period_size_near( self->pcm_handle,
                                             pcm_hw_params,
                                             &self->frames,
@@ -106,7 +119,7 @@ LBAudioStream lb_audio_stream_destruct( LBAudioStream audio_stream )
     assert( self );
 
     free( self->buffer );
-    snd_pcm_drain( self->pcm_handle );
+    snd_pcm_drop( self->pcm_handle );
     snd_pcm_close( self->pcm_handle );
 
     return self;
@@ -145,17 +158,18 @@ int lb_audio_stream_write( LBAudioStream audio_stream )
     AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
     int status;
     assert( self );
-    status = snd_pcm_writei( self->pcm_handle, self->buffer, self->frames );
-    if (status == -EPIPE)
+    
+    while ((status = snd_pcm_writei( self->pcm_handle, self->buffer, self->frames )) < 0)
     {
         snd_pcm_prepare( self->pcm_handle );
-        return -1;
     }
-    else if (status < 0)
-    {
-        return -2;
-    }
-    
+
     return status;
+}
+
+void lb_audio_stream_drop( LBAudioStream audio_stream )
+{
+    AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
+    snd_pcm_drop( self->pcm_handle );
 }
 

@@ -7,8 +7,11 @@
 class Limbus::AudioStream
 	var stream : ptr
 	
-	def construct( bits : int, sample_rate : int, channels : int ) : void
-		this.stream = limbus::lb_audio_stream_construct( bits, sample_rate, channels )
+	def construct( bits : int,
+	               sample_rate : int,
+	               channels : int,
+	               buffer_size : uint ) : void
+		this.stream = limbus::lb_audio_stream_construct( bits, sample_rate, channels, buffer_size )
 	end
 
 	def destruct() : void
@@ -37,6 +40,10 @@ class Limbus::AudioStream
     
     def write() : int
         return limbus::lb_audio_stream_write( this.stream )
+    end
+    
+    def drop() : void
+        limbus::lb_audio_stream_drop( this.stream )
     end
 end
 

@@ -13,17 +13,21 @@ extern "C"
 {
 #endif
 
+#define LBAudioStreamDefaultBufferSize 0
+
 typedef void* LBAudioStream;
 
 LBAudioStream lb_audio_stream_construct( int bits,
                                          int sample_rate,
-                                         int channels );
+                                         int channels,
+                                         unsigned int buffer_size );
 LBAudioStream lb_audio_stream_destruct( LBAudioStream audio_stream );
 int lb_audio_stream_get_channels( LBAudioStream audio_stream );
 int lb_audio_stream_get_rate( LBAudioStream audio_stream );
 void* lb_audio_stream_get_buffer( LBAudioStream audio_stream );
 unsigned int lb_audio_stream_get_buffer_size( LBAudioStream audio_stream );
 int lb_audio_stream_write( LBAudioStream audio_stream );
+void lb_audio_stream_drop( LBAudioStream audio_stream );
 
 #ifdef __cplusplus
 }
