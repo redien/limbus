@@ -4,6 +4,8 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
+require opengl_window
+
 class Limbus::Keyboard
 	var keyboard : ptr
 	
@@ -14,7 +16,7 @@ class Limbus::Keyboard
 		this.keyboard = limbus::lb_keyboard_construct()
 		limbus::lb_window_add_input_device( window.get_window_impl(), this.keyboard )
 	end
-
+	
 	def destruct() : void
 		limbus::lb_keyboard_destruct( this.keyboard )
 	end
@@ -44,4 +46,3 @@ class Limbus::Keyboard
 		return found_event
 	end
 end
-

@@ -27,6 +27,7 @@ class Limbus::OpenglWindow
 	set
 		limbus::lb_window_set_width( this.window, value )
 	end
+
 	property height : int
 	get
 		return limbus::lb_window_get_height( this.window )
@@ -38,6 +39,7 @@ class Limbus::OpenglWindow
 	get
 		return limbus::lb_screen_get_width( this.screen )
 	end
+
 	property screen_height : int
 	get
 		return limbus::lb_screen_get_height( this.screen )
@@ -49,12 +51,44 @@ class Limbus::OpenglWindow
 	set
 		limbus::lb_window_set_x( this.window, value )
 	end
+
 	property y : int
 	get
 		return limbus::lb_window_get_y( this.window )
 	set
 		limbus::lb_window_set_y( this.window, value )
 	end
+	
+	property styled : bool
+	get
+		var value : int
+		value = limbus::lb_window_get_styled( this.window )
+		if value == 1 then return true end
+		return false
+	set
+		if value == true then
+			limbus::lb_window_set_styled( this.window, 1 )
+		end
+		if value == false then
+			limbus::lb_window_set_styled( this.window, 0 )
+		end
+	end
+	
+	property resizable : bool
+	get
+		var value : int
+		value = limbus::lb_window_get_resizable( this.window )
+		if value == 1 then return true end
+		return false
+	set
+		if value == true then
+			limbus::lb_window_set_resizable( this.window, 1 )
+		end
+		if value == false then
+			limbus::lb_window_set_resizable( this.window, 0 )
+		end
+	end
+
 
 	def construct() : void
 		this.created = false
@@ -66,16 +100,22 @@ class Limbus::OpenglWindow
 		assert( limbus::lb_window_constructed( this.window ) == 1 )
 	end
 
+	def destroy!() : void
+		limbus::lb_opengl_context_release_current( this.context )
+		limbus::lb_opengl_context_destruct( this.context )
+		this.created = false
+	end
+	
 	def destruct() : void
 		if this.created == true then
-			this.destroy()
+			this.destroy!()
 		end
 
 		limbus::lb_window_destruct( this.window )
 		limbus::lb_screen_destruct( this.screen )
 	end
 
-	def release_context() : void
+	def release_context!() : void
 		limbus::lb_opengl_context_release_ownership( this.context )
 	end
 
@@ -93,22 +133,7 @@ class Limbus::OpenglWindow
 		this.created = true
 	end
 
-	def destroy() : void
-		limbus::lb_opengl_context_release_current( this.context )
-		limbus::lb_opengl_context_destruct( this.context )
-		this.created = false
-	end
-	
-	def set_resize_border( state : bool ) : void
-		if state == true then
-			limbus::lb_window_set_resize_border( this.window, 1 )
-		end
-		if state == false then
-			limbus::lb_window_set_resize_border( this.window, 0 )
-		end
-	end
-
-	def set_swap_interval( interval : int ) : bool
+	def set_swap_interval!( interval : int ) : bool
 		if limbus::lb_opengl_context_set_swap_interval( this.context, interval ) == 1 then
 			return true
 		end

@@ -6,6 +6,10 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
+#ifndef _CRT_SECURE_NO_WARNINGS
+	#define _CRT_SECURE_NO_WARNINGS
+#endif
+
 #include <limbus/screen.h>
 
 #include <stdio.h>

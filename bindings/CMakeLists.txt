@@ -13,7 +13,7 @@ macro( add_simple_binding lang lang_dir )
 	)
 	add_custom_target(
 		${lang}_binding_copy_lib ALL
-		COMMAND cmake -E copy ${BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${lang_dir}/
+		COMMAND ${CMAKE_COMMAND} -E copy ${FINAL_BIN_DIR}/${CMAKE_SHARED_LIBRARY_PREFIX}limbus${CMAKE_SHARED_LIBRARY_SUFFIX} ${lang_dir}/
 		WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 	)
 	add_dependencies(
@@ -25,11 +25,11 @@ endmacro( add_simple_binding )
 
 add_custom_target(
 	binding_make_directories ALL
-	COMMAND cmake -E make_directory ${PYTHON_DIR}
-	COMMAND cmake -E make_directory ${RUBY_DIR}
-	COMMAND cmake -E make_directory ${CPP_DIR}
-	COMMAND cmake -E make_directory ${LUA_DIR}
-	COMMAND cmake -E make_directory ${CSHARP_DIR}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_DIR}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${RUBY_DIR}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CPP_DIR}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${LUA_DIR}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CSHARP_DIR}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

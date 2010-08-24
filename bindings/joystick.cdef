@@ -37,7 +37,7 @@ class Limbus::Joystick
 		limbus::lb_joystick_destruct( this.joystick )
 	end
 	
-	def send_events() : void
+	def send_events!() : void
 		if limbus::lb_joystick_next_event( this.joystick ) == 1 then
 			var e : int
 			e = limbus::lb_joystick_get_event_type( this.joystick )

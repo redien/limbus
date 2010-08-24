@@ -28,12 +28,14 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 
 static void construct_impl( void* win );
 static void destruct_impl( void* win );
+static void update_decorations( void* win );
 
 typedef struct
 {
 	int type;
 	int files;
 	int x, y;
+	int width, height;
 } WindowEvent;
 
 typedef struct
@@ -43,7 +45,10 @@ typedef struct
 	int width, height;
 	int x, y;
 	int actual_x_offset, actual_y_offset;
+	
 	DWORD style;
+	int styled;
+	int resizable;
 
 	WindowEvent event;
 	Vector events;
@@ -66,7 +71,7 @@ void* lb_window_construct( void* screen )
 	assert( window_data );
 
 	window_data->mapped = 0;
-	window_data->caption = 0;
+
 	window_data->x = CW_USEDEFAULT;
 	window_data->y = CW_USEDEFAULT;
 	window_data->actual_x_offset = 0;
@@ -81,8 +86,12 @@ void* lb_window_construct( void* screen )
 
 	vector_construct( &window_data->filepaths, MAX_FILE_PATH + 1 );
 
+	window_data->caption = 0;
 	lb_window_set_caption( window, "" );
-	lb_window_enable_decorations( window );
+	
+	window_data->styled = 1;
+	window_data->resizable = 0;
+	update_decorations( window );
 
 	return window;
 }
@@ -120,10 +129,21 @@ int lb_window_constructed( LBWindow window )
 	return window != NULL;
 }
 
-void lb_window_enable_decorations( LBWindow win )
+void update_decorations( void* win )
 {
 	DECLARE_WINDOW_AND_DATA()
+	
 	window_data->style = WS_OVERLAPPEDWINDOW ^ WS_SIZEBOX ^ WS_MAXIMIZEBOX;
+	
+	if (window_data->resizable)
+	{
+		window_data->style |= WS_SIZEBOX | WS_MAXIMIZEBOX;
+	}
+	
+	if (!window_data->styled)
+	{
+		window_data->style = WS_POPUP;
+	}
 
 	if (window_data->mapped)
 	{
@@ -132,16 +152,30 @@ void lb_window_enable_decorations( LBWindow win )
 	}
 }
 
-void lb_window_disable_decorations( LBWindow win )
+void lb_window_set_styled( void* win, int value )
 {
 	DECLARE_WINDOW_AND_DATA()
-	window_data->style = WS_POPUP;
+	window_data->styled = value;
+	update_decorations( win );
+}
 
-	if (window_data->mapped)
-	{
-		/* Assume this works */
-		SetWindowLongPtr( window->handle, GWL_STYLE, window_data->style );
-	}
+int lb_window_get_styled( void* win )
+{
+	DECLARE_WINDOW_AND_DATA()
+	return window_data->styled;
+}
+
+void lb_window_set_resizable( void* win, int value )
+{
+	DECLARE_WINDOW_AND_DATA()
+	window_data->resizable = value;
+	update_decorations( win );
+}
+
+int lb_window_get_resizable( void* win )
+{
+	DECLARE_WINDOW_AND_DATA()
+	return window_data->resizable;
 }
 
 void lb_window_set_caption( void* win, const char* caption )
@@ -346,6 +380,11 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 				return 0;
 
 			case WM_SIZE:
+				event.type = LBWindowEventResize;
+				event.width = window_data->width;
+				event.height = window_data->height;
+				vector_push_back( &window_data->events, &event );
+
 				window_data->width = LOWORD( lParam );
 				window_data->height = HIWORD( lParam );
 				return 0;
@@ -439,6 +478,18 @@ const char* lb_window_get_event_file( void* win, int i )
 	file = (const char*)vector_at( &window_data->filepaths, i );
 	assert( file != NULL );
 	return file;
+}
+
+int lb_window_get_event_width( void* win )
+{
+	DECLARE_WINDOW_AND_DATA()
+	return window_data->event.width;
+}
+
+int lb_window_get_event_height( void* win )
+{
+	DECLARE_WINDOW_AND_DATA()
+	return window_data->event.height;
 }
 
 void lb_window_add_input_device( void* win, void* d )

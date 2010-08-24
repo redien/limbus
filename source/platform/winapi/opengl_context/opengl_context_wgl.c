@@ -264,7 +264,7 @@ void lb_opengl_context_release_current( void* con )
 }
 
 typedef BOOL (*WGLSWAPINTERVALEXTPROC)( int );
-void lb_opengl_context_set_swap_interval( void* con, int interval )
+int lb_opengl_context_set_swap_interval( void* con, int interval )
 {
 	WGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 	DEFINE_CONTEXT_AND_DATA()
@@ -272,6 +272,9 @@ void lb_opengl_context_set_swap_interval( void* con, int interval )
 	if (wglSwapIntervalEXT)
 	{
 		wglSwapIntervalEXT( interval );
+		return 1;
 	}
+
+	return 0;
 }
 

@@ -60,23 +60,33 @@ LBWindow lb_window_destruct( LBWindow window );
   */
 int lb_window_constructed( LBWindow window );
 
-
-/** Enables all window decorations.
+/** Set whether the window is styled or not. (A non-styled window
+  * will consist of only the client area, without any titlebar or border.)
   * @param window a pointer to a successfully constructed window object.
+  * @param value 1 to change to a styled window or 0 for a non-styled window.
   */
-void lb_window_enable_decorations( LBWindow window );
+void lb_window_set_styled( LBWindow window, int value );
 
-/** Enables/Disables the window's resize border decoration.
-  * The resize border is disabled by default.
+/** Get whether the window is styled or not. (A non-styled window
+  * will consist of only the client area, without any titlebar or border.)
   * @param window a pointer to a successfully constructed window object.
-  * @param state 1 enables and 0 disables the resize border.
+  * @return 1 if the window is styled or 0 if not.
   */
-void lb_window_set_resize_border( LBWindow window, int state );
+int lb_window_get_styled( LBWindow window );
 
-/** Disables all window decorations.
+/** Set whether the window should be resizable.
+  * A window is not resizable by default.
   * @param window a pointer to a successfully constructed window object.
+  * @param value 1 enables and 0 disables resizing.
   */
-void lb_window_disable_decorations( LBWindow window );
+void lb_window_set_resizable( LBWindow window, int value );
+
+/** Get whether the window should be resizable.
+  * A window is not resizable by default.
+  * @param window a pointer to a successfully constructed window object.
+  * @return 1 if resizing is enabled, otherwise 0.
+  */
+int lb_window_get_resizable( LBWindow window );
 
 /** Set the caption of the window.
   * @param window a pointer to a successfully constructed window object.
@@ -84,13 +94,13 @@ void lb_window_disable_decorations( LBWindow window );
   */
 void lb_window_set_caption( LBWindow window, const char* caption );
 
-/** Set the width of the window.
+/** Set the width of the window's client area.
   * @param window a pointer to a successfully constructed window object.
   * @param width the new width in pixels.
   */
 void lb_window_set_width( LBWindow window, int width );
 
-/** Set the height of the window.
+/** Set the height of the window's client area.
   * @param window a pointer to a successfully constructed window object.
   * @param height the new height in pixels.
   */
@@ -116,13 +126,13 @@ void lb_window_set_y( LBWindow window, int y );
   */
 const char* lb_window_get_caption( LBWindow window );
 
-/** Get the width of the window.
+/** Get the width of the window's client area.
   * @param window a pointer to a successfully constructed window object.
   * @return the width in pixels.
   */
 int lb_window_get_width( LBWindow window );
 
-/** Get the height of the window.
+/** Get the height of the window's client area.
   * @param window a pointer to a successfully constructed window object.
   * @return the height in pixels.
   */

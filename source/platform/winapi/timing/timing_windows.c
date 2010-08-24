@@ -26,6 +26,22 @@ double lb_time_count_in_seconds( void )
 	}
 }
 
+unsigned long lb_time_count_in_milliseconds( void )
+{
+	LARGE_INTEGER frequency;
+
+	if (QueryPerformanceFrequency( &frequency ))
+	{
+		LARGE_INTEGER time;
+		QueryPerformanceCounter( &time );
+		return (unsigned long)time.QuadPart / (unsigned long)(frequency.QuadPart / 1000);
+	}
+	else
+	{
+		return GetTickCount();
+	}
+}
+
 void lb_msleep( unsigned int msec )
 {
 	Sleep( msec );

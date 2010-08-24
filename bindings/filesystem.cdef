@@ -17,6 +17,11 @@ class Limbus::Filesystem
 		end
 	end
 
+	property working_directory : string
+	get
+		return limbus::lb_filesystem_get_working_directory( this.fs )
+	end
+
 	#list_factory string directory_entries( string path ) list_directory next_directory_entry get_directory_entry_name;
 
 	def list_directory( path : string ) : bool
@@ -27,7 +32,7 @@ class Limbus::Filesystem
 		return false
 	end
 
-	def next_directory_entry() : bool
+	def next_directory_entry!() : bool
 		if limbus::lb_filesystem_directory_next_entry( this.fs ) == 1 then
 			return true
 		end
@@ -43,7 +48,7 @@ class Limbus::Filesystem
 		return limbus::lb_filesystem_file_size( this.fs, path )
 	end
 
-	def path_is_directory( path : string ) : bool
+	def directory?( path : string ) : bool
 	    if limbus::lb_filesystem_path_is_directory( this.fs, path ) == 1 then
 	        return true
         end
@@ -51,16 +56,12 @@ class Limbus::Filesystem
         return false
 	end
 
-	def path_is_file( path : string ) : bool
+	def file?( path : string ) : bool
 	    if limbus::lb_filesystem_path_is_file( this.fs, path ) == 1 then
 	        return true
         end
 
         return false
-	end
-
-	def get_working_directory() : string
-		return limbus::lb_filesystem_get_working_directory( this.fs )
 	end
 end
 

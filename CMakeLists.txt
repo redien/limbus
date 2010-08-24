@@ -48,7 +48,7 @@ set( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests )
 set( LUA_DEP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lua-5.1.4 )
 set( LUA_SRC_PATH ${LUA_DEP_DIR}/src )
 set( LUA_INCLUDE_DIR ${LUA_SRC_PATH} )
-set( LUA_EXE ${BIN_DIR}/lua )
+set( LUA_EXE ${FINAL_BIN_DIR}/lua )
 
 set( CBIND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../cbind/ )
 
@@ -386,9 +386,9 @@ if(BUILD_SHARED)
 	if(MSVC)
 		add_custom_target(
 			msvc_dll_def ALL
-			COMMAND ${LUA_EXE} ${CBIND_DIR}/generate_dll_def.lua limbus ${GENERATED_CONFIG}
+			COMMAND ${LUA_EXE} generate_dll_def.lua limbus ${LIB_DIR}/limbus.def ${GENERATED_CONFIG}
 			COMMENT "Generating DLL .def file..."
-			WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+			WORKING_DIRECTORY ${CBIND_DIR}
 		)
 		add_dependencies(
 			msvc_dll_def
@@ -409,7 +409,7 @@ if(BUILD_SHARED)
 		)
 		set_target_properties(
 			limbus_shared PROPERTIES
-				LINK_FLAGS /DEF:${CMAKE_CURRENT_SOURCE_DIR}/lib/limbus.def
+				LINK_FLAGS /DEF:${LIB_DIR}/limbus.def
 				OUTPUT_NAME limbus
 				ARCHIVE_OUTPUT_DIRECTORY ${BIN_DIR}
 				RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
