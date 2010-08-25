@@ -18,8 +18,11 @@ typedef void* LBKeyboard;
 /** An enumeration of the different keyboard event types. */
 enum LBKeyboardEvent
 {
+    /** Event sent when a key is pressed. */
 	LBKeyboardEventKeyPress,
+    /** Event sent when a key is released. */
 	LBKeyboardEventKeyRelease,
+    /** Event sent when a key, representing a unicode character is pressed. */
 	LBKeyboardEventUnicode
 };
 typedef enum LBKeyboardEvent LBKeyboardEvent;

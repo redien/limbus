@@ -18,8 +18,11 @@ typedef void* LBMouse;
 /** An enumeration of the different mouse event types. */
 enum LBMouseEvent
 {
+    /** Event sent when the mouse has changed positon. */
 	LBMouseEventMotion,
+    /** Event sent when a button is pressed. */
 	LBMouseEventButtonPress,
+    /** Event sent when a button is released. */
 	LBMouseEventButtonRelease
 };
 typedef enum LBMouseEvent LBMouseEvent;

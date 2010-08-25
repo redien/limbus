@@ -94,17 +94,35 @@ int lb_window_get_resizable( LBWindow window );
   */
 void lb_window_set_caption( LBWindow window, const char* caption );
 
+/** Get the caption of the window.
+  * @param window a pointer to a successfully constructed window object.
+  * @return the caption as a zero-terminated UTF-8 string.
+  */
+const char* lb_window_get_caption( LBWindow window );
+
 /** Set the width of the window's client area.
   * @param window a pointer to a successfully constructed window object.
   * @param width the new width in pixels.
   */
 void lb_window_set_width( LBWindow window, int width );
 
+/** Get the width of the window's client area.
+  * @param window a pointer to a successfully constructed window object.
+  * @return the width in pixels.
+  */
+int lb_window_get_width( LBWindow window );
+
 /** Set the height of the window's client area.
   * @param window a pointer to a successfully constructed window object.
   * @param height the new height in pixels.
   */
 void lb_window_set_height( LBWindow window, int height );
+
+/** Get the height of the window's client area.
+  * @param window a pointer to a successfully constructed window object.
+  * @return the height in pixels.
+  */
+int lb_window_get_height( LBWindow window );
 
 /** Set the x-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
@@ -113,37 +131,19 @@ void lb_window_set_height( LBWindow window, int height );
   */
 void lb_window_set_x( LBWindow window, int x );
 
-/** Set the y-coordinate of the window's position.
-  * @param window a pointer to a successfully constructed window object.
-  * @param y the new y-coordinate measured in pixels from the top of
-  * the screen to the top of the window.
-  */
-void lb_window_set_y( LBWindow window, int y );
-
-/** Get the caption of the window.
-  * @param window a pointer to a successfully constructed window object.
-  * @return the caption as a zero-terminated UTF-8 string.
-  */
-const char* lb_window_get_caption( LBWindow window );
-
-/** Get the width of the window's client area.
-  * @param window a pointer to a successfully constructed window object.
-  * @return the width in pixels.
-  */
-int lb_window_get_width( LBWindow window );
-
-/** Get the height of the window's client area.
-  * @param window a pointer to a successfully constructed window object.
-  * @return the height in pixels.
-  */
-int lb_window_get_height( LBWindow window );
-
 /** Get the x-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
   * @return the x-coordinate measured in pixels from the left side of
   * the screen to the left side of the window.
   */
 int lb_window_get_x( LBWindow window );
+
+/** Set the y-coordinate of the window's position.
+  * @param window a pointer to a successfully constructed window object.
+  * @param y the new y-coordinate measured in pixels from the top of
+  * the screen to the top of the window.
+  */
+void lb_window_set_y( LBWindow window, int y );
 
 /** Get the y-coordinate of the window's position.
   * @param window a pointer to a successfully constructed window object.
@@ -216,6 +216,7 @@ const char* lb_window_get_event_file( LBWindow window, int file );
   * Currently the available devices are LBKeyboard, LBMouse and LBTablet.
   * @param window a pointer to a successfully constructed window object.
   * @param device a pointer to a successfully constructed input device.
+  * The window object does not take ownership of the device object pointed to by device.
   */
 void lb_window_add_input_device( LBWindow window, void* device );
 

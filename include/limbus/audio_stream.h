@@ -13,9 +13,11 @@ extern "C"
 {
 #endif
 
-#define LBAudioStreamDefaultBufferSize 0
+/* Experimental */
 
 typedef void* LBAudioStream;
+
+#define LBAudioStreamDefaultBufferSize 0
 
 LBAudioStream lb_audio_stream_construct( int bits,
                                          int sample_rate,

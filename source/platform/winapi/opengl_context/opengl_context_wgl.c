@@ -160,8 +160,8 @@ int lb_opengl_context_get_pixelformat_support_opengl( void* con,
 	else
 		return 0;
 }
-int lb_opengl_context_get_pixelformat_rgba( void* con,
-                                            int format )
+
+LBOpenglContextColorFormat lb_opengl_context_get_pixelformat_color_format( void* con, int format )
 {
 	DEFINE_CONTEXT_AND_DATA()
 	if (format == 0)
@@ -169,10 +169,11 @@ int lb_opengl_context_get_pixelformat_rgba( void* con,
 	format--;
 
 	if (context_data->pixelformats[format].iPixelType == PFD_TYPE_RGBA)
-		return 1;
+		return LBOpenglContextColorFormatRGBA;
 	else
-		return 0;
+		return LBOpenglContextColorFormatIndexed;
 }
+
 int lb_opengl_context_get_pixelformat_depth_size( void* con,
                                                   int format )
 {
@@ -195,7 +196,7 @@ static int get_default_pixelformat( void* con )
 	{
 		if (lb_opengl_context_get_pixelformat_support_opengl( context, i ) == 1)
 		{
-			if (lb_opengl_context_get_pixelformat_rgba( context, i ) == 1)
+			if (lb_opengl_context_get_pixelformat_color_format( context, i ) == LBOpenglContextColorFormatRGBA)
 			{
 				if (lb_opengl_context_get_pixelformat_double_buffer( context, i ) == 1)
 				{

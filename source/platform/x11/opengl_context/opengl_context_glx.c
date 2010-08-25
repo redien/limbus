@@ -145,8 +145,20 @@ int lb_opengl_context_pixelformats( void* con )
 
 DEFINE_PIXELFORMAT_ATTRIBUTE( double_buffer, GLX_DOUBLEBUFFER )
 DEFINE_PIXELFORMAT_ATTRIBUTE( support_opengl, GLX_USE_GL )
-DEFINE_PIXELFORMAT_ATTRIBUTE( rgba, GLX_RGBA )
 DEFINE_PIXELFORMAT_ATTRIBUTE( depth_size, GLX_DEPTH_SIZE )
+
+int lb_opengl_context_get_pixelformat_color_format( void* con, int format )
+{
+	DECLARE_CONTEXT_AND_DATA()
+	assert( context_data->visuals );
+
+	if (format == LBOpenglContextDefaultPixelformat)
+		format = context_data->default_pixelformat;
+
+	format--;
+
+	return (read_visual_attrib( context, format, GLX_RGBA )) ? LBOpenglContextColorFormatRGBA : LBOpenglContextColorFormatIndexed;
+}
 
 static int get_default_pixelformat( void* con )
 {
@@ -159,7 +171,7 @@ static int get_default_pixelformat( void* con )
 	{
 		if (lb_opengl_context_get_pixelformat_support_opengl( context, i ) == 1)
 		{
-			if (lb_opengl_context_get_pixelformat_rgba( context, i ) == 1)
+			if (lb_opengl_context_get_pixelformat_color_format( context, i ) == LBOpenglContextColorFormatRGBA)
 			{
 				if (lb_opengl_context_get_pixelformat_double_buffer( context, i ) == 1)
 				{
