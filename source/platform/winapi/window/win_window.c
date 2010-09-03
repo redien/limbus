@@ -40,6 +40,7 @@ typedef struct
 
 typedef struct
 {
+	LBScreen screen;
 	int mapped;
 	char* caption;
 	int width, height;
@@ -57,7 +58,7 @@ typedef struct
 	Vector devices;
 } WinWindowData;
 
-void* lb_window_construct( void* screen )
+void* lb_window_construct()
 {
 	WinWindow* window;
 	WinWindowData* window_data;
@@ -69,6 +70,8 @@ void* lb_window_construct( void* screen )
 
 	window_data = (WinWindowData*)malloc( sizeof( WinWindowData ) );
 	assert( window_data );
+	
+	window_data->screen = lb_screen_construct( LBScreenDefault );
 
 	window_data->mapped = 0;
 
@@ -117,6 +120,8 @@ void* lb_window_destruct( void* win )
 	vector_destruct( &window_data->filepaths );
 	vector_destruct( &window_data->events );
 	vector_destruct( &window_data->devices );
+	
+	lb_screen_destruct( window_data->screen );
 
 	free( window_data );
 	free( window );
@@ -127,6 +132,21 @@ void* lb_window_destruct( void* win )
 int lb_window_constructed( LBWindow window )
 {
 	return window != NULL;
+}
+
+LBScreen lb_window_set_screen( void* win, LBScreen screen )
+{
+	LBScreen old_screen;
+	DECLARE_WINDOW_AND_DATA()
+	old_screen = window_data->screen;
+	window_data->screen = screen;
+	return old_screen;
+}
+
+LBScreen lb_window_get_screen( void* win )
+{
+	DECLARE_WINDOW_AND_DATA()
+	return window_data->screen;
 }
 
 void update_decorations( void* win )

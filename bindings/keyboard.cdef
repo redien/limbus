@@ -4,21 +4,26 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-require opengl_window
+require input_device
+require input_dispatcher
 
-class Limbus::Keyboard
+class Limbus::Keyboard : Limbus::InputDevice
 	var keyboard : ptr
 	
 	signal on_key_event( key : int, pressed : bool )
 	signal on_unicode( utf32 : int, utf8 : string )
 
-	def construct( window : Limbus::OpenglWindow ) : void
+	def construct( dispatcher : Limbus::InputDispatcher ) : void
 		this.keyboard = limbus::lb_keyboard_construct()
-		limbus::lb_window_add_input_device( window.get_window_impl(), this.keyboard )
+		dispatcher.add_input_device( this )
 	end
 	
 	def destruct() : void
 		limbus::lb_keyboard_destruct( this.keyboard )
+	end
+	
+	def get_impl() : ptr
+		return this.keyboard
 	end
 
 	def poll_events() : bool

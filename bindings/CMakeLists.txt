@@ -28,6 +28,7 @@ add_custom_target(
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${PYTHON_DIR}
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${RUBY_DIR}
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CPP_DIR}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CPP_DIR}/limbus
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${LUA_DIR}
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CSHARP_DIR}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -55,7 +56,7 @@ if(GENERATE_CPP_BINDING)
 			${BIND_LANGUAGES}
 			cpp
 	)
-
+	
 	include_directories( ${INCLUDE_DIR} )
 	include_directories( ${CPP_DIR} )
 

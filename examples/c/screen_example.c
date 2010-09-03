@@ -16,7 +16,7 @@
 
 int main( int argc, char** argv )
 {
-	void *screen;
+	LBScreen screen;
 
 	screen = lb_screen_construct( LBScreenDefault );
 	if (lb_screen_constructed( screen ) == 0)

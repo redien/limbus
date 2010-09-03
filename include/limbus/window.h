@@ -29,19 +29,15 @@ enum LBWindowEvent
 };
 typedef enum LBWindowEvent LBWindowEvent;
 
-/** Constructs a new window object.
-  * Simply calling this function might not create an actual window.
-  * On most platforms a graphics context is needed before the
-  * window can be fully created.
-  * @param screen a pointer to a screen object created with
-  * lb_screen_construct. The window object does not take ownership
-  * of the screen object pointed to by screen.
+/** Constructs a new window object on the default screen.
+  * Simply calling this function will not create an actual window
+  * since a graphics context is needed before the window can be fully created.
   * @return a pointer to the newly created window object if successful,
   * else returns a pointer identifying a non-constructed window object.
   * Use lb_window_constructed to find out if a window object was
   * constructed or not.
   */
-LBWindow lb_window_construct( LBScreen screen );
+LBWindow lb_window_construct();
 
 /** Destructs a previously constructed window object.
   * Destructing a window object will deallocate all the resources
@@ -59,6 +55,25 @@ LBWindow lb_window_destruct( LBWindow window );
   * window object or 0 if it doesn't.
   */
 int lb_window_constructed( LBWindow window );
+
+/** Set the screen object of the screen to associate the window with.
+  * After setting the screen, the screen object is owned by
+  * the window and thus must not be destructed manually.
+  * Consequently, the previous screen object to be associated with the window
+  * is no longer owned by the window and should be destructed accordingly.
+  * @param window a pointer to a successfully constructed window object.
+  * @param screen a pointer to a successfully constructed screen object
+  * created with lb_screen_construct.
+  * @return the screen object previously associated with the window.
+  */
+LBScreen lb_window_set_screen( LBWindow window, LBScreen screen );
+
+/** Get the screen object of the screen that the window is associated with.
+  * @param window a pointer to a successfully constructed window object.
+  * @return a pointer to the screen object of the screen that the window
+  * is associated with.
+  */
+LBScreen lb_window_get_screen( LBWindow window );
 
 /** Set whether the window is styled or not. (A non-styled window
   * will consist of only the client area, without any titlebar or border.)

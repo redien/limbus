@@ -4,7 +4,10 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-class Limbus::Mouse
+require input_device
+require input_dispatcher
+
+class Limbus::Mouse : Limbus::InputDevice
 	var mouse : ptr
 
 	signal on_button_event( button : int, pressed : bool, x : int, y : int )
@@ -38,9 +41,9 @@ class Limbus::Mouse
 		limbus::lb_mouse_set_visibility( this.mouse, 0 )
 	end
 
-	def construct( window : Limbus::OpenglWindow ) : void
+	def construct( dispatcher : Limbus::InputDispatcher ) : void
 		this.mouse = limbus::lb_mouse_construct()
-		limbus::lb_window_add_input_device( window.get_window_impl(), this.mouse )
+		dispatcher.add_input_device( this )
 	end
 
 	def destruct() : void

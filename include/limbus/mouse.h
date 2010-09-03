@@ -66,19 +66,19 @@ int lb_mouse_constructed( LBMouse mouse );
   */
 void lb_mouse_set_x( LBMouse mouse, int x );
 
-/** Set the y-coordinate of the mouse's position.
-  * @param mouse a pointer to a successfully constructed mouse object.
-  * @param y the new y-coordinate measured in pixels from the top of
-  * the window to the mouse's position.
-  */
-void lb_mouse_set_y( LBMouse mouse, int y );
-
 /** Get the x-coordinate of the mouse's position.
   * @param mouse a pointer to a successfully constructed mouse object.
   * @return the x-coordinate measured in pixels from the left side of
   * the window to the mouse's position.
   */
 int lb_mouse_get_x( LBMouse mouse );
+
+/** Set the y-coordinate of the mouse's position.
+  * @param mouse a pointer to a successfully constructed mouse object.
+  * @param y the new y-coordinate measured in pixels from the top of
+  * the window to the mouse's position.
+  */
+void lb_mouse_set_y( LBMouse mouse, int y );
 
 /** Get the y-coordinate of the mouse's position.
   * @param mouse a pointer to a successfully constructed mouse object.

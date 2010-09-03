@@ -7,7 +7,7 @@
 */
 
 #include <stdio.h>
-#include <platform/timing.h>
+#include <limbus/timing.h>
 
 int main( int argc, char** argv )
 {

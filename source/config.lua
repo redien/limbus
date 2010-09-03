@@ -23,6 +23,8 @@ c_source_path = "${INCLUDE_DIR}/"
 cdef_source_path = "${BINDINGS_DIR}/"
 
 output_path = "${GENERATED_DIR}/"
+cpp_include_output_path = "${CPP_DIR}/limbus"
+cpp_include_prefix = "limbus/"
 
 languages = parse_cmake_list( "${BIND_LANGUAGES}" )
 c_source_files = parse_cmake_list( "${BIND_HEADERS}" )

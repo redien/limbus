@@ -4,11 +4,14 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-class Limbus::OpenglWindow
+require input_device
+require input_dispatcher
+require screen
+
+class Limbus::OpenglWindow : Limbus::InputDispatcher
 	var created : bool,
-		screen : ptr,
-		window : ptr,
-		context : ptr
+	     window : ptr,
+	     context : ptr
 
 	signal on_close()
 	signal on_file_drop( filepath : string, x : int, y : int )
@@ -33,16 +36,6 @@ class Limbus::OpenglWindow
 		return limbus::lb_window_get_height( this.window )
 	set
 		limbus::lb_window_set_height( this.window, value )
-	end
-
-	property screen_width : int
-	get
-		return limbus::lb_screen_get_width( this.screen )
-	end
-
-	property screen_height : int
-	get
-		return limbus::lb_screen_get_height( this.screen )
 	end
 
 	property x : int
@@ -93,10 +86,7 @@ class Limbus::OpenglWindow
 	def construct() : void
 		this.created = false
 
-		this.screen = limbus::lb_screen_construct( limbus::LBScreenDefault )
-		assert( limbus::lb_screen_constructed( this.screen ) == 1 )
-
-		this.window = limbus::lb_window_construct( this.screen )
+		this.window = limbus::lb_window_construct()
 		assert( limbus::lb_window_constructed( this.window ) == 1 )
 	end
 
@@ -112,7 +102,6 @@ class Limbus::OpenglWindow
 		end
 
 		limbus::lb_window_destruct( this.window )
-		limbus::lb_screen_destruct( this.screen )
 	end
 
 	def release_context!() : void
@@ -139,6 +128,10 @@ class Limbus::OpenglWindow
 		end
 		
 		return false
+	end
+	
+	def add_input_device( device : Limbus::InputDevice ) : void
+		limbus::lb_window_add_input_device( this.window, device.get_impl() )
 	end
 
 	def get_context_impl() : ptr

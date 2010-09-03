@@ -1,11 +1,13 @@
 
-
 #          Copyright Jesper Oskarsson 2009 - 2010.
 # Distributed under the Boost Software License, Version 1.0.
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-class Limbus::Tablet
+require input_device
+require input_dispatcher
+
+class Limbus::Tablet : Limbus::InputDevice
 	var tablet : ptr
 
 	signal on_button_event( button : int, pressed : bool )
@@ -26,9 +28,9 @@ class Limbus::Tablet
 		limbus::lb_tablet_set_context_height( this.tablet, value )
 	end
 
-	def construct( window : Limbus::OpenglWindow ) : void
+	def construct( dispatcher : Limbus::InputDispatcher ) : void
 		this.tablet = limbus::lb_tablet_construct()
-		limbus::lb_window_add_input_device( window.get_window_impl(), this.tablet )
+		dispatcher.add_input_device( this )
 	end
 
 	def destruct() : void

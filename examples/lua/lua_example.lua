@@ -16,16 +16,13 @@ window.create();
 
 local running = true
 
-window.onWindowEvent(function( event )
-	if event == LBWindowEventClose then
-		running = false
-	end
+window.onClose(function()
+	running = false
 end)
 
 while running do
-	window.sendEvents()
+	window.pollEvents()
 	window.swapBuffers()
 end
 
 window.destruct()
-

@@ -81,14 +81,22 @@ set(
 
 set(
 	BIND_SOURCES
-		opengl_window.cdef
 		timer.cdef
+		input_device.cdef
+		input_dispatcher.cdef
+		screen.cdef
+		window.cdef
+		opengl_context.cdef
+		opengl_window.cdef
 )
 
 set(
 	GENERATED_CPP_SOURCES
-		${CPP_DIR}/OpenglWindow.cpp
 		${CPP_DIR}/Timer.cpp
+		${CPP_DIR}/Screen.cpp
+		${CPP_DIR}/Window.cpp
+		${CPP_DIR}/OpenglContext.cpp
+		${CPP_DIR}/OpenglWindow.cpp
 )
 
 include( dependencies/CMakeLists.txt )
