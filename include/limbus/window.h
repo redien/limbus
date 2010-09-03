@@ -67,7 +67,9 @@ void lb_window_set_screen( LBWindow window, LBScreen screen );
 /** Get the screen object of the screen that the window is associated with.
   * @param window a pointer to a successfully constructed window object.
   * @return a pointer to the screen object of the screen that the window
-  * is associated with.
+  * is associated with. The window object retains ownership of the default
+  * screen object even if a new screen object is set. This means that the
+  * default screen should never be destructed manually by the user.
   */
 LBScreen lb_window_get_screen( LBWindow window );
 

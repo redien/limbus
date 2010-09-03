@@ -11,12 +11,22 @@ require screen
 class Limbus::OpenglWindow : Limbus::InputDispatcher
 	var created : bool,
 	    window : ptr,
+		screen : Limbus::Screen,
+		initial_screen : Limbus::Screen,
 	    context : ptr
 
 	signal on_close()
 	signal on_file_drop( filepath : string, x : int, y : int )
 	signal on_resize()
 
+	property screen : Limbus::Screen
+	get
+		return this.screen
+	set
+		this.screen = value
+		limbus::lb_window_set_screen( this.window, value.get_impl() )
+	end
+	
 	property styled : bool
 	get
 		var value : int
@@ -88,6 +98,12 @@ class Limbus::OpenglWindow : Limbus::InputDispatcher
 
 		this.window = limbus::lb_window_construct()
 		assert( limbus::lb_window_constructed( this.window ) == 1 )
+		
+		var new_screen : Limbus::Screen
+		new_screen = new Limbus::Screen()
+		this.screen = new_screen
+		this.initial_screen = new_screen
+		limbus::lb_window_set_screen( this.window, new_screen.get_impl() )
 	end
 
 	def destroy!() : void
@@ -101,6 +117,7 @@ class Limbus::OpenglWindow : Limbus::InputDispatcher
 			this.destroy!()
 		end
 
+		delete this.initial_screen
 		limbus::lb_window_destruct( this.window )
 	end
 

@@ -123,8 +123,7 @@ void* lb_window_destruct( void* win )
 	vector_destruct( &window_data->events );
 	vector_destruct( &window_data->devices );
 	
-	if (window_data->screen == window_data->initial_screen)
-		lb_screen_destruct( window_data->screen );
+	lb_screen_destruct( window_data->initial_screen );
 
 	free( window_data );
 	free( window );
