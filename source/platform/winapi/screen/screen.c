@@ -7,7 +7,6 @@
 */
 
 #include <limbus/screen.h>
-#include "../win_screen.h"
 
 #include <windows.h>
 #include <stdlib.h>

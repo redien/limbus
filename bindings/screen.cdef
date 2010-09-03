@@ -1,0 +1,33 @@
+
+#          Copyright Jesper Oskarsson 2009 - 2010.
+# Distributed under the Boost Software License, Version 1.0.
+#    (See accompanying file LICENSE_1_0.txt or copy at
+#          http://www.boost.org/LICENSE_1_0.txt)
+
+class Limbus::Screen
+	var screen : ptr
+
+	property width : int
+	get
+		return limbus::lb_screen_get_width( this.screen )
+	end
+
+	property height : int
+	get
+		return limbus::lb_screen_get_height( this.screen )
+	end
+
+	def construct() : void
+		this.screen = limbus::lb_screen_construct( limbus::LBScreenDefault )
+		assert( limbus::lb_screen_constructed( this.screen ) == 1 )
+	end
+
+	def destruct() : void
+		limbus::lb_screen_destruct( this.screen )
+	end
+
+	def get_impl() : ptr
+		return this.screen
+	end
+end
+

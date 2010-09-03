@@ -57,16 +57,12 @@ LBWindow lb_window_destruct( LBWindow window );
 int lb_window_constructed( LBWindow window );
 
 /** Set the screen object of the screen to associate the window with.
-  * After setting the screen, the screen object is owned by
-  * the window and thus must not be destructed manually.
-  * Consequently, the previous screen object to be associated with the window
-  * is no longer owned by the window and should be destructed accordingly.
   * @param window a pointer to a successfully constructed window object.
   * @param screen a pointer to a successfully constructed screen object
-  * created with lb_screen_construct.
-  * @return the screen object previously associated with the window.
+  * created with lb_screen_construct. The window object does not take
+  * ownership of the screen object pointed to by screen.
   */
-LBScreen lb_window_set_screen( LBWindow window, LBScreen screen );
+void lb_window_set_screen( LBWindow window, LBScreen screen );
 
 /** Get the screen object of the screen that the window is associated with.
   * @param window a pointer to a successfully constructed window object.

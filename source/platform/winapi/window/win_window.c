@@ -41,6 +41,7 @@ typedef struct
 typedef struct
 {
 	LBScreen screen;
+	LBScreen initial_screen;
 	int mapped;
 	char* caption;
 	int width, height;
@@ -72,6 +73,7 @@ void* lb_window_construct()
 	assert( window_data );
 	
 	window_data->screen = lb_screen_construct( LBScreenDefault );
+	window_data->initial_screen = window_data->screen;
 
 	window_data->mapped = 0;
 
@@ -121,7 +123,8 @@ void* lb_window_destruct( void* win )
 	vector_destruct( &window_data->events );
 	vector_destruct( &window_data->devices );
 	
-	lb_screen_destruct( window_data->screen );
+	if (window_data->screen == window_data->initial_screen)
+		lb_screen_destruct( window_data->screen );
 
 	free( window_data );
 	free( window );
@@ -134,13 +137,10 @@ int lb_window_constructed( LBWindow window )
 	return window != NULL;
 }
 
-LBScreen lb_window_set_screen( void* win, LBScreen screen )
+void lb_window_set_screen( void* win, LBScreen screen )
 {
-	LBScreen old_screen;
 	DECLARE_WINDOW_AND_DATA()
-	old_screen = window_data->screen;
 	window_data->screen = screen;
-	return old_screen;
 }
 
 LBScreen lb_window_get_screen( void* win )

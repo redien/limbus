@@ -8,15 +8,22 @@ require input_device
 require input_dispatcher
 require screen
 
-class Limbus::OpenglWindow : Limbus::InputDispatcher
-	var created : bool,
-	    window : ptr,
-	    context : ptr
+class Limbus::Window : Limbus::InputDispatcher
+	var window : ptr,
+		screen : Limbus::Screen
 
 	signal on_close()
 	signal on_file_drop( filepath : string, x : int, y : int )
 	signal on_resize()
 
+	property screen : Limbus::Screen
+	get
+		return this.screen
+	set
+		this.screen = value
+		limbus::lb_window_set_screen( this.window, value.get_impl() )
+	end
+	
 	property styled : bool
 	get
 		var value : int
@@ -84,61 +91,24 @@ class Limbus::OpenglWindow : Limbus::InputDispatcher
 
 
 	def construct() : void
-		this.created = false
-
 		this.window = limbus::lb_window_construct()
 		assert( limbus::lb_window_constructed( this.window ) == 1 )
-	end
-
-	def destroy!() : void
-		limbus::lb_opengl_context_release_current( this.context )
-		limbus::lb_opengl_context_destruct( this.context )
-		this.created = false
-	end
-	
-	def destruct() : void
-		if this.created == true then
-			this.destroy!()
-		end
-
-		limbus::lb_window_destruct( this.window )
-	end
-
-	def release_context!() : void
-		limbus::lb_opengl_context_release_ownership( this.context )
-	end
-
-	def swap_buffers() : void
-		limbus::lb_opengl_context_swap_buffers( this.context )
-	end
-
-	def create() : void
-		this.context = limbus::lb_opengl_context_construct_in_window( this.window, limbus::LBOpenglContextCreateNew )
-		assert( limbus::lb_opengl_context_constructed( this.context ) == 1 )
-
-		limbus::lb_opengl_context_set_pixelformat( this.context, limbus::LBOpenglContextDefaultPixelformat )
-		limbus::lb_opengl_context_make_current( this.context )
-
-		this.created = true
-	end
-
-	def set_swap_interval!( interval : int ) : bool
-		if limbus::lb_opengl_context_set_swap_interval( this.context, interval ) == 1 then
-			return true
-		end
 		
-		return false
+		var new_screen : Limbus::Screen
+		new_screen = new Limbus::Screen()
+		this.screen = new_screen
+		limbus::lb_window_set_screen( this.window, new_screen.get_impl() )
+	end
+
+	def destruct() : void
+		limbus::lb_window_destruct( this.window )
 	end
 	
 	def add_input_device( device : Limbus::InputDevice ) : void
 		limbus::lb_window_add_input_device( this.window, device.get_impl() )
 	end
 
-	def get_context_impl() : ptr
-		return this.context
-	end
-
-	def get_window_impl() : ptr
+	def get_impl() : ptr
 		return this.window
 	end
 
