@@ -49,6 +49,8 @@ if(COMPILE_EXAMPLES)
 
 	add_c_example( screen_example )
 	
-	add_cpp_example( opengl_window )
+	if (ENABLE_TABLET_SUPPORT)
+		add_cpp_example( opengl_window )
+	endif(ENABLE_TABLET_SUPPORT)
 endif(COMPILE_EXAMPLES)
 

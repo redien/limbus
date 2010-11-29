@@ -247,6 +247,7 @@ if(WIN32)
 		SOURCE_FILES
 			${SOURCE_FILES}
 			source/platform/winapi/opengl_context/opengl_context_wgl.c
+			source/platform/winapi/custom_context/custom_context_winapi.c
 			source/platform/winapi/screen/screen.c
 			source/platform/winapi/timing/timing_windows.c
 			source/platform/winapi/window/win_window.c
