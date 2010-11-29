@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _X11_INPUT_DEVICE_H_
-#define _X11_INPUT_DEVICE_H_
+#ifndef X11_INPUT_DEVICE_H
+#define X11_INPUT_DEVICE_H
 
 #include <X11/Xlib.h>
 

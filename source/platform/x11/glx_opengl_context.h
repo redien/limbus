@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _GLX_OPENGL_CONTEXT_H_
-#define _GLX_OPENGL_CONTEXT_H_
+#ifndef GLX_OPENGL_CONTEXT_H
+#define GLX_OPENGL_CONTEXT_H
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>

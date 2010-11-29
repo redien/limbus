@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _WIN_WINDOW_H_
-#define _WIN_WINDOW_H_
+#ifndef WIN_WINDOW_H
+#define WIN_WINDOW_H
 
 #include <windows.h>
 

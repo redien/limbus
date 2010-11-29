@@ -63,7 +63,7 @@ int lb_screen_get_width( LBScreen screen );
  */
 int lb_screen_get_height( LBScreen screen );
 
-/** Get the number of screen modes.
+/** Get the number of screen modes available for the screen.
  *  @param screen a pointer to a successfully constructed screen object.
  *  @return the number of screen modes available
  */

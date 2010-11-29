@@ -13,6 +13,8 @@ extern "C"
 {
 #endif
 
+#include <limbus/window.h>
+
 typedef void* LBOpenglContext;
 
 /** An enumeration of the different color formats. */
@@ -34,7 +36,7 @@ typedef enum LBOpenglContextColorFormat LBOpenglContextColorFormat;
 #define LBOpenglContextDefaultPixelformat 0
 
 /** Constructs a new OpenGL context object.
-  * The context will not be created until a valid pixelformat is set.
+  * The actual context will not be created until it is bound to the window using lb_opengl_context_bind.
   * @param window a pointer to a window object created with
   * lb_window_construct. The context object does not take ownership
   * of the window object pointed to by window.
@@ -43,7 +45,7 @@ typedef enum LBOpenglContextColorFormat LBOpenglContextColorFormat;
   * Use lb_opengl_context_constructed to find out if a context object was
   * constructed or not.
   */
-LBOpenglContext lb_opengl_context_construct_in_window( LBOpenglContext window, int use_current );
+LBOpenglContext lb_opengl_context_construct( LBWindow window, int use_current );
 
 /** Destructs a previously constructed OpenGL context object.
   * Destructing a OpenGL context object will deallocate all the resources
@@ -61,17 +63,12 @@ LBOpenglContext lb_opengl_context_destruct( LBOpenglContext context );
 void lb_opengl_context_release_ownership( LBOpenglContext context );
 
 /** Check for successfully constructed OpenGL context objects.
-  * @param context a pointer returned by lb_opengl_context_construct_in_window
+  * @param context a pointer returned by lb_opengl_context_construct
   * or lb_opengl_context_destruct
   * @return 1 if context points to a successfully constructed
   * OpenGL context object or 0 if it doesn't.
   */
 int lb_opengl_context_constructed( LBOpenglContext context );
-
-/** Swaps the framebuffers.
-  * @param context a pointer to a successfully constructed context object.
-  */
-void lb_opengl_context_swap_buffers( LBOpenglContext context );
 
 /** Get the number of available pixelformats.
   * @param context a pointer to a successfully constructed context object.
@@ -111,12 +108,12 @@ LBOpenglContextColorFormat lb_opengl_context_get_pixelformat_color_format( LBOpe
   */
 int lb_opengl_context_get_pixelformat_depth_size( LBOpenglContext context, int pixelformat );
 
-/** Set the pixelformat of the OpenGL context.
+/** Bind the OpenGL context to the window using the specified pixelformat.
   * @param context a pointer to a successfully constructed context object.
   * @param pixelformat an integer identifying a valid pixelformat.
   * Valid pixelformats range from 0 to lb_opengl_context_pixelformats( context ) - 1, inclusive.
   */
-void lb_opengl_context_set_pixelformat( LBOpenglContext context, int pixelformat );
+void lb_opengl_context_bind( LBOpenglContext context, int pixelformat );
 
 /** Sets the OpenGL context as the current context.
   * @param context a pointer to a successfully constructed context object.
@@ -127,6 +124,11 @@ void lb_opengl_context_make_current( LBOpenglContext context );
   * @param context a pointer to a successfully constructed context object.
   */
 void lb_opengl_context_release_current( LBOpenglContext context );
+
+/** Swaps the framebuffers.
+  * @param context a pointer to a successfully constructed context object.
+  */
+void lb_opengl_context_swap_buffers( LBOpenglContext context );
 
 /** Sets the swap interval for the OpenGL context.
   * @param context a pointer to a successfully constructed context object.

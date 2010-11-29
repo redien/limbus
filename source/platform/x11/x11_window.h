@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _X11_WINDOW_H_
-#define _X11_WINDOW_H_
+#ifndef X11_WINDOW_H
+#define X11_WINDOW_H
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

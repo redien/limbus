@@ -130,10 +130,10 @@ class Limbus::OpenglWindow : Limbus::InputDispatcher
 	end
 
 	def create() : void
-		this.context = limbus::lb_opengl_context_construct_in_window( this.window, limbus::LBOpenglContextCreateNew )
+		this.context = limbus::lb_opengl_context_construct( this.window, limbus::LBOpenglContextCreateNew )
 		assert( limbus::lb_opengl_context_constructed( this.context ) == 1 )
 
-		limbus::lb_opengl_context_set_pixelformat( this.context, limbus::LBOpenglContextDefaultPixelformat )
+		limbus::lb_opengl_context_bind( this.context, limbus::LBOpenglContextDefaultPixelformat )
 		limbus::lb_opengl_context_make_current( this.context )
 
 		this.created = true

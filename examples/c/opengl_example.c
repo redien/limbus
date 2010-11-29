@@ -6,7 +6,6 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <limbus/screen.h>
 #include <limbus/window.h>
 #include <limbus/opengl_context.h>
 #include <limbus/opengl.h>
@@ -14,57 +13,33 @@
 #include <stdio.h>
 #include <string.h>
 
-void *screen = NULL,
-     *window = NULL,
-     *context = NULL;
-
 typedef struct VertexTag
 {
     GLfloat position[2];
     GLfloat color[4];
 } Vertex;
 
-void cleanup( void )
-{
-    if (lb_opengl_context_constructed( context ))
-    	lb_opengl_context_destruct( context );
-
-    if (lb_window_constructed( window ))
-		lb_window_destruct( window );
-
-    if (lb_screen_constructed( screen ))
-		lb_screen_destruct( screen );
-}
-
 int main( int argc, char** argv )
 {
+	LBWindow window = NULL;
+	LBOpenglContext context = NULL;
 	int running;
 
-	screen = lb_screen_construct( LBScreenDefault );
-	if (!lb_screen_constructed( screen ))
-		return -1;
-
-	window = lb_window_construct( screen );
+	window = lb_window_construct();
 	if (!lb_window_constructed( window ))
-	{
-	    cleanup();
 		return -1;
-	}
 
 	lb_window_set_width( window, 640 );
 	lb_window_set_height( window, 480 );
 	lb_window_set_caption( window, "Window name" );
 
-	context = lb_opengl_context_construct_in_window( window,
-	                                                 LBOpenglContextCreateNew );
+	context = lb_opengl_context_construct( window, LBOpenglContextCreateNew );
 	if (!lb_opengl_context_constructed( context ))
 	{
-		cleanup();
+		lb_window_destruct( window );
 		return -1;
 	}
-
-	lb_opengl_context_set_pixelformat( context,
-	                                   LBOpenglContextDefaultPixelformat );
+	lb_opengl_context_bind( context,  LBOpenglContextDefaultPixelformat );
 	lb_opengl_context_make_current( context );
 
 	glClearColor( 0.5f, 0.5f, 1.0f, 1.0f );
@@ -116,7 +91,7 @@ int main( int argc, char** argv )
 		lb_opengl_context_swap_buffers( context );
 	}
 
-	cleanup();
+	lb_opengl_context_destruct( context );
+	lb_window_destruct( window );
 	return 0;
 }
-

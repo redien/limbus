@@ -10,10 +10,10 @@ class Limbus::OpenglContext
 	var context : ptr
 
 	def construct( window : Limbus::Window ) : void
-		this.context = limbus::lb_opengl_context_construct_in_window( window.get_impl(), limbus::LBOpenglContextCreateNew )
+		this.context = limbus::lb_opengl_context_construct( window.get_impl(), limbus::LBOpenglContextCreateNew )
 		assert( limbus::lb_opengl_context_constructed( this.context ) == 1 )
 
-		limbus::lb_opengl_context_set_pixelformat( this.context, limbus::LBOpenglContextDefaultPixelformat )
+		limbus::lb_opengl_context_bind( this.context, limbus::LBOpenglContextDefaultPixelformat )
 		limbus::lb_opengl_context_make_current( this.context )
 	end
 

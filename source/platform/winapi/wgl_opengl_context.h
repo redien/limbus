@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _WGL_OPENGL_CONTEXT_H_
-#define _WGL_OPENGL_CONTEXT_H_
+#ifndef WGL_OPENGL_CONTEXT_H
+#define WGL_OPENGL_CONTEXT_H
 
 #include <windows.h>
 

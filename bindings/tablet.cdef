@@ -36,12 +36,19 @@ class Limbus::Tablet : Limbus::InputDevice
 	def destruct() : void
 		limbus::lb_tablet_destruct( this.tablet )
 	end
+	
+	def get_impl() : ptr
+		return this.tablet
+	end
 
 	def poll_events() : bool
-		if limbus::lb_tablet_next_event( this.tablet ) == 1 then
+		var found_event : bool
+		found_event = false
+
+		while limbus::lb_tablet_next_event( this.tablet ) == 1 do
 			var e : int
 			e = limbus::lb_tablet_get_event_type( this.tablet )
-			
+
 			if e == limbus::LBTabletEvent::LBTabletEventButtonPress then
 				on_button_event( limbus::lb_tablet_get_event_button( this.tablet ),
 								 true )
@@ -51,7 +58,7 @@ class Limbus::Tablet : Limbus::InputDevice
 				on_button_event( limbus::lb_tablet_get_event_button( this.tablet ),
 								 false )
 			end
-			
+
 			if e == limbus::LBTabletEvent::LBTabletEventProximityIn then
 				on_proximity_event( true )
 			end
@@ -66,10 +73,10 @@ class Limbus::Tablet : Limbus::InputDevice
 								 limbus::lb_tablet_get_event_pressure( this.tablet ) )
 			end
 
-			return true
+			found_event = true
 		end
 		
-		return false
+		return found_event
 	end
 end
 

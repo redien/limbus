@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _WINAPI_INPUT_DEVICE_H_
-#define _WINAPI_INPUT_DEVICE_H_
+#ifndef WINAPI_INPUT_DEVICE_H
+#define WINAPI_INPUT_DEVICE_H
 
 #include <windows.h>
 

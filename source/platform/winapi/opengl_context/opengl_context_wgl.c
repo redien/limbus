@@ -51,7 +51,7 @@ static void set_pixelformat_list( wglContext* context, wglContextData* context_d
 	}
 }
 
-void* lb_opengl_context_construct_in_window( void* win, int use_current )
+void* lb_opengl_context_construct( void* win, int use_current )
 {
 	wglContext* context;
 	wglContextData* context_data;
@@ -213,7 +213,7 @@ static int get_default_pixelformat( void* con )
 	return 0;
 }
 
-void lb_opengl_context_set_pixelformat( void* con, int format )
+void lb_opengl_context_bind( void* con, int format )
 {
 	BOOL result;
 	DEFINE_CONTEXT_AND_DATA()

@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _X11_SCREEN_H_
-#define _X11_SCREEN_H_
+#ifndef X11_SCREEN_H
+#define X11_SCREEN_H
 
 #include <X11/Xlib.h>
 

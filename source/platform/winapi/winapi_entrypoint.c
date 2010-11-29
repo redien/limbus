@@ -6,8 +6,8 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _WINAPI_ENTRYPOINT_H_
-#define _WINAPI_ENTRYPOINT_H_
+#ifndef WINAPI_ENTRYPOINT_H
+#define WINAPI_ENTRYPOINT_H
 
 extern int main( int argc, char* argv[] );
 

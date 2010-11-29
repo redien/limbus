@@ -458,7 +458,7 @@ int lb_window_next_event( void* win )
 	WindowEvent* event_ptr;
 	DECLARE_WINDOW_AND_DATA()
 
-	if (PeekMessage( &msg, window->handle, 0, 0, PM_REMOVE ))
+	while (PeekMessage( &msg, window->handle, 0, 0, PM_REMOVE ))
 	{
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );

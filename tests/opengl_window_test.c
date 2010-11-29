@@ -23,16 +23,12 @@
 
 int main( int argc, char** argv )
 {
-	void *screen, *window, *context;
+	void *window, *context;
 	void *window2, *context2;
 	int running;
 	double time;
 
-	screen = lb_screen_construct( LBScreenDefault );
-	assert( lb_screen_constructed( screen ) == 1 );
-
-
-	window = lb_window_construct( screen );
+	window = lb_window_construct();
 	assert( lb_window_constructed( window ) == 1 );
 
 	lb_window_set_width( window, 201 );
@@ -41,12 +37,10 @@ int main( int argc, char** argv )
 	lb_window_set_y( window, 102 );
 	lb_window_set_caption( window, "No name" );
 
-	context = lb_opengl_context_construct_in_window( window,
-	                                                 LBOpenglContextCreateNew );
+	context = lb_opengl_context_construct( window, LBOpenglContextCreateNew );
 	assert( lb_opengl_context_constructed( context ) == 1 );
 
-	lb_opengl_context_set_pixelformat( context,
-	                                   LBOpenglContextDefaultPixelformat );
+	lb_opengl_context_bind( context, LBOpenglContextDefaultPixelformat );
 
 	assert( lb_window_get_width( window ) == 201 );
 	assert( lb_window_get_height( window ) == 202 );
@@ -68,15 +62,13 @@ int main( int argc, char** argv )
 	assert( strcmp( lb_window_get_caption( window ), "Window1" ) == 0 );
 
 
-	window2 = lb_window_construct( screen );
+	window2 = lb_window_construct();
 	assert( lb_window_constructed( window2 ) == 1 );
 
-	context2 = lb_opengl_context_construct_in_window( window2,
-	                                                  LBOpenglContextCreateNew );
+	context2 = lb_opengl_context_construct( window2, LBOpenglContextCreateNew );
 	assert( lb_opengl_context_constructed( context2 ) == 1 );
 
-	lb_opengl_context_set_pixelformat( context2,
-	                                   LBOpenglContextDefaultPixelformat );
+	lb_opengl_context_bind( context2, LBOpenglContextDefaultPixelformat );
 	
 	assert( lb_window_get_width( window2 ) == 640 );
 	assert( lb_window_get_height( window2 ) == 480 );
@@ -150,8 +142,5 @@ int main( int argc, char** argv )
 	if (lb_window_constructed( window2 ) == 1)
 		window2 = lb_window_destruct( window2 );
 	assert( lb_window_constructed( window2 ) == 0 );
-
-	screen = lb_screen_destruct( screen );
-	assert( lb_screen_constructed( screen ) == 0 );
 }
 

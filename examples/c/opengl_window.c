@@ -6,7 +6,6 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#include <limbus/screen.h>
 #include <limbus/window.h>
 #include <limbus/keyboard.h>
 #include <limbus/mouse.h>
@@ -22,37 +21,28 @@
 
 int main( int argc, char** argv )
 {
-	LBScreen screen;
 	LBWindow window;
 	LBOpenglContext context;
 	LBKeyboard keyboard;
 	LBMouse mouse;
 	int running;
 
-	screen = lb_screen_construct( LBScreenDefault );
-	if (lb_screen_constructed( screen ) == 0)
-		return -1;
-
-	window = lb_window_construct( screen );
+	window = lb_window_construct();
 	if (lb_window_constructed( window ) == 0)
-	{
-		lb_screen_destruct( screen );
 		return -1;
-	}
 
 	lb_window_set_width( window, 800 );
 	lb_window_set_height( window, 600 );
 	lb_window_set_caption( window, "Window name" );
 
-	context = lb_opengl_context_construct_in_window( window, LBOpenglContextCreateNew );
+	context = lb_opengl_context_construct( window, LBOpenglContextCreateNew );
 	if (lb_opengl_context_constructed( context ) == 0)
 	{
 		lb_window_destruct( window );
-		lb_screen_destruct( screen );
 		return -1;
 	}
 
-	lb_opengl_context_set_pixelformat( context, LBOpenglContextDefaultPixelformat );
+	lb_opengl_context_bind( context, LBOpenglContextDefaultPixelformat );
 	lb_opengl_context_make_current( context );
 
 	keyboard = lb_keyboard_construct();
@@ -60,7 +50,6 @@ int main( int argc, char** argv )
 	{
 		lb_opengl_context_destruct( context );
 		lb_window_destruct( window );
-		lb_screen_destruct( screen );
 	    return -1;
 	}
 	lb_window_add_input_device( window, keyboard );
@@ -71,7 +60,6 @@ int main( int argc, char** argv )
 	    lb_keyboard_destruct( keyboard );
 		lb_opengl_context_destruct( context );
 		lb_window_destruct( window );
-		lb_screen_destruct( screen );
 	    return -1;
 	}
 	lb_window_add_input_device( window, mouse );
@@ -116,7 +104,6 @@ int main( int argc, char** argv )
     lb_keyboard_destruct( keyboard );
 	lb_opengl_context_destruct( context );
 	lb_window_destruct( window );
-	lb_screen_destruct( screen );
 	return 0;
 }
 

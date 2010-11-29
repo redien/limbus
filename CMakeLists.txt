@@ -265,7 +265,6 @@ if(WIN32)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/filesystem/filesystem_winapi.c )
 	endif(ENABLE_FILESYSTEM_SUPPORT)
 
-
 	if(ENABLE_JOYSTICK_SUPPORT)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/joystick/joystick_winmm.c )
 	endif(ENABLE_JOYSTICK_SUPPORT)
@@ -279,33 +278,7 @@ if(WIN32)
 	endif(ENABLE_KEYBOARD_SUPPORT)
 
 	if(ENABLE_TABLET_SUPPORT)
-		set(
-			SOURCE_FILES
-				${SOURCE_FILES}
-				source/platform/winapi/tablet/tablet_windows.c
-		)
-
-		set(
-			WINTAB_LIBRARY
-			"${CMAKE_CURRENT_SOURCE_DIR}/../../wintab/lib/i386/wintab32.lib"
-			CACHE FILE
-			"WinTab library filepath"
-		)
-
-		set(
-			WINTAB_INCLUDE_PATH
-			"${CMAKE_CURRENT_SOURCE_DIR}/../../wintab/include/"
-			CACHE PATH
-			"WinTab include path"
-		)
-
-		set(
-			SHARED_LIBRARIES
-				${SHARED_LIBRARIES}
-				${WINTAB_LIBRARY}
-		)
-
-		include_directories( ${WINTAB_INCLUDE_PATH} )
+		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/tablet/tablet_windows.c )
 	endif(ENABLE_TABLET_SUPPORT)
 elseif(UNIX)
 	set(
