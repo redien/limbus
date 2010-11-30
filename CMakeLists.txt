@@ -215,7 +215,7 @@ endif(ENABLE_KEYBOARD_SUPPORT)
 
 set(
 	ENABLE_AUDIO_STREAM_SUPPORT
-	ON
+	OFF
 	CACHE BOOL "Enable support for audio streams."
 )
 if(ENABLE_AUDIO_STREAM_SUPPORT)
