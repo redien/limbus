@@ -1,0 +1,10 @@
+
+List of things to do:
+-----------------------
+
+- Write a Main page for the Doxygen documentation.
+- Write tutorials for setting up a window and OpenGL context.
+- Make X11 window implementation up-to-date with the API.
+- Clean up WinAPI implementations
+- Replace asserts with real error handling
+
