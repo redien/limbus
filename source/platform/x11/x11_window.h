@@ -11,11 +11,11 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include "x11_screen.h"
 
 typedef struct
 {
-	Display* display;
-	int screen;
+	X11Screen* screen;
 	Window window;
 	Window root_window;
 	void (*create_window_impl)(void*, XVisualInfo*);

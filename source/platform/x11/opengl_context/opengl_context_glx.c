@@ -15,7 +15,6 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <limbus/opengl.h>
-#include <GL/glx.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -46,7 +45,7 @@ static int read_visual_attrib( glXContext* context,
 							   int attrib );
 static int get_default_pixelformat( void* con );
 
-void* lb_opengl_context_construct_in_window( void* win, int use_current )
+void* lb_opengl_context_construct( void* win, int use_current )
 {
 	X11Window* window;
 	glXContext* context;
@@ -61,8 +60,8 @@ void* lb_opengl_context_construct_in_window( void* win, int use_current )
 	assert( context_data != NULL );
 	context->impl_data = context_data;
 
-	context->display = window->display;
-	context->screen = window->screen;
+	context->display = window->screen->display;
+	context->screen = window->screen->screen;
 
 	context_data->window = window;
 	context_data->created = 0;
@@ -147,7 +146,7 @@ DEFINE_PIXELFORMAT_ATTRIBUTE( double_buffer, GLX_DOUBLEBUFFER )
 DEFINE_PIXELFORMAT_ATTRIBUTE( support_opengl, GLX_USE_GL )
 DEFINE_PIXELFORMAT_ATTRIBUTE( depth_size, GLX_DEPTH_SIZE )
 
-int lb_opengl_context_get_pixelformat_color_format( void* con, int format )
+LBOpenglContextColorFormat lb_opengl_context_get_pixelformat_color_format( void* con, int format )
 {
 	DECLARE_CONTEXT_AND_DATA()
 	assert( context_data->visuals );
@@ -188,7 +187,7 @@ static int get_default_pixelformat( void* con )
 	return 0;
 }
 
-void lb_opengl_context_set_pixelformat( void* con, int format )
+void lb_opengl_context_bind( void* con, int format )
 {
 	DECLARE_CONTEXT_AND_DATA()
 	

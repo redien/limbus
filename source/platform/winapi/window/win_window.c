@@ -32,7 +32,7 @@ static void update_decorations( void* win );
 
 typedef struct
 {
-	int type;
+	enum LBWindowEvent type;
 	int files;
 	int x, y;
 	int width, height;
@@ -40,6 +40,8 @@ typedef struct
 
 typedef struct
 {
+	WinWindow base;
+
 	LBScreen screen;
 	LBScreen initial_screen;
 	int mapped;
@@ -57,75 +59,60 @@ typedef struct
 	Vector filepaths;
 
 	Vector devices;
-} WinWindowData;
+} WinWindowImpl;
 
 void* lb_window_construct()
 {
-	WinWindow* window;
-	WinWindowData* window_data;
+	WinWindowImpl* window;
 
-	window = (WinWindow*)malloc( sizeof( WinWindow ) );
+	window = (WinWindowImpl*)malloc( sizeof *window );
 	assert( window );
 
-	window->construct_impl = &construct_impl;
+	window->base.construct_impl = &construct_impl;
 
-	window_data = (WinWindowData*)malloc( sizeof( WinWindowData ) );
-	assert( window_data );
-	
-	window_data->screen = lb_screen_construct( LBScreenDefault );
-	window_data->initial_screen = window_data->screen;
+	window->screen = lb_screen_construct( LBScreenDefault );
+	window->initial_screen = window->screen;
 
-	window_data->mapped = 0;
+	window->mapped = 0;
 
-	window_data->x = CW_USEDEFAULT;
-	window_data->y = CW_USEDEFAULT;
-	window_data->actual_x_offset = 0;
-	window_data->actual_y_offset = 0;
+	window->x = CW_USEDEFAULT;
+	window->y = CW_USEDEFAULT;
+	window->actual_x_offset = 0;
+	window->actual_y_offset = 0;
 
-	window_data->width = 640;
-	window_data->height = 480;
+	window->width = 640;
+	window->height = 480;
 
-	vector_construct( &window_data->events, sizeof( WindowEvent ) );
-	vector_construct( &window_data->devices, sizeof( WinAPIInputDevice* ) );
-	window->impl_data = window_data;
+	vector_construct( &window->events, sizeof( WindowEvent ) );
+	vector_construct( &window->devices, sizeof( WinAPIInputDevice* ) );
+	vector_construct( &window->filepaths, MAX_FILE_PATH + 1 );
 
-	vector_construct( &window_data->filepaths, MAX_FILE_PATH + 1 );
-
-	window_data->caption = 0;
+	window->caption = 0;
 	lb_window_set_caption( window, "" );
 	
-	window_data->styled = 1;
-	window_data->resizable = 0;
+	window->styled = 1;
+	window->resizable = 0;
 	update_decorations( window );
 
 	return window;
 }
 
-#define DECLARE_WINDOW_AND_DATA()\
-	WinWindow* window;\
-	WinWindowData* window_data;\
-	window = (WinWindow*)win;\
-	assert( window );\
-	window_data = (WinWindowData*)window->impl_data;\
-	assert( window_data );
-
 void* lb_window_destruct( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
+	WinWindowImpl* window = (WinWindowImpl*)win;
 
-	if (window_data->mapped)
+	if (window->mapped)
 		destruct_impl( window );
 
-	if (window_data->caption)
-		free( window_data->caption );
+	if (window->caption)
+		free( window->caption );
 
-	vector_destruct( &window_data->filepaths );
-	vector_destruct( &window_data->events );
-	vector_destruct( &window_data->devices );
+	vector_destruct( &window->filepaths );
+	vector_destruct( &window->events );
+	vector_destruct( &window->devices );
 	
-	lb_screen_destruct( window_data->initial_screen );
+	lb_screen_destruct( window->initial_screen );
 
-	free( window_data );
 	free( window );
 
 	return NULL;
@@ -138,81 +125,81 @@ int lb_window_constructed( LBWindow window )
 
 void lb_window_set_screen( void* win, LBScreen screen )
 {
-	DECLARE_WINDOW_AND_DATA()
-	window_data->screen = screen;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	window->screen = screen;
 }
 
 LBScreen lb_window_get_screen( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
-	return window_data->screen;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	return window->screen;
 }
 
 void update_decorations( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
+	WinWindowImpl* window = (WinWindowImpl*)win;
 	
-	window_data->style = WS_OVERLAPPEDWINDOW ^ WS_SIZEBOX ^ WS_MAXIMIZEBOX;
+	window->style = WS_OVERLAPPEDWINDOW ^ WS_SIZEBOX ^ WS_MAXIMIZEBOX;
 	
-	if (window_data->resizable)
+	if (window->resizable)
 	{
-		window_data->style |= WS_SIZEBOX | WS_MAXIMIZEBOX;
+		window->style |= WS_SIZEBOX | WS_MAXIMIZEBOX;
 	}
 	
-	if (!window_data->styled)
+	if (!window->styled)
 	{
-		window_data->style = WS_POPUP;
+		window->style = WS_POPUP;
 	}
 
-	if (window_data->mapped)
+	if (window->mapped)
 	{
 		/* Assume this works */
-		SetWindowLongPtr( window->handle, GWL_STYLE, window_data->style );
+		SetWindowLongPtr( window->base.handle, GWL_STYLE, window->style );
 	}
 }
 
 void lb_window_set_styled( void* win, int value )
 {
-	DECLARE_WINDOW_AND_DATA()
-	window_data->styled = value;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	window->styled = value;
 	update_decorations( win );
 }
 
 int lb_window_get_styled( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
-	return window_data->styled;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	return window->styled;
 }
 
 void lb_window_set_resizable( void* win, int value )
 {
-	DECLARE_WINDOW_AND_DATA()
-	window_data->resizable = value;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	window->resizable = value;
 	update_decorations( win );
 }
 
 int lb_window_get_resizable( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
-	return window_data->resizable;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	return window->resizable;
 }
 
 void lb_window_set_caption( void* win, const char* caption )
 {
 	int size;
-	DECLARE_WINDOW_AND_DATA()
+	WinWindowImpl* window = (WinWindowImpl*)win;
 
-	if (window_data->caption)
-		free( window_data->caption );
+	if (window->caption)
+		free( window->caption );
 
 	size = strlen( caption ) + 1;
-	window_data->caption = (char*)malloc( size );
-	if (!window_data->caption)
+	window->caption = (char*)malloc( size );
+	if (!window->caption)
 		return;
-	strcpy( window_data->caption, caption );
+	strcpy( window->caption, caption );
 
-	if (window_data->mapped)
-		SetWindowText( window->handle, window_data->caption );
+	if (window->mapped)
+		SetWindowText( window->base.handle, window->caption );
 }
 
 static void correct_window_size( void* win )
@@ -226,9 +213,9 @@ static void correct_window_size( void* win )
 		client_height,
 		new_width,
 		new_height;
-	DECLARE_WINDOW_AND_DATA()
+	WinWindowImpl* window = (WinWindowImpl*)win;
 
-	handle = window->handle;
+	handle = window->base.handle;
 
 	GetClientRect( handle, &client_rect );
 	GetWindowRect( handle, &window_rect );
@@ -248,21 +235,21 @@ static void correct_window_size( void* win )
 static void update_window_rect( void* win )
 {
 	int* pos;
-	DECLARE_WINDOW_AND_DATA()
-	pos = &window_data->x;
-	MoveWindow( window->handle, window_data->x,
-								window_data->y,
-								window_data->width,
-								window_data->height,
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	pos = &window->x;
+	MoveWindow( window->base.handle, window->x,
+								window->y,
+								window->width,
+								window->height,
 								TRUE );
  	correct_window_size( window );
 }
 
 #define DEFINE_WINDOW_INT_SETTER( property )\
 	void lb_window_set_##property( void* win, int property ) {\
-		DECLARE_WINDOW_AND_DATA()\
-		window_data->property = property;\
-		if (window_data->mapped)\
+		WinWindowImpl* window = (WinWindowImpl*)win;\
+		window->property = property;\
+		if (window->mapped)\
 			update_window_rect( win );\
 	}
 
@@ -273,14 +260,14 @@ DEFINE_WINDOW_INT_SETTER( y )
 
 const char* lb_window_get_caption( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
-	return (const char*)window_data->caption;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	return (const char*)window->caption;
 }
 
 #define DEFINE_WINDOW_INT_GETTER( property )\
 	int lb_window_get_##property( void* win ) {\
-		DECLARE_WINDOW_AND_DATA()\
-		return window_data->property;\
+		WinWindowImpl* window = (WinWindowImpl*)win;\
+		return window->property;\
 	}
 
 DEFINE_WINDOW_INT_GETTER( width )
@@ -291,74 +278,74 @@ DEFINE_WINDOW_INT_GETTER( y )
 static void construct_impl( void* win )
 {
 	RECT window_rect;
-	DECLARE_WINDOW_AND_DATA()
+	WinWindowImpl* window = (WinWindowImpl*)win;
 
-	window->cursor = LoadCursor( NULL, IDC_ARROW );
-	assert( window->cursor != NULL );
+	window->base.cursor = LoadCursor( NULL, IDC_ARROW );
+	assert( window->base.cursor != NULL );
 
-	window->window_class.cbSize =			sizeof( WNDCLASSEX );
-	window->window_class.style =			CS_HREDRAW | CS_VREDRAW;
-	window->window_class.lpfnWndProc =		&WindowProc;
-	window->window_class.cbClsExtra =		0;
-	window->window_class.cbWndExtra =		0;
-	window->window_class.hInstance =		GetModuleHandle( NULL );
-	window->window_class.hIcon =			LoadIcon( GetModuleHandle( NULL ), IDI_APPLICATION );
-	window->window_class.hCursor =			window->cursor;
-	window->window_class.hbrBackground =	NULL;
-	window->window_class.lpszMenuName =		NULL;
-	window->window_class.lpszClassName =	"GameWindowClass";
-	window->window_class.hIconSm =			NULL;
-	window->class_atom = RegisterClassEx( &window->window_class );
+	window->base.window_class.cbSize =			sizeof( WNDCLASSEX );
+	window->base.window_class.style =			CS_HREDRAW | CS_VREDRAW;
+	window->base.window_class.lpfnWndProc =		&WindowProc;
+	window->base.window_class.cbClsExtra =		0;
+	window->base.window_class.cbWndExtra =		0;
+	window->base.window_class.hInstance =		GetModuleHandle( NULL );
+	window->base.window_class.hIcon =			LoadIcon( GetModuleHandle( NULL ), IDI_APPLICATION );
+	window->base.window_class.hCursor =			window->base.cursor;
+	window->base.window_class.hbrBackground =	NULL;
+	window->base.window_class.lpszMenuName =		NULL;
+	window->base.window_class.lpszClassName =	"GameWindowClass";
+	window->base.window_class.hIconSm =			NULL;
+	window->base.class_atom = RegisterClassEx( &window->base.window_class );
 
-	window->handle = CreateWindowEx( WS_EX_APPWINDOW,
+	window->base.handle = CreateWindowEx( WS_EX_APPWINDOW,
 									 "GameWindowClass",
-									 window_data->caption,
-									 window_data->style,
-									 window_data->x, window_data->y,
-									 window_data->width, window_data->height,
+									 window->caption,
+									 window->style,
+									 window->x, window->y,
+									 window->width, window->height,
 									 NULL, NULL,
 									 GetModuleHandle( NULL ),
 									 NULL );
-	assert( window->handle );
+	assert( window->base.handle );
 
-	SetWindowLongPtr( window->handle, GWLP_USERDATA, (LONG)window );
+	SetWindowLongPtr( window->base.handle, GWLP_USERDATA, (LONG)window );
 
-	ShowWindow( window->handle, SW_SHOW );
+	ShowWindow( window->base.handle, SW_SHOW );
 
-	GetWindowRect( window->handle, &window_rect );
-	window_data->actual_x_offset = window_data->x - window_rect.left;
-	window_data->actual_y_offset = window_data->y - window_rect.top;
+	GetWindowRect( window->base.handle, &window_rect );
+	window->actual_x_offset = window->x - window_rect.left;
+	window->actual_y_offset = window->y - window_rect.top;
 	/* TODO: Fix this mess */
-	window_data->x = window_data->x - window_data->actual_x_offset;
-	window_data->y = window_data->y - window_data->actual_y_offset;
+	window->x = window->x - window->actual_x_offset;
+	window->y = window->y - window->actual_y_offset;
 
 	correct_window_size( window );
 
-	DragAcceptFiles( window->handle, TRUE );
+	DragAcceptFiles( window->base.handle, TRUE );
 
 	{
 		WinAPIInputDevice** iter = NULL;
-		while ((iter = vector_next( &window_data->devices, iter )))
+		while ((iter = (WinAPIInputDevice**)vector_next( &window->devices, iter )))
 		{
-			(*iter)->handle = window->handle;
+			(*iter)->handle = window->base.handle;
 			(*iter)->construct( (*iter) );
 		}
 	}
 
-	window_data->mapped = 1;
+	window->mapped = 1;
 }
 
 static void destruct_impl( void* win )
 {
 	BOOL result;
-	DECLARE_WINDOW_AND_DATA()
+	WinWindowImpl* window = (WinWindowImpl*)win;
 
-	if (!window_data->mapped)
+	if (!window->mapped)
 		return;
 
-	window_data->mapped = 0;
+	window->mapped = 0;
 
-	result = DestroyWindow( window->handle );
+	result = DestroyWindow( window->base.handle );
 	assert( result );
 
 	/* We probably don't want to do this as class names are hard-coded and this could unregister
@@ -369,21 +356,17 @@ static void destruct_impl( void* win )
 
 LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-	WinWindow* window;
-	WinWindowData* window_data;
+	WinWindowImpl* window;
 	WindowEvent event;
 
-	window = (WinWindow*)GetWindowLongPtr( hwnd, GWLP_USERDATA );
+	window = (WinWindowImpl*)GetWindowLongPtr( hwnd, GWLP_USERDATA );
 
 	if (window)
 	{
-		window_data = (WinWindowData*)window->impl_data;
-		assert( window_data );
-
-		if (window_data->mapped)
+		if (window->mapped)
 		{
 			WinAPIInputDevice** iter = NULL;
-			while ((iter = vector_next( &window_data->devices, iter )))
+			while ((iter = (WinAPIInputDevice**)vector_next( &window->devices, iter )))
 			{
 				LRESULT result;
 				if ((*iter)->handle_winapi_message( (*iter), uMsg, wParam, lParam, &result ))
@@ -394,27 +377,27 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 		switch (uMsg)
 		{
 			case WM_MOVE:
-				window_data->x = LOWORD( lParam ) - window_data->actual_x_offset;
-				window_data->y = HIWORD( lParam ) - window_data->actual_y_offset;
+				window->x = LOWORD( lParam ) - window->actual_x_offset;
+				window->y = HIWORD( lParam ) - window->actual_y_offset;
 				return 0;
 
 			case WM_SIZE:
 				event.type = LBWindowEventResize;
-				event.width = window_data->width;
-				event.height = window_data->height;
-				vector_push_back( &window_data->events, &event );
+				event.width = window->width;
+				event.height = window->height;
+				vector_push_back( &window->events, &event );
 
-				window_data->width = LOWORD( lParam );
-				window_data->height = HIWORD( lParam );
+				window->width = LOWORD( lParam );
+				window->height = HIWORD( lParam );
 				return 0;
 
 			case WM_SETCURSOR:
-				SetCursor( window->cursor );
+				SetCursor( window->base.cursor );
 				return TRUE;
 
 			case WM_CLOSE:
 				event.type = LBWindowEventClose;
-				vector_push_back( &window_data->events, &event );
+				vector_push_back( &window->events, &event );
 				return TRUE;
 
 			case WM_DROPFILES:
@@ -432,17 +415,17 @@ LRESULT CALLBACK WindowProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam 
 					event.files = DragQueryFile( (HDROP)wParam, 0xFFFFFFFF, NULL, 0 );
 					assert( event.files > 0 );
 
-					vector_clear( &window_data->filepaths );
+					vector_clear( &window->filepaths );
 					for (i = 0; i < event.files; i++)
 					{
 						UINT result;
 						result = DragQueryFile( (HDROP)wParam, i, filepath, MAX_FILE_PATH );
 						assert( result );
 
-						vector_push_back( &window_data->filepaths, &filepath );
+						vector_push_back( &window->filepaths, &filepath );
 					}
 
-					vector_push_back( &window_data->events, &event );
+					vector_push_back( &window->events, &event );
 					DragFinish( (HDROP)wParam );
 				}
 				return 0;
@@ -456,34 +439,34 @@ int lb_window_next_event( void* win )
 {
 	MSG msg;
 	WindowEvent* event_ptr;
-	DECLARE_WINDOW_AND_DATA()
+	WinWindowImpl* window = (WinWindowImpl*)win;
 
-	while (PeekMessage( &msg, window->handle, 0, 0, PM_REMOVE ))
+	while (PeekMessage( &msg, window->base.handle, 0, 0, PM_REMOVE ))
 	{
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
 	}
 
-	event_ptr = (WindowEvent*)vector_next( &window_data->events, NULL );
+	event_ptr = (WindowEvent*)vector_next( &window->events, NULL );
 	if (event_ptr == NULL)
 		return 0;
 
-	window_data->event = *event_ptr;
-	vector_erase( &window_data->events, event_ptr );
+	window->event = *event_ptr;
+	vector_erase( &window->events, event_ptr );
 
 	return 1;
 }
 
 enum LBWindowEvent lb_window_get_event_type( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
-	return window_data->event.type;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	return window->event.type;
 }
 
 #define DEFINE_WINDOW_EVENT_GETTER( param )\
 	int lb_window_get_event_##param( void* win ) {\
-		DECLARE_WINDOW_AND_DATA()\
-		return window_data->event.param;\
+		WinWindowImpl* window = (WinWindowImpl*)win;\
+		return window->event.param;\
 	}
 
 DEFINE_WINDOW_EVENT_GETTER( x )
@@ -493,34 +476,34 @@ DEFINE_WINDOW_EVENT_GETTER( files )
 const char* lb_window_get_event_file( void* win, int i )
 {
 	const char* file;
-	DECLARE_WINDOW_AND_DATA()
-	file = (const char*)vector_at( &window_data->filepaths, i );
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	file = (const char*)vector_at( &window->filepaths, i );
 	assert( file != NULL );
 	return file;
 }
 
 int lb_window_get_event_width( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
-	return window_data->event.width;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	return window->event.width;
 }
 
 int lb_window_get_event_height( void* win )
 {
-	DECLARE_WINDOW_AND_DATA()
-	return window_data->event.height;
+	WinWindowImpl* window = (WinWindowImpl*)win;
+	return window->event.height;
 }
 
 void lb_window_add_input_device( void* win, void* d )
 {
 	WinAPIInputDevice* device = (WinAPIInputDevice*)d;
-	DECLARE_WINDOW_AND_DATA()
+	WinWindowImpl* window = (WinWindowImpl*)win;
 
-	vector_push_back( &window_data->devices, &device );
+	vector_push_back( &window->devices, &device );
 
-	if (window_data->mapped)
+	if (window->mapped)
 	{
-		device->handle = window->handle;
+		device->handle = window->base.handle;
 		device->construct( device );
 	}
 }

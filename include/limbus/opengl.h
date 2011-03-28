@@ -20,6 +20,7 @@ extern "C"
 	#define glGetProcAddress wglGetProcAddress
 #else
 	#include <GL/gl.h>
+	#include <GL/glx.h>
 
 	#define glGetProcAddress( s ) glXGetProcAddress( (const GLubyte *)s )
 #endif
@@ -28,3 +29,4 @@ extern "C"
 }
 #endif
 #endif
+

@@ -15,12 +15,9 @@
 
 int main( int argc, char** argv )
 {
-	void *screen, *window;
+	LBWindow window;
 	
-	screen = lb_screen_construct( LBScreenDefault );
-	ASSERT( lb_screen_constructed( screen ) == 1, "Screen could not be constructed" );
-	
-	window = lb_window_construct( screen );
+	window = lb_window_construct();
 	ASSERT( lb_window_constructed( window ) == 1, "Window could not be constructed" );
 	lb_window_set_x( window, 123 );
 	lb_window_set_y( window, 321 );
@@ -36,9 +33,6 @@ int main( int argc, char** argv )
 
 	window = lb_window_destruct( window );
 	ASSERT( lb_window_constructed( window ) == 0, "Window was not destructed properly" );
-	
-	screen = lb_screen_destruct( screen );
-	ASSERT( lb_screen_constructed( screen ) == 0, "Screen was not destructed properly" );
 	
 	return test_result;
 }

@@ -37,7 +37,7 @@ typedef enum LBWindowEvent LBWindowEvent;
   * Use lb_window_constructed to find out if a window object was
   * constructed or not.
   */
-LBWindow lb_window_construct();
+LBWindow lb_window_construct( void );
 
 /** Destructs a previously constructed window object.
   * Destructing a window object will deallocate all the resources
@@ -73,94 +73,106 @@ void lb_window_set_screen( LBWindow window, LBScreen screen );
   */
 LBScreen lb_window_get_screen( LBWindow window );
 
-/** Set whether the window is styled or not. (A non-styled window
-  * will consist of only the client area, without any titlebar or border.)
+/** Set whether the window is styled or not. A non-styled window
+  * will consist of only the client area, without any titlebar or border.
+  * Windows are styled by default.
   * @param window a pointer to a successfully constructed window object.
   * @param value 1 to change to a styled window or 0 for a non-styled window.
   */
 void lb_window_set_styled( LBWindow window, int value );
 
-/** Get whether the window is styled or not. (A non-styled window
-  * will consist of only the client area, without any titlebar or border.)
+/** Get whether the window is styled or not. A non-styled window
+  * will consist of only the client area, without any titlebar or border.
+  * Windows are styled by default.
   * @param window a pointer to a successfully constructed window object.
   * @return 1 if the window is styled or 0 if not.
   */
 int lb_window_get_styled( LBWindow window );
 
 /** Set whether the window should be resizable.
-  * A window is not resizable by default.
+  * Windows are _not_ resizable by default.
   * @param window a pointer to a successfully constructed window object.
   * @param value 1 enables and 0 disables resizing.
   */
 void lb_window_set_resizable( LBWindow window, int value );
 
 /** Get whether the window should be resizable.
-  * A window is not resizable by default.
+  * Windows are _not_ resizable by default.
   * @param window a pointer to a successfully constructed window object.
   * @return 1 if resizing is enabled, otherwise 0.
   */
 int lb_window_get_resizable( LBWindow window );
 
 /** Set the caption of the window.
+  * The caption is set to an empty string by default.
   * @param window a pointer to a successfully constructed window object.
   * @param caption the new caption as a zero-terminated UTF-8 string.
   */
 void lb_window_set_caption( LBWindow window, const char* caption );
 
 /** Get the caption of the window.
+  * The caption is set to an empty string by default.
   * @param window a pointer to a successfully constructed window object.
   * @return the caption as a zero-terminated UTF-8 string.
   */
 const char* lb_window_get_caption( LBWindow window );
 
 /** Set the width of the window's client area.
+  * The width is set to 640 by default.
   * @param window a pointer to a successfully constructed window object.
   * @param width the new width in pixels.
   */
 void lb_window_set_width( LBWindow window, int width );
 
 /** Get the width of the window's client area.
+  * The width is set to 640 by default.
   * @param window a pointer to a successfully constructed window object.
   * @return the width in pixels.
   */
 int lb_window_get_width( LBWindow window );
 
 /** Set the height of the window's client area.
+  * The height is set to 480 by default.
   * @param window a pointer to a successfully constructed window object.
   * @param height the new height in pixels.
   */
 void lb_window_set_height( LBWindow window, int height );
 
 /** Get the height of the window's client area.
+  * The height is set to 480 by default.
   * @param window a pointer to a successfully constructed window object.
   * @return the height in pixels.
   */
 int lb_window_get_height( LBWindow window );
 
-/** Set the x-coordinate of the window's position.
+/** Set the x coordinate of the window's position.
+  * The default value for the x coordinate is system-specific.
   * @param window a pointer to a successfully constructed window object.
-  * @param x the new x-coordinate measured in pixels from the left side of
+  * @param x the new x coordinate measured in pixels from the left side of
   * the screen to the left side of the window.
   */
 void lb_window_set_x( LBWindow window, int x );
 
-/** Get the x-coordinate of the window's position.
+/** Get the x coordinate of the window's position.
+  * The default value for the x coordinate is system-specific.
   * @param window a pointer to a successfully constructed window object.
-  * @return the x-coordinate measured in pixels from the left side of
+  * @return the x coordinate measured in pixels from the left side of
   * the screen to the left side of the window.
   */
 int lb_window_get_x( LBWindow window );
 
-/** Set the y-coordinate of the window's position.
+/** Set the y coordinate of the window's position.
+  * The default value for the y coordinate is system-specific.
   * @param window a pointer to a successfully constructed window object.
-  * @param y the new y-coordinate measured in pixels from the top of
+  * @param y the new y coordinate measured in pixels from the top of
   * the screen to the top of the window.
   */
 void lb_window_set_y( LBWindow window, int y );
 
-/** Get the y-coordinate of the window's position.
+/** Get the y coordinate of the window's position.
+  * The default value for the y coordinate is system-specific.
   * @param window a pointer to a successfully constructed window object.
-  * @return the y-coordinate measured in pixels from the top of
+  * @return the y coordinate measured in pixels from the top of
   * the screen to the top of the window.
   */
 int lb_window_get_y( LBWindow window );
@@ -178,16 +190,16 @@ int lb_window_next_event( LBWindow window );
   */
 LBWindowEvent lb_window_get_event_type( LBWindow window );
 
-/** Get the x-coordinate associated with the current event.
+/** Get the x coordinate associated with the current event.
   * @param window a pointer to a successfully constructed window object.
-  * @return on an LBWindowEventFileDrop event, returns the x-coordinate of
+  * @return on an LBWindowEventFileDrop event, returns the x coordinate of
   * the position where the file was dropped.
   */
 int lb_window_get_event_x( LBWindow window );
 
-/** Get the y-coordinate associated with the current event.
+/** Get the y coordinate associated with the current event.
   * @param window a pointer to a successfully constructed window object.
-  * @return on an LBWindowEventFileDrop event, returns the y-coordinate of
+  * @return on an LBWindowEventFileDrop event, returns the y coordinate of
   * the position where the file was dropped.
   */
 int lb_window_get_event_y( LBWindow window );

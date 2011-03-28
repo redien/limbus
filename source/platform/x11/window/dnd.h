@@ -8,20 +8,20 @@
 
 static void dnd_setup( X11WindowImpl* window )
 {
-    window->selection_atom = XInternAtom( window->base.display, "PRIMARY", False );
-    window->XdndEnter =      XInternAtom( window->base.display, "XdndEnter", False );
-    window->XdndPosition =   XInternAtom( window->base.display, "XdndPosition", False );
-    window->XdndStatus =     XInternAtom( window->base.display, "XdndStatus", False );
-    window->XdndDrop =       XInternAtom( window->base.display, "XdndDrop", False );
-    window->XdndActionCopy = XInternAtom( window->base.display, "XdndActionCopy", False );
-    window->XdndFinished =   XInternAtom( window->base.display, "XdndFinished", False );
-    window->XdndSelection =  XInternAtom( window->base.display, "XdndSelection", False );
+    window->selection_atom = XInternAtom( window->base.screen->display, "PRIMARY", False );
+    window->XdndEnter =      XInternAtom( window->base.screen->display, "XdndEnter", False );
+    window->XdndPosition =   XInternAtom( window->base.screen->display, "XdndPosition", False );
+    window->XdndStatus =     XInternAtom( window->base.screen->display, "XdndStatus", False );
+    window->XdndDrop =       XInternAtom( window->base.screen->display, "XdndDrop", False );
+    window->XdndActionCopy = XInternAtom( window->base.screen->display, "XdndActionCopy", False );
+    window->XdndFinished =   XInternAtom( window->base.screen->display, "XdndFinished", False );
+    window->XdndSelection =  XInternAtom( window->base.screen->display, "XdndSelection", False );
 
     {
-        Atom XdndAware = XInternAtom( window->base.display, "XdndAware", False );
+        Atom XdndAware = XInternAtom( window->base.screen->display, "XdndAware", False );
         unsigned int version = 5;
         
-        XChangeProperty( window->base.display,
+        XChangeProperty( window->base.screen->display,
                          window->base.window,
                          XdndAware,
                          XA_ATOM,
@@ -114,12 +114,12 @@ static void dnd_handle_event( X11WindowImpl* window,
             window->dnd_x = (event.xclient.data.l[2] >> 16) - window->x;
             window->dnd_y = (event.xclient.data.l[2] & 0xFFFF) - window->y;
             
-            XSendEvent( window->base.display,
+            XSendEvent( window->base.screen->display,
                         event.xclient.data.l[0],
                         False,
                         NoEventMask,
                         (XEvent*)&message );
-            XFlush( window->base.display );
+            XFlush( window->base.screen->display );
         }
         else if (event.xclient.message_type == window->XdndDrop)
         {
@@ -136,7 +136,7 @@ static void dnd_handle_event( X11WindowImpl* window,
                 message.data.l[1] = 0;
                 message.data.l[2] = None;
                 
-                XSendEvent( window->base.display,
+                XSendEvent( window->base.screen->display,
                             event.xclient.data.l[0],
                             False,
                             NoEventMask,
@@ -146,14 +146,14 @@ static void dnd_handle_event( X11WindowImpl* window,
             {
                 window->dnd_source_window = event.xclient.data.l[0];
                 if (window->dnd_version >= 1)
-                    XConvertSelection( window->base.display,
+                    XConvertSelection( window->base.screen->display,
                                        window->XdndSelection,
                                        window->dnd_target_type,
                                        window->selection_atom,
                                        window->base.window,
                                        event.xclient.data.l[2] );
                 else
-                    XConvertSelection( window->base.display,
+                    XConvertSelection( window->base.screen->display,
                                        window->XdndSelection,
                                        window->dnd_target_type,
                                        window->selection_atom,
@@ -175,7 +175,7 @@ static void dnd_handle_event( X11WindowImpl* window,
             bytes_read = 1024;
             while (!data)
             {
-                XGetWindowProperty( window->base.display,
+                XGetWindowProperty( window->base.screen->display,
                                     window->base.window,
                                     window->selection_atom,
                                     0,
@@ -229,7 +229,7 @@ static void dnd_handle_event( X11WindowImpl* window,
 
                 memset( &message, sizeof message, 0 );
                 message.type = ClientMessage;
-                message.display = window->base.display;
+                message.display = window->base.screen->display;
                 message.window = window->dnd_source_window;
                 message.message_type = window->XdndFinished;
                 message.format = 32;
@@ -237,13 +237,13 @@ static void dnd_handle_event( X11WindowImpl* window,
                 message.data.l[1] = 1;
                 message.data.l[2] = window->XdndActionCopy;
                 
-                XSendEvent( window->base.display,
+                XSendEvent( window->base.screen->display,
                             window->dnd_source_window,
                             False,
                             NoEventMask,
                             (XEvent*)&message );
                 
-                XSync( window->base.display, False );
+                XSync( window->base.screen->display, False );
             }
             
             XFree( data );

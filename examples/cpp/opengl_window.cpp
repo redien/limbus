@@ -6,11 +6,12 @@
 
 #include <limbus/OpenglWindow.hpp>
 #include <limbus/Keyboard.hpp>
-#include <limbus/Tablet.hpp>
+#include <limbus/Mouse.hpp>
 
 #include <limbus/opengl.h>
 
 #include <iostream>
+#include <cstring>
 
 #define GL_ARRAY_BUFFER 0x8892
 #define GL_STATIC_DRAW 0x88E4
@@ -26,7 +27,7 @@ typedef void (APIENTRY *GLBUFFERSUBDATAPROC)( GLenum, ptrdiff_t, ptrdiff_t, cons
 class Game :
 	public Limbus::OpenglWindow::EventHandler,
 	public Limbus::Keyboard::EventHandler,
-	public Limbus::Tablet::EventHandler
+	public Limbus::Mouse::EventHandler
 {
 	struct Vertex
 	{
@@ -34,12 +35,13 @@ class Game :
 		GLfloat color[4];
 	};
 
+	Limbus::OpenglWindow window;
+
 public:
 	void run()
 	{
 		running = true;
-
-		Limbus::OpenglWindow window;
+		
 		window.setCaption( "OpenGL window" );
 		window.setWidth( 640 );
 		window.setHeight( 480 );
@@ -48,9 +50,9 @@ public:
 
 		Limbus::Keyboard keyboard( &window );
 		keyboard.addEventHandler( this );
-
-		Limbus::Tablet tablet( &window );
-		tablet.addEventHandler( this );
+		
+		Limbus::Mouse mouse( &window );
+		mouse.addEventHandler( this );
 
 		glClearColor( 0.5f, 0.5f, 1.0f, 1.0f );
 
@@ -86,7 +88,7 @@ public:
 		{
 			window.pollEvents();
 			keyboard.pollEvents();
-			tablet.pollEvents();
+			mouse.pollEvents();
 
 			glClear( GL_COLOR_BUFFER_BIT );
 
@@ -112,10 +114,10 @@ private:
 		if (key == LBKeyEscape && pressed)
 			running = false;
 	}
-
-	void onMotionEvent( Limbus::Tablet& sender, int x, int y, int pressure )
+	
+	void onMotionEvent( Limbus::Mouse& sender, int x, int y )
 	{
-		std::cout << x << " " << y << " " << pressure << std::endl;
+		std::cout << " " << x << " " << y << std::endl;
 	}
 
 	bool running;
@@ -127,3 +129,4 @@ int main( int argc, char** argv )
 	game.run();
 	return 0;
 }
+

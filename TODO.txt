@@ -2,9 +2,22 @@
 List of things to do:
 -----------------------
 
+- Bug: X11 LBWindow implementation seems to halt the application when setting a caption.
+       Looks like it only occurs when there are a specific number of events queued.
+- Clean up WinAPI implementations.
+- Replace asserts with real error handling.
+	- Have lb_*_constructed return an error message when
+	  constructing an object fails.
+- Look over the LBTablet API and make sure it compiles on all platforms.
+	- Fix X11 implementation.
+- Turn off use of bundled Lua in the repo and make the use of Lua configurable.
+- Add support for OpenGL 3.0+ contexts.
 - Write a Main page for the Doxygen documentation.
 - Write tutorials for setting up a window and OpenGL context.
-- Make X11 window implementation up-to-date with the API.
-- Clean up WinAPI implementations
-- Replace asserts with real error handling
+- Clarify project description in the README and on SF.net.
+- Standardize filenames for implementation source files.
+- Make sure the library compiles as C++.
+- Research ways of testing the library and implement new tests.
+- Make it possible for the users to plug-in their own code for memory handling.
+- Write an implementation for MacOS.
 

@@ -46,12 +46,14 @@ typedef struct
 {
     X11Window base;
 
+	X11Screen* initial_screen;
+
 	Atom wm_delete_window;
 	XIC input_context;
 	XIM input_method;
 	long event_mask;
 
-	int fullscreen;
+	int styled;
 	int resizable;
 	char* caption;
 	int width, height;
@@ -79,23 +81,21 @@ typedef struct
 
 #include "dnd.h"
 
-static void impl_create_window( void* win, XVisualInfo* visual_info );
-static void impl_destroy_window( void* win );
+static void impl_create_window( LBWindow win, XVisualInfo* visual_info );
+static void impl_destroy_window( LBWindow win );
 static void impl_update_window_caption( X11WindowImpl* window );
 
-void* lb_window_construct( void* scr )
+void* lb_window_construct( void )
 {
 	X11WindowImpl* window;
-	X11Screen* screen;
-
-	screen = (X11Screen*)scr;
-	assert( screen );
 
 	window = (X11WindowImpl*)malloc( sizeof *window );
 	assert( window != NULL );
 
-	window->base.display = screen->display;
-	window->base.screen = screen->screen;
+	window->base.screen = lb_screen_construct( LBScreenDefault );
+	assert( lb_screen_constructed( window->base.screen ) == 1 );
+	window->initial_screen = window->base.screen;
+
 	window->base.create_window_impl = &impl_create_window;
 	window->base.destroy_window_impl = &impl_destroy_window;
 
@@ -109,7 +109,7 @@ void* lb_window_construct( void* scr )
 	window->y = 0;
 	window->width = 640;
 	window->height = 480;
-	window->fullscreen = 0;
+	window->styled = 1;
 	window->resizable = 0;
 
 	lb_window_set_caption( window, "" );
@@ -117,7 +117,7 @@ void* lb_window_construct( void* scr )
 	return window;
 }
 
-void* lb_window_destruct( void* win )
+void* lb_window_destruct( LBWindow win )
 {
 	X11WindowImpl* window = (X11WindowImpl*)win;
 
@@ -131,37 +131,59 @@ void* lb_window_destruct( void* win )
 	vector_destruct( &window->events );
 	vector_destruct( &window->devices );
 	vector_destruct( &window->files );
+	
+	free( window->initial_screen );
 
 	free( window );
 	return NULL;
 }
 
-int lb_window_constructed( void* window )
+int lb_window_constructed( LBWindow window )
 {
     return (window != NULL) ? 1 : 0;
 }
 
-/* TODO: Make it possible to enable/disable decorations after a window
+
+void lb_window_set_screen( LBWindow _window, LBScreen screen )
+{
+	X11WindowImpl* window = (X11WindowImpl*)_window;
+	window->base.screen = screen;
+}
+
+LBScreen lb_window_get_screen( LBWindow _window )
+{
+	X11WindowImpl* window = (X11WindowImpl*)_window;
+	return window->base.screen;
+}
+
+
+/* TODO: Make it possible to enable/disable styles after a window
          has been created. */
-void lb_window_enable_decorations( void* win )
+
+void lb_window_set_styled( LBWindow _window, int value )
 {
-	X11WindowImpl* window = (X11WindowImpl*)win;
-    window->fullscreen = 0;
-    window->resizable = 1;
+	X11WindowImpl* window = (X11WindowImpl*)_window;
+	window->styled = value;
 }
 
-void lb_window_set_resize_border( LBWindow win, int state )
+int lb_window_get_styled( LBWindow _window )
 {
-	X11WindowImpl* window = (X11WindowImpl*)win;
-	window->resizable = state;
+	X11WindowImpl* window = (X11WindowImpl*)_window;
+	return window->styled;
 }
 
-void lb_window_disable_decorations( void* win )
+void lb_window_set_resizable( LBWindow _window, int value )
 {
-	X11WindowImpl* window = (X11WindowImpl*)win;
-    window->fullscreen = 1;
-    window->resizable = 0;
+	X11WindowImpl* window = (X11WindowImpl*)_window;
+	window->resizable = value;
 }
+
+int lb_window_get_resizable( LBWindow _window )
+{
+	X11WindowImpl* window = (X11WindowImpl*)_window;
+	return window->resizable;
+}
+
 
 void lb_window_set_caption( void* win, const char* caption )
 {
@@ -191,7 +213,7 @@ void lb_window_set_width( void* win, int width )
 	window->width = width;
 	if (window->created_impl)
 	{
-		XResizeWindow( window->base.display, window->base.window,
+		XResizeWindow( window->base.screen->display, window->base.window,
 		               window->width, window->height );
 	}
 }
@@ -202,7 +224,7 @@ void lb_window_set_height( void* win, int height )
 	window->height = height;
 	if (window->created_impl)
 	{
-		XResizeWindow( window->base.display, window->base.window,
+		XResizeWindow( window->base.screen->display, window->base.window,
 		               window->width, window->height );
 	}
 }
@@ -213,7 +235,7 @@ void lb_window_set_x( void* win, int x )
 	window->x = x;
 	if (window->created_impl)
 	{
-		XMoveWindow( window->base.display, window->base.window,
+		XMoveWindow( window->base.screen->display, window->base.window,
 		             window->x, window->y );
 	}
 }
@@ -224,7 +246,7 @@ void lb_window_set_y( void* win, int y )
 	window->y = y;
 	if (window->created_impl)
 	{
-		XMoveWindow( window->base.display, window->base.window,
+		XMoveWindow( window->base.screen->display, window->base.window,
 		             window->x, window->y );
 	}
 }
@@ -265,9 +287,9 @@ int lb_window_next_event( void* win )
 	WindowEvent* iter;
 	XEvent event;
 
-	while (XPending( window->base.display ))
+	while (XPending( window->base.screen->display ))
 	{
-	    XNextEvent( window->base.display, &event );
+	    XNextEvent( window->base.screen->display, &event );
 	    
 	    /* Let registered input devices look at the event */
 	    {
@@ -374,7 +396,7 @@ void lb_window_add_input_device( void* win, void* d )
 
 	if (window->created_impl)
 	{
-		device->display = window->base.display;
+		device->display = window->base.screen->display;
 		device->window = window->base.window;
 		device->root_window = window->base.root_window;
 		device->input_context = window->input_context;
@@ -389,19 +411,19 @@ void impl_create_window( void* win, XVisualInfo* visual_info )
     XSetWindowAttributes window_attributes;
     unsigned long window_attribute_mask;
 
-    color_map = XCreateColormap( window->base.display,
-    							 RootWindow( window->base.display,
+    color_map = XCreateColormap( window->base.screen->display,
+    							 RootWindow( window->base.screen->display,
 			    							 visual_info->screen ),
     							 visual_info->visual,
     							 AllocNone );
 
     window_attributes.colormap = color_map;
-    window_attributes.override_redirect = (window->fullscreen) ? True : False;
+    window_attributes.override_redirect = (window->styled) ? False : True;
     window_attribute_mask = CWColormap | CWOverrideRedirect;
 
-	window->base.root_window = XRootWindow( window->base.display,
-	                                        window->base.screen );
-	window->base.window = XCreateWindow( window->base.display,
+	window->base.root_window = XRootWindow( window->base.screen->display,
+	                                        window->base.screen->screen );
+	window->base.window = XCreateWindow( window->base.screen->display,
                                          window->base.root_window,
                                          window->x, window->y,
                                          window->width, window->height,
@@ -413,10 +435,10 @@ void impl_create_window( void* win, XVisualInfo* visual_info )
                                          &window_attributes );
 
 	/* Configure window events */
-	window->wm_delete_window = XInternAtom( window->base.display,
+	window->wm_delete_window = XInternAtom( window->base.screen->display,
                                             "WM_DELETE_WINDOW",
                                             False );
-	XSetWMProtocols( window->base.display,
+	XSetWMProtocols( window->base.screen->display,
 					 window->base.window,
 					 &window->wm_delete_window,
 					 1 );
@@ -429,12 +451,12 @@ void impl_create_window( void* win, XVisualInfo* visual_info )
                          ButtonReleaseMask |
                          StructureNotifyMask;
 
-	XSelectInput( window->base.display,
+	XSelectInput( window->base.screen->display,
 				  window->base.window,
 				  window->event_mask );
 
 	/* Create input context/method */
-	window->input_method = XOpenIM( window->base.display, NULL, NULL, NULL );
+	window->input_method = XOpenIM( window->base.screen->display, NULL, NULL, NULL );
 	assert( window->input_method != NULL );
 	window->input_context = XCreateIC( window->input_method,
                                        XNClientWindow, window->base.window,
@@ -452,24 +474,24 @@ void impl_create_window( void* win, XVisualInfo* visual_info )
 		size_hints->flags = PMaxSize | PMinSize;
 		size_hints->min_width = size_hints->max_width = window->width;
 		size_hints->min_height = size_hints->max_height = window->height;
-		XSetWMNormalHints( window->base.display, window->base.window, size_hints );
+		XSetWMNormalHints( window->base.screen->display, window->base.window, size_hints );
 
 		XFree( size_hints );
 	}
 
-	XMapWindow( window->base.display,
+	XMapWindow( window->base.screen->display,
 				window->base.window );
 
     dnd_setup( window );
 	impl_update_window_caption( window );
 
-	XFlush( window->base.display );
+	XFlush( window->base.screen->display );
 
 	{
 		X11InputDevice** iter = NULL;
 		while ((iter = (X11InputDevice**)vector_next( &window->devices, iter )))
 		{
-			(*iter)->display = window->base.display;
+			(*iter)->display = window->base.screen->display;
 			(*iter)->window = window->base.window;
 			(*iter)->root_window = window->base.root_window;
 			(*iter)->input_context = window->input_context;
@@ -487,10 +509,10 @@ void impl_destroy_window( void* win )
 	XDestroyIC( window->input_context );
 	XCloseIM( window->input_method );
 
-	XDestroyWindow( window->base.display,
+	XDestroyWindow( window->base.screen->display,
 					window->base.window );
 
-	XFlush( window->base.display );
+	XFlush( window->base.screen->display );
 
 	window->created_impl = 0;
 }
@@ -501,11 +523,11 @@ void impl_update_window_caption( X11WindowImpl* window )
 
 	if (XStringListToTextProperty( &window->caption, 1, &text_property ))
 	{
-		XSetWMName( window->base.display,
+		XSetWMName( window->base.screen->display,
 					window->base.window,
 					&text_property );
 
-		XFlush( window->base.display );
+		XFlush( window->base.screen->display );
 
 		XFree( text_property.value );
 	}

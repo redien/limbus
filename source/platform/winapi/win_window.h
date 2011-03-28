@@ -18,7 +18,6 @@ typedef struct
 	ATOM class_atom;
 	HCURSOR cursor;
 	void (*construct_impl)( void* window );
-	void* impl_data;
 } WinWindow;
 
 #endif

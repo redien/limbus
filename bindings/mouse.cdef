@@ -41,6 +41,7 @@ class Limbus::Mouse : Limbus::InputDevice
 		limbus::lb_mouse_set_visibility( this.mouse, 0 )
 	end
 
+
 	def construct( dispatcher : Limbus::InputDispatcher ) : void
 		this.mouse = limbus::lb_mouse_construct()
 		dispatcher.add_input_device( this )
@@ -48,6 +49,10 @@ class Limbus::Mouse : Limbus::InputDevice
 
 	def destruct() : void
 		limbus::lb_mouse_destruct( this.mouse )
+	end
+	
+	def get_impl() : ptr
+		return this.mouse
 	end
 
 	def poll_events() : bool

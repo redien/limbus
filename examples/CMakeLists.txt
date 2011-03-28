@@ -32,8 +32,8 @@ macro( add_cpp_example name )
 	target_link_libraries(
 		${name}_cpp_example
 			${SHARED_LIBRARIES}
-			limbus
 			limbus_cpp
+			limbus
 	)
 endmacro( add_cpp_example )
 
@@ -43,14 +43,12 @@ set(
 	CACHE BOOL "Compile examples."
 )
 if(COMPILE_EXAMPLES)
+	add_c_example( screen_example )
+
 	if(ENABLE_MOUSE_SUPPORT AND ENABLE_KEYBOARD_SUPPORT)
 		add_c_example( opengl_window )
-	endif(ENABLE_MOUSE_SUPPORT AND ENABLE_KEYBOARD_SUPPORT)
-
-	add_c_example( screen_example )
 	
-	if (ENABLE_TABLET_SUPPORT)
 		add_cpp_example( opengl_window )
-	endif(ENABLE_TABLET_SUPPORT)
+	endif(ENABLE_MOUSE_SUPPORT AND ENABLE_KEYBOARD_SUPPORT)
 endif(COMPILE_EXAMPLES)
 
