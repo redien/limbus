@@ -64,7 +64,7 @@ void* lb_screen_construct( int screen_num )
 	return NULL;
 }
 
-void* lb_screen_destruct( void* screen )
+void* lb_screen_destruct( LBScreen screen )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 
@@ -84,24 +84,24 @@ void* lb_screen_destruct( void* screen )
 	return NULL;
 }
 
-int lb_screen_constructed( void* screen )
+int lb_screen_constructed( LBScreen screen )
 {
 	return (screen != NULL) ? 1 : 0;
 }
 
-int lb_screen_get_width( void* screen )
+int lb_screen_get_width( LBScreen screen )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	return self->mode.dmPelsWidth;
 }
 
-int lb_screen_get_height( void* screen )
+int lb_screen_get_height( LBScreen screen )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	return self->mode.dmPelsHeight;
 }
 
-int lb_screen_modes( void* screen )
+int lb_screen_modes( LBScreen screen )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	DWORD count = 0;
@@ -115,7 +115,7 @@ int lb_screen_modes( void* screen )
     return count;
 }
 
-int lb_screen_get_mode_width( void* screen, int mode )
+int lb_screen_get_mode_width( LBScreen screen, int mode )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	DEVMODE devmode;
@@ -128,7 +128,7 @@ int lb_screen_get_mode_width( void* screen, int mode )
     return devmode.dmPelsWidth;
 }
 
-int lb_screen_get_mode_height( void* screen, int mode )
+int lb_screen_get_mode_height( LBScreen screen, int mode )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	DEVMODE devmode;
@@ -141,7 +141,7 @@ int lb_screen_get_mode_height( void* screen, int mode )
     return devmode.dmPelsHeight;
 }
 
-int lb_screen_change_mode( void* screen, int mode )
+LBScreenError lb_screen_change_mode( LBScreen screen, int mode )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	LONG result;

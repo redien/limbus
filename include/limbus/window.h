@@ -17,6 +17,16 @@ extern "C"
 
 typedef void* LBWindow;
 
+/* An enumeration of the API-specific errors. */
+enum LBWindowError
+{
+    /* No error occured */
+    LBWindowNoError,
+    /* Failed to allocate memory */
+    LBWindowAllocationFailure
+};
+typedef enum LBWindowError LBWindowError;
+
 /** An enumeration of the different window event types. */
 enum LBWindowEvent
 {
@@ -28,6 +38,8 @@ enum LBWindowEvent
 	LBWindowEventResize
 };
 typedef enum LBWindowEvent LBWindowEvent;
+
+
 
 /** Constructs a new window object on the default screen.
   * Simply calling this function will not create an actual window

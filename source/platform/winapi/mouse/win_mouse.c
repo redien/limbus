@@ -15,8 +15,8 @@
 
 typedef struct MouseEventTag
 {
-	int type;
-	int button;
+	LBMouseEvent type;
+	LBMouseButton button;
 	int x, y;
 } MouseEvent;
 
@@ -209,13 +209,13 @@ int lb_mouse_next_event( void* m )
 	}
 }
 
-enum LBMouseEvent lb_mouse_get_event_type( void* m )
+LBMouseEvent lb_mouse_get_event_type( void* m )
 {
 	CAST_MOUSE()
 	return mouse->event.type;
 }
 
-int lb_mouse_get_event_button( void* m )
+LBMouseButton lb_mouse_get_event_button( void* m )
 {
 	CAST_MOUSE()
 	return mouse->event.button;

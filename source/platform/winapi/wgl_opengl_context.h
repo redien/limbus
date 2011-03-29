@@ -16,7 +16,6 @@ typedef struct
 	PIXELFORMATDESCRIPTOR pfd;
 	HDC device_context;
 	HGLRC render_context;
-	void* impl_data;
 } wglContext;
 
 #endif
