@@ -30,4 +30,5 @@ endmacro( add_placebo_test )
 
 add_placebo_test( window_properties )
 add_placebo_test( opengl_window_test )
+add_placebo_test( filesystem )
 

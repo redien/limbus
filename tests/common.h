@@ -10,7 +10,7 @@
 
 #define ASSERT( exp, msg )\
 	if (!(exp)) {\
-		fprintf( stderr, "%s", msg );\
+		fprintf( stderr, "%s\n", msg );\
 		test_result = EXIT_FAILURE;\
 	}
 

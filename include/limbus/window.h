@@ -130,28 +130,28 @@ void lb_window_set_caption( LBWindow window, const char* caption );
 const char* lb_window_get_caption( LBWindow window );
 
 /** Set the width of the window's client area.
-  * The width is set to 640 by default.
+  * The default width of the window is system-specific.
   * @param window a pointer to a successfully constructed window object.
   * @param width the new width in pixels.
   */
 void lb_window_set_width( LBWindow window, int width );
 
 /** Get the width of the window's client area.
-  * The width is set to 640 by default.
+  * The default width of the window is system-specific.
   * @param window a pointer to a successfully constructed window object.
   * @return the width in pixels.
   */
 int lb_window_get_width( LBWindow window );
 
 /** Set the height of the window's client area.
-  * The height is set to 480 by default.
+  * The default height of the window is system-specific.
   * @param window a pointer to a successfully constructed window object.
   * @param height the new height in pixels.
   */
 void lb_window_set_height( LBWindow window, int height );
 
 /** Get the height of the window's client area.
-  * The height is set to 480 by default.
+  * The default height of the window is system-specific.
   * @param window a pointer to a successfully constructed window object.
   * @return the height in pixels.
   */

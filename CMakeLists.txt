@@ -50,7 +50,7 @@ set( LUA_SRC_PATH ${LUA_DEP_DIR}/src )
 set( LUA_INCLUDE_DIR ${LUA_SRC_PATH} )
 set( LUA_EXE ${FINAL_BIN_DIR}/lua )
 
-set( CBIND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../cbind/ )
+set( CBIND_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/cbind/ )
 
 set( GENERATED_CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua )
 
@@ -281,6 +281,11 @@ if(WIN32)
 	if(ENABLE_TABLET_SUPPORT)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/tablet/tablet_windows.c )
 	endif(ENABLE_TABLET_SUPPORT)
+
+	if(ENABLE_AUDIO_STREAM_SUPPORT)
+		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/audio_stream/winapi_audio_stream.c )
+	endif(ENABLE_AUDIO_STREAM_SUPPORT)
+
 elseif(UNIX)
 	set(
 		SHARED_LIBRARIES

@@ -11,14 +11,18 @@ List of things to do:
 	- Fix X11 implementation.
 - Implement custom_context.h for X11.
 - Turn off use of bundled Lua in the repo and make the use of Lua configurable.
-- Add support for OpenGL 3.0+ contexts.
+- Add CMake variables for disabling all of the subsystems.
+- Add events for windows getting focused/unfocused
+- Clean up WinAPI implementations.
+	- Clear up window positioning
 - Write a Main page for the Doxygen documentation.
 - Write tutorials for setting up a window and OpenGL context.
-- Clean up WinAPI implementations.
+- Update all of the examples.
 - Clarify project description in the README and on SF.net.
 - Standardize filenames for implementation source files.
 - Make sure the library compiles as C++.
 - Research ways of testing the library and implement new tests.
 - Make it possible for the users to plug-in their own code for memory handling.
+- Add support for OpenGL 3.0+ contexts.
+- Add clipboard API
 - Write an implementation for MacOS.
-

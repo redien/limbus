@@ -32,7 +32,7 @@ void* lb_unix_filesystem_construct()
 	return filesystem;
 }
 
-void* lb_unix_filesystem_destruct( void* fs )
+void lb_unix_filesystem_destruct( void* fs )
 {
 	UnixFilesystem* filesystem = (UnixFilesystem*)fs;
 
@@ -40,7 +40,6 @@ void* lb_unix_filesystem_destruct( void* fs )
 		closedir( filesystem->dir );
 
 	free( filesystem );
-	return NULL;
 }
 
 int lb_filesystem_constructed( void* filesystem )

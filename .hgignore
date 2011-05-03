@@ -16,4 +16,4 @@ generated/ruby/*
 generated/cpp/*
 generated/python/*
 generated/csharp/*
-
+commit_log.txt

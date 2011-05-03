@@ -114,7 +114,7 @@ int lb_filesystem_next_watch_event( void* fs )
             
             if (result_size <= 0)
                 return 0;
-            
+
             offset = 0;
             while (offset < result_size)
             {

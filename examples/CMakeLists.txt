@@ -21,20 +21,22 @@ macro( add_c_example name )
 endmacro( add_c_example )
 
 macro( add_cpp_example name )
-	add_executable(
-		${name}_cpp_example
-			examples/cpp/${name}.cpp
-	)
-	set_target_properties(
-		${name}_cpp_example PROPERTIES
-			RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
-	)
-	target_link_libraries(
-		${name}_cpp_example
-			${SHARED_LIBRARIES}
-			limbus_cpp
-			limbus
-	)
+	if( GENERATE_CPP_BINDING )
+		add_executable(
+			${name}_cpp_example
+				examples/cpp/${name}.cpp
+		)
+		set_target_properties(
+			${name}_cpp_example PROPERTIES
+				RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
+		)
+		target_link_libraries(
+			${name}_cpp_example
+				${SHARED_LIBRARIES}
+				limbus_cpp
+				limbus
+		)
+	endif( GENERATE_CPP_BINDING )
 endmacro( add_cpp_example )
 
 set(

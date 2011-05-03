@@ -12,7 +12,7 @@ class Limbus::Filesystem
 	end
 
 	def destruct() : void
-		if limbus::lb_filesystem_constructed( this.fs ) == 1 then
+		if limbus::lb_filesystem_constructed( this.fs ) == limbus::LBFilesystemNoError then
 			limbus::lb_filesystem_destruct( this.fs )
 		end
 	end

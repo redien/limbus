@@ -10,8 +10,8 @@ require screen
 
 class Limbus::Window : Limbus::InputDispatcher
 	var window : ptr,
-		screen : Limbus::Screen,
-		initial_screen : Limbus::Screen
+	      impl_screen : Limbus::Screen,
+	      initial_screen : Limbus::Screen
 
 	signal on_close()
 	signal on_file_drop( filepath : string, x : int, y : int )
@@ -19,9 +19,9 @@ class Limbus::Window : Limbus::InputDispatcher
 
 	property screen : Limbus::Screen
 	get
-		return this.screen
+		return this.impl_screen
 	set
-		this.screen = value
+		this.impl_screen = value
 		limbus::lb_window_set_screen( this.window, value.get_impl() )
 	end
 	
@@ -97,7 +97,7 @@ class Limbus::Window : Limbus::InputDispatcher
 		
 		var new_screen : Limbus::Screen
 		new_screen = new Limbus::Screen()
-		this.screen = new_screen
+		this.impl_screen = new_screen
 		this.initial_screen = new_screen
 		limbus::lb_window_set_screen( this.window, new_screen.get_impl() )
 	end
