@@ -9,7 +9,9 @@ local function GenerateArgument( arg, i )
 	local str = ""
 	str = str .. c_var_decl( arg.type, arg.identifier ) .. " = (" .. c_type( arg.type ) .. ")"
 
-	if  arg.type.basic_type == "char"
+	if arg.type.func then
+		str = str .. "lua_touserdata"
+	elseif arg.type.basic_type == "char"
 	and arg.type.pointer_depth == 1 then
 		str = str .. "luaL_checkstring"
 	elseif arg.type.pointer_depth > 0 then
@@ -35,7 +37,9 @@ end
 local function GenerateReturnValue( func )
 	local str = ""
 
-	if  func.return_type.basic_type == "char"
+	if func.return_type.func then
+		str = str .. "lua_pushlightuserdata"
+	elseif  func.return_type.basic_type == "char"
 	and func.return_type.pointer_depth == 1 then
 		str = str .. "lua_pushstring"
 	elseif func.return_type.pointer_depth > 0 then

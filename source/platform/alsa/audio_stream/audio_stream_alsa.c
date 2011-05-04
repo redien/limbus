@@ -113,7 +113,7 @@ LBAudioStream lb_audio_stream_construct( int bits,
     return (LBAudioStream)self;
 }
 
-LBAudioStream lb_audio_stream_destruct( LBAudioStream audio_stream )
+void lb_audio_stream_destruct( LBAudioStream audio_stream )
 {
     AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
     assert( self );
@@ -121,8 +121,6 @@ LBAudioStream lb_audio_stream_destruct( LBAudioStream audio_stream )
     free( self->buffer );
     snd_pcm_drop( self->pcm_handle );
     snd_pcm_close( self->pcm_handle );
-
-    return self;
 }
 
 int lb_audio_stream_get_channels( LBAudioStream audio_stream )

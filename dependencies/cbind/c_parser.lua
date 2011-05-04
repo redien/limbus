@@ -10,7 +10,18 @@ function c_var_decl( type, ident )
 	
 	local str = basic
 	.. string.rep( "*", type.pointer_depth )
-	.. " " .. ident
+	.. " "
+	
+	if type.func then
+		str = str .. "(*" .. ident .. ")("
+		for i = 1, #type.arguments do
+			if i > 1 then str = str .. ", " end
+			str = str .. c_type(type.arguments[i].type)
+		end
+		str = str .. ")"
+	else
+		str = str .. ident
+	end
 	
 	for i = 1, type.array_dimensions do
 		str = str .. "[" .. type.array_lengths[i] .. "]"
@@ -33,6 +44,16 @@ assert( test_var_decl == "unsigned char*** array[32][435]" )
 function c_type( type )
 	if type.enum then
 		return "int"
+	elseif type.func then
+		local str = type.basic_type ..
+			   string.rep( "*", type.pointer_depth ) ..
+			   "(*)("
+		for i = 1, #type.arguments do
+			if i > 1 then str = str .. ", " end
+			str = str .. c_type(type.arguments[i].type)
+		end
+		str = str .. ")"
+		return str
 	else
 		return type.basic_type ..
 			   string.rep( "*", type.pointer_depth )
@@ -69,50 +90,69 @@ end
 
 function parse_c_arguments( arguments )
 	local result = {}
-	
-	arguments:gsub(
-		"([%w_][%s%w_]+[%w_])([%*%s]+)([%w_]+)([%[%]%d%s]*)",
-		function( basic_type, stars, ident, arrays )
-			local star_count
-			_,star_count = stars:gsub( "(*)", function() end )
 
-			local array_dimensions = 0
-			local array_lengths = {}
-			for len in arrays:gmatch( "%d+" ) do
+	local filtered_captures = {}
+	local filtered_arguments = arguments:sub(2, -2):gsub("%b()", function(capture)
+		if capture:sub(2, 2) == "*" then
+			return capture
+		else
+			filtered_captures[#filtered_captures + 1] = capture
+			return #filtered_captures
+		end
+	end)
+
+	local function handle_argument( basic_type, stars, ident, brackets )
+		local star_count
+		_,star_count = stars:gsub( "(*)", function() end )
+
+		local array_dimensions = 0
+		local array_lengths = {}
+		local func_arguments = nil
+		
+		if brackets:find( "%[" ) then
+			for len in brackets:gmatch( "%d+" ) do
 				array_lengths[#array_lengths + 1] = tonumber( len )
 				array_dimensions = array_dimensions + 1
 			end
-			
-			-- Remove unnecessary space
-			basic_type = basic_type:gsub( "%s+", " " )
-
-			-- Check for const-ness
-			local const = false
-			basic_type = basic_type:gsub( "const ", function( s )
-				const = true
-				return ""
-			end)
-
-			-- Check for enums
-			local enum = false
-			basic_type = basic_type:gsub( "enum ", function( s )
-				enum = true
-				return ""
-			end)
-			
-			result[#result + 1] = {
-				identifier = ident,
-				type = {
-					pointer_depth = star_count,
-					basic_type = basic_type,
-					array_dimensions = array_dimensions,
-					array_lengths = array_lengths,
-					const = const,
-					enum = enum,
-				},
-			}
+		else
+			if tonumber(brackets) then
+				func_arguments = parse_c_arguments(filtered_captures[tonumber(brackets)])
+			end
 		end
-	)
+
+		-- Remove unnecessary space
+		basic_type = basic_type:gsub( "%s+", " " )
+
+		-- Check for const-ness
+		local const = false
+		basic_type = basic_type:gsub( "const ", function( s )
+			const = true
+			return ""
+		end)
+
+		-- Check for enums
+		local enum = false
+		basic_type = basic_type:gsub( "enum ", function( s )
+			enum = true
+			return ""
+		end)
+		
+		result[#result + 1] = {
+			identifier = ident,
+			type = {
+				pointer_depth = star_count,
+				basic_type = basic_type,
+				array_dimensions = array_dimensions,
+				array_lengths = array_lengths,
+				const = const,
+				enum = enum,
+				func = func_arguments ~= nil,
+				arguments = func_arguments,
+			},
+		}
+	end
+	
+	filtered_arguments:gsub("([%w_][%s%w_]+[%w_])([%*%s]+)%(?%*?([%w_]+)%)?([%[%]%d%s]*)(%d*)", handle_argument)
 
 	return result
 end
@@ -121,14 +161,16 @@ local args = parse_c_arguments( "( const char* _str,\
 								   unsigned int i,\
 								   void* *ptrptr,\
 								   short *  ** * array [463] [2   ],\
+								   int (*myfunction) ( int f, void* d),\
 								   long   int  ** array2[  3]  [32],\
 								   enum MyEnum test )" )
-assert( #args == 6 )
+assert( #args == 7 )
 assert( args[1] )
 assert( args[1].type.basic_type == "char" )
 assert( args[1].type.pointer_depth == 1 )
 assert( args[1].type.const == true )
 assert( args[1].type.enum == false )
+assert( args[1].type.func == false )
 assert( args[1].type.array_dimensions == 0 )
 assert( #args[1].type.array_lengths == 0 )
 assert( args[1].identifier == "_str" )
@@ -137,6 +179,7 @@ assert( args[2].type.basic_type == "unsigned int" )
 assert( args[2].type.pointer_depth == 0 )
 assert( args[2].type.const == false )
 assert( args[2].type.enum == false )
+assert( args[2].type.func == false )
 assert( args[2].type.array_dimensions == 0 )
 assert( #args[2].type.array_lengths == 0 )
 assert( args[2].identifier == "i" )
@@ -145,6 +188,7 @@ assert( args[3].type.basic_type == "void" )
 assert( args[3].type.pointer_depth == 2 )
 assert( args[3].type.const == false )
 assert( args[3].type.enum == false )
+assert( args[3].type.func == false )
 assert( args[3].type.array_dimensions == 0 )
 assert( #args[3].type.array_lengths == 0 )
 assert( args[3].identifier == "ptrptr" )
@@ -153,29 +197,64 @@ assert( args[4].type.basic_type == "short" )
 assert( args[4].type.pointer_depth == 4 )
 assert( args[4].type.const == false )
 assert( args[4].type.enum == false )
+assert( args[4].type.func == false )
 assert( args[4].type.array_dimensions == 2 )
 assert( #args[4].type.array_lengths == 2 )
 assert( args[4].type.array_lengths[1] == 463 )
 assert( args[4].type.array_lengths[2] == 2 )
 assert( args[4].identifier == "array" )
+
 assert( args[5] )
-assert( args[5].type.basic_type == "long int" )
-assert( args[5].type.pointer_depth == 2 )
+assert( args[5].type.basic_type == "int" )
+assert( args[5].type.pointer_depth == 0 )
 assert( args[5].type.const == false )
 assert( args[5].type.enum == false )
-assert( args[5].type.array_dimensions == 2 )
-assert( #args[5].type.array_lengths == 2 )
-assert( args[5].type.array_lengths[1] == 3 )
-assert( args[5].type.array_lengths[2] == 32 )
-assert( args[5].identifier == "array2" )
+assert( args[5].type.func == true )
+assert( args[5].type.array_dimensions == 0 )
+assert( #args[5].type.array_lengths == 0 )
+assert( args[5].identifier == "myfunction" )
+
+local args5 = args[5].type.arguments
+assert( #args5 == 2 )
+assert( args5[1] )
+assert( args5[1].type.basic_type == "int" )
+assert( args5[1].type.pointer_depth == 0 )
+assert( args5[1].type.const == false )
+assert( args5[1].type.enum == false )
+assert( args5[1].type.func == false )
+assert( args5[1].type.array_dimensions == 0 )
+assert( #args5[1].type.array_lengths == 0 )
+assert( args5[1].identifier == "f" )
+assert( args5[2] )
+assert( args5[2].type.basic_type == "void" )
+assert( args5[2].type.pointer_depth == 1 )
+assert( args5[2].type.const == false )
+assert( args5[2].type.enum == false )
+assert( args5[2].type.func == false )
+assert( args5[2].type.array_dimensions == 0 )
+assert( #args5[2].type.array_lengths == 0 )
+assert( args5[2].identifier == "d" )
+
 assert( args[6] )
-assert( args[6].type.basic_type == "MyEnum" )
-assert( args[6].type.pointer_depth == 0 )
+assert( args[6].type.basic_type == "long int" )
+assert( args[6].type.pointer_depth == 2 )
 assert( args[6].type.const == false )
-assert( args[6].type.enum == true )
-assert( args[6].type.array_dimensions == 0 )
-assert( #args[6].type.array_lengths == 0 )
-assert( args[6].identifier == "test" )
+assert( args[6].type.enum == false )
+assert( args[6].type.func == false )
+assert( args[6].type.array_dimensions == 2 )
+assert( #args[6].type.array_lengths == 2 )
+assert( args[6].type.array_lengths[1] == 3 )
+assert( args[6].type.array_lengths[2] == 32 )
+assert( args[6].identifier == "array2" )
+assert( args[7] )
+assert( args[7].type.basic_type == "MyEnum" )
+assert( args[7].type.pointer_depth == 0 )
+assert( args[7].type.const == false )
+assert( args[7].type.enum == true )
+assert( args[7].type.func == false )
+assert( args[7].type.array_dimensions == 0 )
+assert( #args[7].type.array_lengths == 0 )
+assert( args[7].identifier == "test" )
 
 args = parse_c_arguments( "( void )" )
 assert( #args == 0 )

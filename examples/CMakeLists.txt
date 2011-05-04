@@ -46,6 +46,10 @@ set(
 )
 if(COMPILE_EXAMPLES)
 	add_c_example( screen_example )
+	
+	if (ENABLE_AUDIO_STREAM_SUPPORT)
+		add_c_example( audio_stream_example )
+	endif (ENABLE_AUDIO_STREAM_SUPPORT)
 
 	if(ENABLE_MOUSE_SUPPORT AND ENABLE_KEYBOARD_SUPPORT)
 		add_c_example( opengl_window )
