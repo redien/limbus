@@ -6,35 +6,31 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef _CRT_SECURE_NO_WARNINGS
-	#define _CRT_SECURE_NO_WARNINGS
-#endif
-
 #include <limbus/audio_stream.h>
 
-#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <limits.h>
 #include <assert.h>
 
-float t = 0;
-int buffers_done = 0;
+size_t t = 0;
 
 int callback(void* data)
 {
 	size_t i;
 	short* buffer;
-
+	unsigned int buffer_size;
+	
 	assert(sizeof(short) == 2);
 	buffer = (short*)lb_audio_stream_get_buffer(data);
-	for (i = 0; i < 100000 * 2; i += 2) {
-		buffer[i] = (short)((sin(t) + 1.0) * USHRT_MAX + SHRT_MIN) * 0.1;
-		buffer[i + 1] = buffer[i];
-		t += 0.05f;
-	}
+	buffer_size = lb_audio_stream_get_buffer_size(data);
 
-	buffers_done = 1;
-	printf("%f\n", t);
+	for (i = 0; i < buffer_size * 2; i += 2) {
+		double sample = sin(t / M_PI / 2) * 0.25;
+		buffer[i] = (short)(((sample + 1) / 2) * USHRT_MAX + SHRT_MIN);
+		buffer[i + 1] = buffer[i];
+		t += 1;
+	}
 
 	return 0;
 }
@@ -43,20 +39,32 @@ int main( int argc, char** argv )
 {
 	LBAudioStream audio_stream;
 
-	audio_stream = lb_audio_stream_construct(16, 44100, 2, 100000);
-	lb_audio_stream_set_callback(audio_stream, callback, audio_stream);
-
-	lb_audio_stream_open(audio_stream);
-	while (1) {
-		if (buffers_done > 0)
-		{
-			lb_audio_stream_write(audio_stream);
-			buffers_done = 0;
-		}
+	audio_stream = lb_audio_stream_construct(16, 44100, 2, 8192);
+	
+	if (lb_audio_stream_constructed(audio_stream) == 0)
+		return EXIT_FAILURE;
+	
+	if (lb_audio_stream_open(audio_stream) != LBAudioStreamNoError)
+	{
+		lb_audio_stream_destruct(audio_stream);
+		return EXIT_FAILURE;
 	}
-	lb_audio_stream_close(audio_stream);
 
+	while (1) {
+		if (lb_audio_stream_wait_for_available_buffers(audio_stream) != LBAudioStreamNoError)
+			break;
+
+		callback(audio_stream);
+		lb_audio_stream_write(audio_stream);
+	}
+
+	if (lb_audio_stream_close(audio_stream) != LBAudioStreamNoError)
+	{
+		lb_audio_stream_destruct(audio_stream);
+		return EXIT_FAILURE;
+	}
 	lb_audio_stream_destruct(audio_stream);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
+

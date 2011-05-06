@@ -26,5 +26,5 @@ typedef struct UnixFilesystemTag
 } UnixFilesystem;
 
 void* lb_unix_filesystem_construct( void );
-void* lb_unix_filesystem_destruct( void* fs );
+void lb_unix_filesystem_destruct( void* fs );
 

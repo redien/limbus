@@ -41,7 +41,7 @@ typedef enum LBFilesystemWatchEvent LBFilesystemWatchEvent;
 
 LBFilesystem lb_filesystem_construct( void );
 void lb_filesystem_destruct( LBFilesystem filesystem );
-LBFilesystemError lb_filesystem_constructed( LBFilesystem filesystem );
+int lb_filesystem_constructed( LBFilesystem filesystem );
 
 int lb_filesystem_path_is_file( LBFilesystem filesystem, const char* path );
 unsigned int lb_filesystem_file_size( LBFilesystem filesystem, const char* path );

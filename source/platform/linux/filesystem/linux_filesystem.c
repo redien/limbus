@@ -52,15 +52,14 @@ void* lb_filesystem_construct()
 	return filesystem;
 }
 
-void* lb_filesystem_destruct( void* fs )
+void lb_filesystem_destruct( void* fs )
 {
 	LinuxFilesystem* filesystem = (LinuxFilesystem*)fs;
 
 	vector_destruct( &filesystem->watch_events );
-    close( filesystem->inotify_fd );
+	close( filesystem->inotify_fd );
 
-    lb_unix_filesystem_destruct( filesystem );
-	return NULL;
+	lb_unix_filesystem_destruct( filesystem );
 }
 
 int lb_filesystem_watch_path( void* fs, char* path )

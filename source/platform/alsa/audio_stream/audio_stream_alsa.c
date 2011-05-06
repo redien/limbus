@@ -25,40 +25,64 @@ LBAudioStream lb_audio_stream_construct( int bits,
                                          int channels,
                                          unsigned int buffer_size )
 {
-    int status, format;
-    unsigned int size;
-    snd_pcm_hw_params_t* pcm_hw_params;
     AlsaAudioStream* self;
-    
+    unsigned int size;
+
     self = (AlsaAudioStream*)malloc( sizeof *self );
     if (!self)
     {
         return NULL;
     }
+    
+    self->rate = sample_rate;
+    self->channels = channels;
+    self->bits = bits;
+    self->frames = buffer_size;
+    size = self->frames * self->channels * (self->bits / 8);
+    self->buffer = (unsigned char*)malloc( size );
+
+    return (LBAudioStream)self;
+}
+
+void lb_audio_stream_destruct( LBAudioStream audio_stream )
+{
+    AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
+    assert( self );
+
+    free( self->buffer );
+}
+
+int lb_audio_stream_constructed( LBAudioStream audio_stream )
+{
+	return (audio_stream) ? 1 : 0;
+}
+
+LBAudioStreamError lb_audio_stream_open( LBAudioStream audio_stream )
+{
+    AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
+    int status, format;
+    snd_pcm_hw_params_t* pcm_hw_params;
+    snd_pcm_sw_params_t* pcm_sw_params;
+
+	if (!(self->bits == 32 || self->bits == 24 || self->bits == 16 || self->bits == 8))
+		return LBAudioStreamUnsupportedSampleSize; 
 
     status = snd_pcm_open( &self->pcm_handle,
                            "default",
                            SND_PCM_STREAM_PLAYBACK,
-                           0 );
+                           SND_PCM_NONBLOCK );
     if (status < 0)
-    {
-        free( self );
-        return NULL;
-    }
-
-    self->rate = sample_rate;
-    self->channels = channels;
-    self->bits = bits;
-    assert( bits == 32 || bits == 24 || bits == 16 || bits == 8 );
-    if (bits == 16)
+        return LBAudioStreamFailedToOpen;
+    
+    if (self->bits == 16)
     {
         format = SND_PCM_FORMAT_S16_LE;
     }
-    else if (bits == 24)
+    else if (self->bits == 24)
     {
         format = SND_PCM_FORMAT_S24_3LE;
     }
-    else if (bits == 32)
+    else if (self->bits == 32)
     {
         format = SND_PCM_FORMAT_S32_LE;
     }
@@ -83,18 +107,17 @@ LBAudioStream lb_audio_stream_construct( int bits,
                                          pcm_hw_params,
                                          &self->channels );
 
-    if (buffer_size == LBAudioStreamDefaultBufferSize)
+    if (self->frames == LBAudioStreamDefaultBufferSize)
     {
         snd_pcm_hw_params_get_period_size_min( pcm_hw_params, &self->frames, NULL );
-        buffer_size = self->frames;
     }
     else
     {
-        snd_pcm_hw_params_get_period_size_max( pcm_hw_params, &self->frames, NULL );
-        if (buffer_size > self->frames)
-            buffer_size = self->frames;
+    	snd_pcm_uframes_t max_frames;
+        snd_pcm_hw_params_get_period_size_max( pcm_hw_params, &max_frames, NULL );
+        if (self->frames > max_frames)
+            self->frames = max_frames;
     }
-    self->frames = buffer_size;
     snd_pcm_hw_params_set_period_size_near( self->pcm_handle,
                                             pcm_hw_params,
                                             &self->frames,
@@ -103,24 +126,29 @@ LBAudioStream lb_audio_stream_construct( int bits,
     if (status < 0)
     {
         snd_pcm_close( self->pcm_handle );
-        free( self );
-        return NULL;
+        return LBAudioStreamFailedToOpen;
     }
-    
-    size = lb_audio_stream_get_buffer_size( self );
-    self->buffer = (unsigned char*)malloc( size );
 
-    return (LBAudioStream)self;
+    snd_pcm_sw_params_alloca( &pcm_sw_params );
+    snd_pcm_sw_params_current( self->pcm_handle, pcm_sw_params );
+    snd_pcm_sw_params_set_avail_min( self->pcm_handle, pcm_sw_params, self->frames );
+    snd_pcm_sw_params_set_start_threshold( self->pcm_handle, pcm_sw_params, 0U );
+    status = snd_pcm_sw_params( self->pcm_handle, pcm_sw_params );
+	if (status < 0)
+	{
+		snd_pcm_close( self->pcm_handle );
+		return LBAudioStreamFailedToOpen;
+	}
+
+	return LBAudioStreamNoError;
 }
 
-void lb_audio_stream_destruct( LBAudioStream audio_stream )
+LBAudioStreamError lb_audio_stream_close( LBAudioStream audio_stream )
 {
     AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
-    assert( self );
-
-    free( self->buffer );
     snd_pcm_drop( self->pcm_handle );
     snd_pcm_close( self->pcm_handle );
+	return LBAudioStreamNoError;
 }
 
 int lb_audio_stream_get_channels( LBAudioStream audio_stream )
@@ -148,7 +176,7 @@ unsigned int lb_audio_stream_get_buffer_size( LBAudioStream audio_stream )
 {
     AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
     assert( self );
-    return self->frames * (self->bits / 8) * self->channels;
+    return self->frames;
 }
 
 int lb_audio_stream_write( LBAudioStream audio_stream )
@@ -169,5 +197,16 @@ void lb_audio_stream_drop( LBAudioStream audio_stream )
 {
     AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
     snd_pcm_drop( self->pcm_handle );
+}
+
+LBAudioStreamError lb_audio_stream_wait_for_available_buffers( LBAudioStream audio_stream )
+{
+    AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
+	
+	if (snd_pcm_wait(self->pcm_handle, 1000) < 0) {
+		return LBAudioStreamFailedToWait;
+	}
+	
+	return LBAudioStreamNoError;
 }
 

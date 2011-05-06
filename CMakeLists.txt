@@ -45,7 +45,7 @@ set( CPP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/cpp )
 
 set( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests )
 
-set( LUA_DEP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../lua-5.1.4 )
+set( LUA_DEP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/lua-5.1.4 )
 set( LUA_SRC_PATH ${LUA_DEP_DIR}/src )
 set( LUA_INCLUDE_DIR ${LUA_SRC_PATH} )
 set( LUA_EXE ${FINAL_BIN_DIR}/lua )
