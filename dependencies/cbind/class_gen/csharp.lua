@@ -115,6 +115,13 @@ local function transform_statement( symbol )
 	if symbol.is_signal_call then
 		return line( "if (" .. std_to_camel( symbol.name.token.value ) .. " != null) " .. std_to_camel( symbol.name.token.value ) .. "(this" .. list_as_string( symbol.arguments, transform_expression, ", ", true ) .. ");" )
 	end
+	if symbol.is_delete then
+		if symbol.member then
+			return line( symbol.object.token.value .. "." .. symbol.member.token.value .. " = null;" )
+		else
+			return line( symbol.object.token.value .. " = null;" )
+		end
+	end
 end
 
 local function transform_class_statement( symbol, class_name )
@@ -191,15 +198,15 @@ local function transform_module( symbol )
 		local str =
 			   line( "namespace " .. symbol.namespace.token.value )
 			.. line( "{", 1 )
+		
+		str = str
+			.. line( "public class " .. symbol.name.token.value .. " : System.IDisposable" .. interface )
+			.. line( "{", 1 )
 
 		for _, signal in ipairs( signals ) do
 			str = str
 			.. line( "public delegate void " .. std_to_camel( signal.name.token.value ) .. "Delegate(" .. symbol.name.token.value .. " sender" .. list_as_string( signal.arguments, transform_identifier_type_pair, ", ", true ) .. ");" )
 		end
-		
-		str = str
-			.. line( "public class " .. symbol.name.token.value .. " : System.IDisposable" .. interface )
-			.. line( "{", 1 )
 
 		for _, signal in ipairs( signals ) do
 			str = str
