@@ -7,15 +7,23 @@
 class Limbus::AudioStream
 	var stream : ptr
 	
-	def construct( bits : int,
-	               sample_rate : int,
+	def construct( sample_size_in_bits : int,
+	               sample_rate_in_hz : int,
 	               channels : int,
-	               buffer_size : uint ) : void
-		this.stream = limbus::lb_audio_stream_construct( bits, sample_rate, channels, buffer_size )
+	               buffer_size_in_samples : uint ) : void
+		this.stream = limbus::lb_audio_stream_construct( sample_size_in_bits, sample_rate_in_hz, channels, buffer_size_in_samples )
 	end
 
 	def destruct() : void
 		limbus::lb_audio_stream_destruct( this.stream )
+	end
+	
+	def open() : void
+		limbus::lb_audio_stream_open( this.stream )
+	end
+	
+	def close() : void
+		limbus::lb_audio_stream_close( this.stream )
 	end
 
     property channels : int
@@ -44,6 +52,10 @@ class Limbus::AudioStream
     
     def drop() : void
         limbus::lb_audio_stream_drop( this.stream )
+    end
+    
+    def wait_for_available_buffers() : void
+    	limbus::lb_audio_stream_wait_for_available_buffers( this.stream )
     end
 end
 
