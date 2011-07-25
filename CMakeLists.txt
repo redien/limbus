@@ -41,6 +41,7 @@ set( LUA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/lua )
 set( PYTHON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/python )
 set( RUBY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/ruby )
 set( CSHARP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/csharp )
+set( GO_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/go )
 set( CPP_DIR ${CMAKE_CURRENT_SOURCE_DIR}/generated/cpp )
 
 set( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests )
@@ -241,6 +242,7 @@ if(WIN32)
 		SHARED_LIBRARIES
 			opengl32
 			winmm
+			gdi32
 	)
 
 	set(

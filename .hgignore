@@ -16,6 +16,7 @@ generated/ruby/*
 generated/cpp/*
 generated/python/*
 generated/csharp/*
+generated/go/*
 commit_log.txt
 dependencies/lua*
 

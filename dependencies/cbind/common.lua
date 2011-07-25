@@ -39,6 +39,17 @@ function filter_enum( name )
     return name
 end
 
+function filter_function( name )
+    if not function_filters then return name end
+
+    for _, filter in ipairs( function_filters ) do
+        local tmp = name:match( filter )
+        if tmp then name = tmp end
+    end
+
+    return name
+end
+
 function list_as_string( list, func, separator, prefix, ... )
 	if #list == 0 then return "" end
 

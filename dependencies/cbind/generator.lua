@@ -120,6 +120,13 @@ for _, language in ipairs( languages ) do
 			write_file( output_path .. "csharp/" .. std_to_camel( class_names[i] ) .. ".cs", class )
 		end
 
+	elseif language == "go" then
+		print_dbg( "Generating Go! binding..." )
+		require "bind_gen.go_syscall"
+		local source, makefile = generate_binding_go( parsed_c_files )
+		write_file( output_path .. "go/" .. name .. ".go", source )
+		write_file( output_path .. "go/Makefile", makefile )
+
 	elseif language == "cpp" then
 		print_dbg( "Generating C++ binding..." )
 		require "class_gen.cpp"

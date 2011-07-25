@@ -26,7 +26,7 @@ typedef struct WinAPIFilesystemTag
 	char cwd[MAX_CWD_PATH];
 } WinAPIFilesystem;
 
-void* lb_filesystem_construct()
+void* lb_filesystem_construct( void )
 {
 	return malloc( sizeof( WinAPIFilesystem ) );
 }

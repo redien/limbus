@@ -15,6 +15,10 @@
 
 size_t t = 0;
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846264338327
+#endif
+
 int callback(void* data)
 {
 	size_t i;
@@ -67,4 +71,3 @@ int main( int argc, char** argv )
 
 	return EXIT_SUCCESS;
 }
-

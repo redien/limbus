@@ -15,8 +15,8 @@ macro( add_c_example name )
 	)
 	target_link_libraries(
 		${name}
-			${SHARED_LIBRARIES}
 			limbus
+			${SHARED_LIBRARIES}
 	)
 endmacro( add_c_example )
 
@@ -32,9 +32,9 @@ macro( add_cpp_example name )
 		)
 		target_link_libraries(
 			${name}_cpp_example
-				${SHARED_LIBRARIES}
 				limbus_cpp
 				limbus
+				${SHARED_LIBRARIES}
 		)
 	endif( GENERATE_CPP_BINDING )
 endmacro( add_cpp_example )

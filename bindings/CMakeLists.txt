@@ -31,6 +31,7 @@ add_custom_target(
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CPP_DIR}/limbus
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${LUA_DIR}
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${CSHARP_DIR}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${GO_DIR}
 	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
@@ -150,6 +151,14 @@ option(
 if(GENERATE_CSHARP_BINDING)
 	add_simple_binding( csharp ${CSHARP_DIR} )
 endif(GENERATE_CSHARP_BINDING)
+
+option(
+	GENERATE_GO_BINDING
+	"Generate Go! binding and class files"
+)
+if(GENERATE_GO_BINDING)
+	add_simple_binding( go ${CSHARP_DIR} )
+endif(GENERATE_GO_BINDING)
 
 option(
 	GENERATE_PYTHON_BINDING

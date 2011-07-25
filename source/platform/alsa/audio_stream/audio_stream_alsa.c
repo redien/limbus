@@ -73,7 +73,7 @@ LBAudioStreamError lb_audio_stream_open( LBAudioStream audio_stream )
                            SND_PCM_NONBLOCK );
     if (status < 0)
         return LBAudioStreamFailedToOpen;
-    
+
     if (self->bits == 16)
     {
         format = SND_PCM_FORMAT_S16_LE;
@@ -209,4 +209,3 @@ LBAudioStreamError lb_audio_stream_wait_for_available_buffers( LBAudioStream aud
 	
 	return LBAudioStreamNoError;
 }
-

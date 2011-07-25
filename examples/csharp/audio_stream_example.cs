@@ -39,7 +39,7 @@ public class OpenglWindowTest
 	{
 		System.Threading.Thread thread = new System.Threading.Thread(PlaySineWave);
 		thread.IsBackground = true;
-		thread.Start();
+        thread.Start();
 		
 		Limbus.Timer timer = new Limbus.Timer();
 		for (;;) {

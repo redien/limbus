@@ -88,6 +88,8 @@ function filter_c_basic_type( basic_type )
 		end))
 end
 
+local global_typedefs = {}
+
 function parse_c_arguments( arguments )
 	local result = {}
 
@@ -101,58 +103,85 @@ function parse_c_arguments( arguments )
 		end
 	end)
 
-	local function handle_argument( basic_type, stars, ident, brackets )
-		local star_count
-		_,star_count = stars:gsub( "(*)", function() end )
+	local argument_pattern = "[%w_][%s%w_]+[%w_][%*%s]+%(?%*?[%w_]+%)?[%[%]%d%s]*%d*"
+	local argument_separation_pattern = "([%w_][%s%w_]+[%w_])([%*%s]+)%(?%*?([%w_]+)%)?([%[%]%d%s]*)(%d*)"
 
-		local array_dimensions = 0
-		local array_lengths = {}
-		local func_arguments = nil
-		
-		if brackets:find( "%[" ) then
-			for len in brackets:gmatch( "%d+" ) do
-				array_lengths[#array_lengths + 1] = tonumber( len )
-				array_dimensions = array_dimensions + 1
-			end
-		else
-			if tonumber(brackets) then
-				func_arguments = parse_c_arguments(filtered_captures[tonumber(brackets)])
-			end
+	for s in filtered_arguments:gmatch(argument_pattern) do
+	
+		local replaced_typedef
+		for _,typedef in ipairs( global_typedefs ) do
+			s = s:gsub("([^%w_])" .. typedef.name .. "([^%w_])", function(first, second)
+				replaced_typedef = typedef.name
+				return first .. typedef.type .. second
+			end)
+			s = s:gsub("^" .. typedef.name .. "([^%w_])", function(second)
+				replaced_typedef = typedef.name
+				return typedef.type .. second
+			end)
+			s = s:gsub("([^%w_])" .. typedef.name .. "$", function(first)
+				replaced_typedef = typedef.name
+				return first .. typedef.type
+			end)
+			s = s:gsub("^" .. typedef.name .. "$", function()
+				replaced_typedef = typedef.name
+				return typedef.type
+			end)
 		end
 
-		-- Remove unnecessary space
-		basic_type = basic_type:gsub( "%s+", " " )
+		local function handle_argument( basic_type, stars, ident, brackets )
+			local star_count
+			_,star_count = stars:gsub( "(*)", function() end )
 
-		-- Check for const-ness
-		local const = false
-		basic_type = basic_type:gsub( "const ", function( s )
-			const = true
-			return ""
-		end)
+			local array_dimensions = 0
+			local array_lengths = {}
+			local func_arguments = nil
+			
+			if brackets:find( "%[" ) then
+				for len in brackets:gmatch( "%d+" ) do
+					array_lengths[#array_lengths + 1] = tonumber( len )
+					array_dimensions = array_dimensions + 1
+				end
+			else
+				if tonumber(brackets) then
+					func_arguments = parse_c_arguments(filtered_captures[tonumber(brackets)])
+				end
+			end
 
-		-- Check for enums
-		local enum = false
-		basic_type = basic_type:gsub( "enum ", function( s )
-			enum = true
-			return ""
-		end)
+			-- Remove unnecessary space
+			basic_type = basic_type:gsub( "%s+", " " )
+
+			-- Check for const-ness
+			local const = false
+			basic_type = basic_type:gsub( "const ", function( s )
+				const = true
+				return ""
+			end)
+
+			-- Check for enums
+			local enum = false
+			basic_type = basic_type:gsub( "enum ", function( s )
+				enum = true
+				return ""
+			end)
+			
+			result[#result + 1] = {
+				identifier = ident,
+				type = {
+					pointer_depth = star_count,
+					basic_type = basic_type,
+					replaced_typedef = replaced_typedef,
+					array_dimensions = array_dimensions,
+					array_lengths = array_lengths,
+					const = const,
+					enum = enum,
+					func = func_arguments ~= nil,
+					arguments = func_arguments,
+				},
+			}
+		end
 		
-		result[#result + 1] = {
-			identifier = ident,
-			type = {
-				pointer_depth = star_count,
-				basic_type = basic_type,
-				array_dimensions = array_dimensions,
-				array_lengths = array_lengths,
-				const = const,
-				enum = enum,
-				func = func_arguments ~= nil,
-				arguments = func_arguments,
-			},
-		}
+		s:gsub(argument_separation_pattern, handle_argument)
 	end
-	
-	filtered_arguments:gsub("([%w_][%s%w_]+[%w_])([%*%s]+)%(?%*?([%w_]+)%)?([%[%]%d%s]*)(%d*)", handle_argument)
 
 	return result
 end
@@ -266,6 +295,25 @@ assert( #args == 0 )
 function parse_return_type( return_type )
 	result = {}
 
+	for _,typedef in ipairs( global_typedefs ) do
+		return_type = return_type:gsub("([^%w_])" .. typedef.name .. "([^%w_])", function(first, second)
+			result.replaced_typedef = typedef.name
+			return first .. typedef.type .. second
+		end)
+		return_type = return_type:gsub("^" .. typedef.name .. "([^%w_])", function(second)
+			result.replaced_typedef = typedef.name
+			return typedef.type .. second
+		end)
+		return_type = return_type:gsub("([^%w_])" .. typedef.name .. "$", function(first)
+			result.replaced_typedef = typedef.name
+			return first .. typedef.type
+		end)
+		return_type = return_type:gsub("^" .. typedef.name .. "$", function()
+			result.replaced_typedef = typedef.name
+			return typedef.type
+		end)
+	end
+	
 	return_type, result.pointer_depth = return_type:gsub( "*", "" )
 
 	return_type = return_type:gsub( "^%s+", "" )
@@ -373,6 +421,8 @@ function ParseCHeaderTypedefs( header, typedefs )
 end
 
 function ParseCHeader( header, typedefs )
+	global_typedefs = typedefs
+
 	-- Remove comments
     header = header:gsub( "%/%*.-%*%/", "" )
 
@@ -388,10 +438,6 @@ function ParseCHeader( header, typedefs )
 		enums = {},
 		defines = {},
 	}
-
-	for _,typedef in ipairs( typedefs ) do
-		header = header:gsub( "([^%w_])" .. typedef.name .. "([^%w_])", "%1" .. typedef.type .. "%2" )
-	end
 
 	-- Parse function declarations
 	for return_type, name, arguments in header:gmatch( function_decl_pattern ) do

@@ -18,6 +18,7 @@ write_debug_output = false
 lua_enable_argument_type_checking = false
 
 name = "limbus"
+library_name = "${CMAKE_SHARED_LIBRARY_PREFIX}" .. name .. "${CMAKE_SHARED_LIBRARY_SUFFIX}"
 
 c_source_path = "${INCLUDE_DIR}/"
 cdef_source_path = "${BINDINGS_DIR}/"
@@ -29,6 +30,8 @@ cpp_include_prefix = "limbus/"
 languages = parse_cmake_list( "${BIND_LANGUAGES}" )
 c_source_files = parse_cmake_list( "${BIND_HEADERS}" )
 cdef_source_files = parse_cmake_list( "${BIND_SOURCES}" )
+
+c_shared_libraries = parse_cmake_list("${SHARED_LIBRARIES}")
 
 enum_filters = {
 	"^LB(%w+)$",
