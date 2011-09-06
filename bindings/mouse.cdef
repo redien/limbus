@@ -5,7 +5,6 @@
 #          http://www.boost.org/LICENSE_1_0.txt)
 
 require input_device
-require input_dispatcher
 
 class Limbus::Mouse : Limbus::InputDevice
 	var mouse : ptr
@@ -42,9 +41,8 @@ class Limbus::Mouse : Limbus::InputDevice
 	end
 
 
-	def construct( dispatcher : Limbus::InputDispatcher ) : void
+	def construct() : void
 		this.mouse = limbus::lb_mouse_construct()
-		dispatcher.add_input_device( this )
 	end
 
 	def destruct() : void

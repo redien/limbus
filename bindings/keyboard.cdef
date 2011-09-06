@@ -5,7 +5,6 @@
 #          http://www.boost.org/LICENSE_1_0.txt)
 
 require input_device
-require input_dispatcher
 
 class Limbus::Keyboard : Limbus::InputDevice
 	var keyboard : ptr
@@ -13,9 +12,8 @@ class Limbus::Keyboard : Limbus::InputDevice
 	signal on_key_event( key : int, pressed : bool )
 	signal on_unicode( utf32 : int, utf8 : string )
 
-	def construct( dispatcher : Limbus::InputDispatcher ) : void
+	def construct() : void
 		this.keyboard = limbus::lb_keyboard_construct()
-		dispatcher.add_input_device( this )
 	end
 	
 	def destruct() : void

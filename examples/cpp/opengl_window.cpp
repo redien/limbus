@@ -48,11 +48,13 @@ public:
 		window.addEventHandler( this );
 		window.create();
 
-		Limbus::Keyboard keyboard( &window );
+		Limbus::Keyboard keyboard;
 		keyboard.addEventHandler( this );
+		window.addInputDevice(&keyboard);
 		
-		Limbus::Mouse mouse( &window );
+		Limbus::Mouse mouse;
 		mouse.addEventHandler( this );
+		window.addInputDevice(&mouse);
 
 		glClearColor( 0.5f, 0.5f, 1.0f, 1.0f );
 

@@ -10,6 +10,8 @@ class Limbus::Timer
 	property elapsed : double
 	get
 		return limbus::lb_time_count_in_seconds() - this.time
+	set
+		this.time = limbus::lb_time_count_in_seconds() - value
 	end
 
 	def construct() : void

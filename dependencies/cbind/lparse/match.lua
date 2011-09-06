@@ -39,6 +39,9 @@ local function match_table( case, value, parameters )
 	return true
 end
 
+-- Unpack is moved to table in Lua 5.2
+local unpack = unpack or table.unpack
+
 function match.new( cases )
 	match.parameter_count = 0
 	return function( value )
