@@ -38,7 +38,9 @@ class Limbus::Mouse : Limbus::InputDevice
 		if value == true then
 			limbus::lb_mouse_set_visibility( this.mouse, 1 )
 		end
-		limbus::lb_mouse_set_visibility( this.mouse, 0 )
+		if value == false then
+			limbus::lb_mouse_set_visibility( this.mouse, 0 )
+		end
 	end
 
 

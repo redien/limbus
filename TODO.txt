@@ -4,9 +4,15 @@ List of things to do:
 
 - Bug: X11 LBWindow implementation seems to halt the application when setting a caption.
        Looks like it only occurs when there are a specific number of events queued.
+- Create an automatic system for destructing objects in the reverse order they were created.
+  This is needed for languages that rely on garbage collection where the order of destruction
+  cannot be controlled.
+- Make it possible to include headers from other projects and have cbind scan them for typedefs.
+- Make it possible to automatically copy enums from C headers to class bindings.
 - Replace asserts with real error handling.
 	- Have lb_*_constructed return an error message when
 	  constructing an object fails.
+- Look over the LBAudioStrean API
 - Look over the LBTablet API and make sure it compiles on all platforms.
 	- Fix X11 implementation.
 - Implement custom_context.h for X11.
