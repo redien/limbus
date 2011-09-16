@@ -2,6 +2,7 @@
 List of things to do:
 -----------------------
 
+- Move from CMake to Premake4
 - Bug: X11 LBWindow implementation seems to halt the application when setting a caption.
        Looks like it only occurs when there are a specific number of events queued.
 - Create an automatic system for destructing objects in the reverse order they were created.

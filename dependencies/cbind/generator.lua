@@ -53,13 +53,13 @@ for _, contents in ipairs( c_source_file_contents ) do
 end
 
 
-local class_names, class_dependancies = {}, {}
+local class_names, referenced_classes = {}, {}, {}
 -- Parse cdef files
 for _, cdef_file in ipairs( cdef_source_files ) do
 	local contents = read_file( cdef_source_path .. cdef_file, true )
 	print_dbg( "Parsing cdef file '" .. cdef_source_path .. cdef_file .. "'" )
 	parsed_cdef_files_syntax[#parsed_cdef_files_syntax + 1],
-	class_dependancies[#class_dependancies + 1] = cdef_parser:parse( contents )
+	referenced_classes[#referenced_classes + 1] = cdef_parser:parse( contents )
 	class_names[#class_names + 1] = cdef_file:match( "^([%w_]+)" )
 end
 
@@ -131,7 +131,7 @@ for _, language in ipairs( languages ) do
 		print_dbg( "Generating C++ binding..." )
 		require "class_gen.cpp"
 		for i = 1, #parsed_cdef_files_syntax do
-			local header, source = generate_class_cpp( parsed_cdef_files_syntax[i], class_dependancies[i], c_source_files, cpp_include_prefix )
+			local header, source = generate_class_cpp( parsed_cdef_files_syntax[i], referenced_classes[i], c_source_files )
 			write_file( cpp_include_output_path .. std_to_camel( class_names[i] ) .. ".hpp", header )
 			if source ~= "" then
 				write_file( output_path .. "cpp/" .. std_to_camel( class_names[i] ) .. ".cpp", source )
