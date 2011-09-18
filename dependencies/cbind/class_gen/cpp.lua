@@ -196,7 +196,7 @@ local function transform_interface_statement( symbol )
 	end
 end
 
-local function transform_module( symbol, class_dependancies, c_source_files, cpp_include_prefix )
+local function transform_module( symbol, referenced_classes, c_source_files )
 	if symbol.is_class then
 		local interface = ""
 		if symbol.interface then
@@ -234,10 +234,11 @@ local function transform_module( symbol, class_dependancies, c_source_files, cpp
 				.. line( "}" )
 		end
 		
-		for _, class in ipairs( class_dependancies ) do
+		for _, reference in pairs(referenced_classes) do
 			header = header
-				.. line( "#include <" .. cpp_include_prefix .. std_to_camel( class ) .. ".hpp>" )
+				.. line( "#include <" .. camel_to_std(reference.namespace) .. "/" .. reference.class .. ".hpp>" )
 		end
+
 		header = header
 			.. line( "" )
 		
@@ -315,7 +316,7 @@ local function transform_module( symbol, class_dependancies, c_source_files, cpp
 
 		local source =
 			   line( "#include <cassert>" )
-			.. line( "#include <" .. cpp_include_prefix .. symbol.name.token.value .. ".hpp>" )
+			.. line( "#include <" .. camel_to_std(symbol.namespace.token.value) .. "/" .. symbol.name.token.value .. ".hpp>" )
 		
 		local class_prefix = symbol.name.token.value .. "::"
 		
@@ -350,9 +351,9 @@ local function transform_module( symbol, class_dependancies, c_source_files, cpp
 			.. line( "#define " .. symbol.namespace.token.value:upper() .. "_" .. symbol.name.token.value:upper() .. "_HPP" )
 			.. line( "" )
 
-		for _, class in ipairs( class_dependancies ) do
+		for _, reference in pairs(referenced_classes) do
 			header = header
-				.. line( "#include <" .. cpp_include_prefix .. std_to_camel( class ) .. ".hpp>" )
+				.. line( "#include <" .. camel_to_std(reference.namespace) .. "/" .. reference.class .. ".hpp>" )
 		end
 		
 		header = header
@@ -374,6 +375,6 @@ local function transform_module( symbol, class_dependancies, c_source_files, cpp
 	assert( false, "Unknown module statement" )
 end
 
-function generate_class_cpp( class, class_dependancies, c_source_files, cpp_include_prefix )
-	return transform_module( class, class_dependancies, c_source_files, cpp_include_prefix )
+function generate_class_cpp( class, referenced_classes, c_source_files )
+	return transform_module( class, referenced_classes, c_source_files )
 end

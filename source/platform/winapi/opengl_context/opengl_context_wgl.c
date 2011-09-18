@@ -7,6 +7,7 @@
 */
 
 #include <limbus/opengl_context.h>
+#include <limbus/opengl.h>
 #include "../wgl_opengl_context.h"
 #include "../win_window.h"
 
@@ -20,8 +21,7 @@ typedef struct
 	int number_of_pixelformats;
 	int default_pixelformat;
 	WinWindow* window;
-	int released,
-	    use_current;
+	int released, bound, use_current;
 } wglContextImpl;
 
 static int get_default_pixelformat( void* con );
@@ -65,6 +65,7 @@ void* lb_opengl_context_construct( void* win, int use_current )
 
 	context->window = window;
 	context->released = 0;
+	context->bound = 0;
 	context->use_current = use_current;
 
 	context->base.device_context = GetDC( context->window->handle );
@@ -83,9 +84,13 @@ void* lb_opengl_context_destruct( void* con )
 
 	if (context->released == 0)
 	{
-		BOOL result;
-		result = wglDeleteContext( context->base.render_context );
-		assert( result );
+		if (context->bound)
+		{
+			BOOL result;
+			result = wglDeleteContext( context->base.render_context );
+			assert( result );
+		}
+
 		ReleaseDC( context->window->handle, context->base.device_context );
 	}
 
@@ -192,7 +197,7 @@ static int get_default_pixelformat( void* con )
 			{
 				if (lb_opengl_context_get_pixelformat_double_buffer( context, i ) == 1)
 				{
-					if (lb_opengl_context_get_pixelformat_depth_size( context, i ) > 0)
+					if (lb_opengl_context_get_pixelformat_depth_size( context, i ) > 16)
 					{
 						return i;
 					}
@@ -232,6 +237,7 @@ void lb_opengl_context_bind( void* con, int format )
 	}
 
 	assert( context->base.render_context );
+	context->bound = 1;
 }
 
 void lb_opengl_context_make_current( void* con )
