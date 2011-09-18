@@ -2,6 +2,7 @@
 List of things to do:
 -----------------------
 
+- Produce an error if window is polled for events before it is created.
 - Move from CMake to Premake4
 - Bug: X11 LBWindow implementation seems to halt the application when setting a caption.
        Looks like it only occurs when there are a specific number of events queued.
