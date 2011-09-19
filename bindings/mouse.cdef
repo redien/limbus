@@ -4,9 +4,6 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-require input_device
-require input_dispatcher
-
 class Limbus::Mouse : Limbus::InputDevice
 	var mouse : ptr
 
@@ -38,13 +35,14 @@ class Limbus::Mouse : Limbus::InputDevice
 		if value == true then
 			limbus::lb_mouse_set_visibility( this.mouse, 1 )
 		end
-		limbus::lb_mouse_set_visibility( this.mouse, 0 )
+		if value == false then
+			limbus::lb_mouse_set_visibility( this.mouse, 0 )
+		end
 	end
 
 
-	def construct( dispatcher : Limbus::InputDispatcher ) : void
+	def construct() : void
 		this.mouse = limbus::lb_mouse_construct()
-		dispatcher.add_input_device( this )
 	end
 
 	def destruct() : void

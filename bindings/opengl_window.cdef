@@ -4,10 +4,6 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-require input_device
-require input_dispatcher
-require screen
-
 class Limbus::OpenglWindow : Limbus::InputDispatcher
 	var created : bool,
 	      window : ptr,

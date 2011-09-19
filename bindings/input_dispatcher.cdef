@@ -4,8 +4,6 @@
 #    (See accompanying file LICENSE_1_0.txt or copy at
 #          http://www.boost.org/LICENSE_1_0.txt)
 
-require input_device
-
 interface Limbus::InputDispatcher
 	def poll_events() : bool
 	def add_input_device( device : Limbus::InputDevice ) : void

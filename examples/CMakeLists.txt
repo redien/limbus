@@ -53,8 +53,10 @@ if(COMPILE_EXAMPLES)
 
 	if(ENABLE_MOUSE_SUPPORT AND ENABLE_KEYBOARD_SUPPORT)
 		add_c_example( opengl_window )
-	
-		add_cpp_example( opengl_window )
+		
+		if (GENERATE_CPP_BINDING)
+			add_cpp_example( opengl_window )
+		endif(GENERATE_CPP_BINDING)
 	endif(ENABLE_MOUSE_SUPPORT AND ENABLE_KEYBOARD_SUPPORT)
 endif(COMPILE_EXAMPLES)
 

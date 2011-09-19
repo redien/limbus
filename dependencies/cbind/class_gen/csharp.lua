@@ -132,9 +132,6 @@ local function transform_class_statement( symbol, class_name )
 		if symbol.name.token.value == "construct" then
 			str = line( "public " .. class_name .. args )
 		else
-			if symbol.name.token.value == "destruct" then
-				args = "(bool unused)"
-			end
 			str = line( "public " .. type_to_s( symbol.return_type ) .. " " .. filter_method_name( symbol.name.token.value ) .. args )
 		end
 		
@@ -219,21 +216,7 @@ local function transform_module( symbol )
 			.. line( "public void Dispose()" )
 			.. line( "{", 1 )
 			.. line( "Destruct();" )
-			.. line( "System.GC.SuppressFinalize(this);" )
 			.. line( nil, -1 )
-			.. line( "}" )
-			.. line( "" )
-			.. line( "bool disposed = false;" )
-			.. line( "public void Destruct()" )
-			.. line( "{", 1 )
-			.. line( "if (!this.disposed)", 1 )
-			.. line( "Destruct(true);", -1 )
-			.. line( "disposed = true;", -1 )
-			.. line( "}" )
-			.. line( "" )
-			.. line( "~" .. symbol.name.token.value .. "()" )
-			.. line( "{", 1 )
-			.. line( "Destruct();", -1 )
 			.. line( "}", -1 )
 			.. line( "}", -1 )
 			.. line( "}" )

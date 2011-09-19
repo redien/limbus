@@ -153,12 +153,28 @@ cdef_parser:define_prefix( token_ids.T_BEGIN_PARENT, 0, function( self, expressi
 	return expression
 end)
 
+local function add_reference(type)
+	local found = false
+	for _, reference in pairs(cdef_parser.referenced_classes) do
+		if reference.namespace == type.namespace and reference.class == type.class then
+			found = true
+			break
+		end
+	end
+	if not found then
+		cdef_parser.referenced_classes[#cdef_parser.referenced_classes + 1] = type
+	end
+end
+
 local function parse_type()
 	local namespace = cdef_parser:advance( token_ids.T_IDENTIFIER )
 	if cdef_parser:next_symbol_is( token_ids.T_DOUBLE_COLON ) then
 		cdef_parser:advance()
 		local class = cdef_parser:advance( token_ids.T_IDENTIFIER )
-		return {namespace = namespace.token.value, class = class.token.value}
+		
+		local type = {namespace = namespace.token.value, class = class.token.value}
+		add_reference(type)
+		return type
 	else
 		return {basic_type = namespace.token.value}
 	end
@@ -648,6 +664,7 @@ local function parse_module_statement()
 			local namespace = cdef_parser:advance( token_ids.T_IDENTIFIER )
 			cdef_parser:advance( token_ids.T_DOUBLE_COLON )
 			interface = {name = cdef_parser:advance( token_ids.T_IDENTIFIER ), namespace = namespace}
+			add_reference({class = interface.name.token.value, namespace = interface.namespace.token.value})
 		end
 
 		local scope = cdef_parser:push_scope()
@@ -709,24 +726,15 @@ local function parse_module_statement()
 	end
 end
 
-local function parse_require_statements()
-	local requirements = {}
-	while cdef_parser:next_symbol_is( token_ids.T_REQUIRE ) do
-		cdef_parser:advance()
-		requirements[#requirements + 1] = cdef_parser:advance( token_ids.T_IDENTIFIER ).token.value
-	end
-	return requirements
-end
-
 require "cdef_determine_types"
 require "cdef_error_checking"
 
 function cdef_parser:parse( s )
+	cdef_parser.referenced_classes = {}
 	local tokens = tokenizer:tokenize( s )
 	cdef_parser:initialize( tokenizer, tokens )
-	local requirements = parse_require_statements()
 	local cdef_module = parse_module_statement()
 	cdef_determine_types( cdef_module )
 	cdef_error_checking( cdef_module )
-	return cdef_module, requirements
+	return cdef_module, cdef_parser.referenced_classes
 end
