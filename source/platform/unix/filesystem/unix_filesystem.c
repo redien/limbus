@@ -42,9 +42,9 @@ void lb_unix_filesystem_destruct( void* fs )
 	free( filesystem );
 }
 
-int lb_filesystem_constructed( void* filesystem )
+LBFilesystemError lb_filesystem_constructed( void* filesystem )
 {
-	return (filesystem) ? 1 : 0;
+	return (filesystem) ? LBFilesystemNoError : LBFilesystemAllocationFailure;
 }
 
 int lb_filesystem_path_is_directory( void* fs, const char* path )
