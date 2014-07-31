@@ -7,129 +7,102 @@
 */
 
 #include "../../../util/vector.h"
-#include "../x11_input_device.h"
+#include "../sdl_input_device.h"
 
 #include <limbus/mouse.h>
 
-#include <X11/Xlib.h>
-#include <X11/cursorfont.h>
 #include <stdlib.h>
 #include <assert.h>
 
-typedef struct MouseEventTag
+typedef struct
 {
 	int type;
 	int button;
 	int x, y;
 } MouseEvent;
 
-typedef struct X11MouseTag
+typedef struct
 {
-	X11InputDevice base;
-	int added_to_window;
-
+	SDLInputDevice base;
 	Vector events;
 	MouseEvent event;
-	int visible;
-
-	Cursor default_cursor;
-	Cursor null_cursor;
-	Pixmap null_pixmap;
-} X11Mouse;
-
-#define CAST_MOUSE()\
-	X11Mouse* mouse = (X11Mouse*)m;\
-	assert( mouse != NULL );
+    
+    int visible;
+    int added_to_window;
+    
+    SDL_Cursor* no_cursor;
+    SDL_Cursor* arrow_cursor;
+} SDLMouse;
 
 static void construct( void* m )
 {
-	XColor black = {0, 0, 0};
-	char bitmap[] = { 0 };
-	CAST_MOUSE()
-
-	/* Create null/default cursor, used to hide/show the cursor */
-	mouse->null_pixmap = XCreateBitmapFromData( mouse->base.display, mouse->base.window, bitmap, 1, 1 );
-	mouse->null_cursor = XCreatePixmapCursor( mouse->base.display,
-											  mouse->null_pixmap, mouse->null_pixmap,
-											  &black, &black, 0, 0 );
-	mouse->default_cursor = XCreateFontCursor( mouse->base.display, XC_left_ptr );
-
+	SDLMouse* mouse = (SDLMouse*)m;
 	lb_mouse_set_visibility( mouse, mouse->visible );
-
+    
+    mouse->arrow_cursor = SDL_CreateSystemCursor( SDL_SYSTEM_CURSOR_ARROW );
+    mouse->no_cursor = SDL_CreateSystemCursor( SDL_SYSTEM_CURSOR_NO );
+    
 	mouse->added_to_window = 1;
 }
 
-#define CONVERT_BUTTON( button ) (button == 1) ? 0 :\
-								((button == 3) ? 1 :\
-								((button == 2) ? 2 : -1))
+#define CONVERT_BUTTON( button ) (button == SDL_BUTTON_LEFT)   ? LBMouseButtonLeft :\
+								((button == SDL_BUTTON_RIGHT)  ? LBMouseButtonRight :\
+								((button == SDL_BUTTON_MIDDLE) ? LBMouseButtonMiddle : -1))
 
-static void handle_x11_event( void* m, XEvent event )
+static void handle_sdl_event( void* m, SDL_Event* event )
 {
-	CAST_MOUSE()
+	SDLMouse* mouse = (SDLMouse*)m;
 
-	if (event.type == MotionNotify)
+	if (event->type == SDL_MOUSEMOTION)
 	{
-		XMotionEvent* motion_event = (XMotionEvent*)&event;
-		MouseEvent event;
-
-		event.type = LBMouseEventMotion;
-		event.x = motion_event->x;
-		event.y = motion_event->y;
+		MouseEvent mouse_event;
+		mouse_event.type = LBMouseEventMotion;
+		mouse_event.x = event->motion.x;
+		mouse_event.y = event->motion.y;
 		
-		vector_push_back( &mouse->events, &event );
+		vector_push_back( &mouse->events, &mouse_event );
 	}
 
-	if (event.type == ButtonPress)
+	if (event->type == SDL_MOUSEBUTTONDOWN)
 	{
-		XButtonPressedEvent* button_event = (XButtonPressedEvent*)&event;
-		MouseEvent event;
+		MouseEvent mouse_event;
+		mouse_event.type = LBMouseEventButtonPress;
+		mouse_event.button = CONVERT_BUTTON( event->button.button );
+		mouse_event.x = event->button.x;
+		mouse_event.y = event->button.x;
 
-		event.type = LBMouseEventButtonPress;
-		event.button = CONVERT_BUTTON( button_event->button );
-		event.x = button_event->x;
-		event.y = button_event->y;
-
-		vector_push_back( &mouse->events, &event );
+		vector_push_back( &mouse->events, &mouse_event );
 	}
 
-	if (event.type == ButtonRelease)
+	if (event->type == SDL_MOUSEBUTTONUP)
 	{
-		XButtonReleasedEvent* button_event = (XButtonReleasedEvent*)&event;
-		MouseEvent event;
+		MouseEvent mouse_event;
+		mouse_event.type = LBMouseEventButtonRelease;
+		mouse_event.button = CONVERT_BUTTON( event->button.button );
+		mouse_event.x = event->button.x;
+		mouse_event.y = event->button.x;
 
-		event.type = LBMouseEventButtonRelease;
-		event.button = CONVERT_BUTTON( button_event->button );
-		event.x = button_event->x;
-		event.y = button_event->y;
-
-		vector_push_back( &mouse->events, &event );
+		vector_push_back( &mouse->events, &mouse_event );
 	}
 }
 
 void* lb_mouse_construct()
 {
-	X11Mouse* mouse = (X11Mouse*)malloc( sizeof( X11Mouse ) );
+	SDLMouse* mouse = (SDLMouse*)malloc( sizeof( SDLMouse ) );
 	vector_construct( &mouse->events, sizeof( MouseEvent ) );
 
 	mouse->added_to_window = 0;
 	mouse->visible = 1;
 
 	mouse->base.construct = &construct;
-	mouse->base.handle_x11_event = &handle_x11_event;
+	mouse->base.handle_sdl_event = &handle_sdl_event;
 	
 	return mouse;
 }
 
 void lb_mouse_destruct( void* m )
 {
-	CAST_MOUSE()
-
-	if (mouse->added_to_window)
-	{
-		XFreeCursor( mouse->base.display, mouse->null_cursor );
-		XFreePixmap( mouse->base.display, mouse->null_pixmap );
-	}
-
+	SDLMouse* mouse = (SDLMouse*)m;
 	vector_destruct( &mouse->events );
 	free( mouse );
 }
@@ -139,62 +112,41 @@ int lb_mouse_constructed( void* mouse )
 	return (mouse != NULL) ? 1 : 0;
 }
 
-#define WARP_POINTER( x, y )\
-	XWarpPointer( mouse->base.display,\
-				  None, mouse->base.root_window,\
-				  0, 0, 0, 0,\
-				  x, y );
-
 void lb_mouse_set_x( void* m, int x )
 {
-	CAST_MOUSE()
-	WARP_POINTER( x, lb_mouse_get_y( mouse ) )
+	SDLMouse* mouse = (SDLMouse*)m;
+	SDL_WarpMouseInWindow( mouse->base.window, x, lb_mouse_get_y( mouse ) );
 }
 
 void lb_mouse_set_y( void* m, int y )
 {
-	CAST_MOUSE()
-	WARP_POINTER( lb_mouse_get_x( mouse ), y )
+	SDLMouse* mouse = (SDLMouse*)m;
+	SDL_WarpMouseInWindow( mouse->base.window, lb_mouse_get_x( mouse ), y );
 }
-
-#define QUERY_POINTER( x, y )\
-	XQueryPointer( mouse->base.display, mouse->base.window,\
-				   &window_out, &window_out,\
-				   x, y,\
-				   &int_out, &int_out,\
-				   (unsigned int*)&int_out )
 
 int lb_mouse_get_x( void* m )
 {
+	SDLMouse* mouse = (SDLMouse*)m;
 	int x;
-	Window window_out;
-	int int_out;
-	CAST_MOUSE()
-
-	QUERY_POINTER( &x, &int_out );
+    SDL_GetMouseState(&x, NULL);
 	return x;
 }
 
 int lb_mouse_get_y( void* m )
 {
+	SDLMouse* mouse = (SDLMouse*)m;
 	int y;
-	Window window_out;
-	int int_out;
-	CAST_MOUSE()
-
-	QUERY_POINTER( &int_out, &y );
+    SDL_GetMouseState(NULL, &y);
 	return y;
 }
 
 void lb_mouse_set_visibility( void* m, int state )
 {
-	CAST_MOUSE()
+	SDLMouse* mouse = (SDLMouse*)m;
 
 	if (mouse->added_to_window)
 	{
-		XDefineCursor( mouse->base.display,
-					   mouse->base.window,
-					   (state == 0) ? mouse->null_cursor : mouse->default_cursor );
+		SDL_SetCursor( state ? mouse->arrow_cursor : mouse->no_cursor );
 	}
 	
 	mouse->visible = state;
@@ -202,14 +154,14 @@ void lb_mouse_set_visibility( void* m, int state )
 
 int lb_mouse_get_visibility( void* m )
 {
-	CAST_MOUSE()
+	SDLMouse* mouse = (SDLMouse*)m;
 	return mouse->visible;
 }
 
 int lb_mouse_next_event( void* m )
 {
 	MouseEvent* iter;
-	CAST_MOUSE()
+	SDLMouse* mouse = (SDLMouse*)m;
 
 	iter = (MouseEvent*)vector_next( &mouse->events, NULL );
 	if (iter != NULL)
@@ -226,25 +178,25 @@ int lb_mouse_next_event( void* m )
 
 enum LBMouseEvent lb_mouse_get_event_type( void* m )
 {
-	CAST_MOUSE()
+	SDLMouse* mouse = (SDLMouse*)m;
 	return mouse->event.type;
 }
 
 LBMouseButton lb_mouse_get_event_button( void* m )
 {
-	CAST_MOUSE()
+	SDLMouse* mouse = (SDLMouse*)m;
 	return mouse->event.button;
 }
 
 int lb_mouse_get_event_x( void* m )
 {
-	CAST_MOUSE()
+	SDLMouse* mouse = (SDLMouse*)m;
 	return mouse->event.x;
 }
 
 int lb_mouse_get_event_y( void* m )
 {
-	CAST_MOUSE()
+	SDLMouse* mouse = (SDLMouse*)m;
 	return mouse->event.y;
 }
 

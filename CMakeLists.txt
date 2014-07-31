@@ -298,11 +298,33 @@ if(WIN32)
 	endif(ENABLE_AUDIO_STREAM_SUPPORT)
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-	set(
+	
+    FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
+    FIND_LIBRARY(FORCEFEEDBACK_LIBRARY ForceFeedback)
+    FIND_LIBRARY(COCOA_LIBRARY Cocoa)
+    FIND_LIBRARY(CARBON_LIBRARY Carbon)
+    FIND_LIBRARY(IOKIT_LIBRARY IOKit)
+    FIND_LIBRARY(COREAUDIO_LIBRARY CoreAudio)
+    FIND_LIBRARY(AUDIOTOOLBOX_LIBRARY AudioToolbox)
+    FIND_LIBRARY(AUDIOUNIT_LIBRARY AudioUnit)
+    
+    set(
 		SHARED_LIBRARIES
-            SDL
-			GL
+            SDL2
+            iconv
+            ${OPENGL_LIBRARY}
+            ${FORCEFEEDBACK_LIBRARY}
+            ${COCOA_LIBRARY}
+            ${CARBON_LIBRARY}
+            ${IOKIT_LIBRARY}
+            ${COREAUDIO_LIBRARY}
+            ${AUDIOTOOLBOX_LIBRARY}
+            ${AUDIOUNIT_LIBRARY}
 	)
+    
+    include_directories(
+      ../SDL2-2.0.3/include
+    )
 
 	set(
 		SOURCE_FILES

@@ -6,20 +6,17 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef GLX_OPENGL_CONTEXT_H
-#define GLX_OPENGL_CONTEXT_H
+#ifndef SDL_OPENGL_CONTEXT_H
+#define SDL_OPENGL_CONTEXT_H
 
-#include <X11/Xlib.h>
-#include <GL/glx.h>
+#include <SDL.h>
+#include "sdl_window.h"
 
 typedef struct
 {
-	Display* display;
-	int screen;
-	GLXContext context;
-	Window window;
-	void* impl_data;
-} glXContext;
+    SDLWindow* window;
+    SDL_GLContext context;
+} SDLOpenglContext;
 
 #endif
 

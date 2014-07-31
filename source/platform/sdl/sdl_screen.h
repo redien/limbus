@@ -6,16 +6,13 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef X11_SCREEN_H
-#define X11_SCREEN_H
-
-#include <X11/Xlib.h>
+#ifndef SDL_SCREEN_H
+#define SDL_SCREEN_H
 
 typedef struct
 {
-	Display* display;
 	int screen;
-} X11Screen;
+} SDLScreen;
 
 #endif
 

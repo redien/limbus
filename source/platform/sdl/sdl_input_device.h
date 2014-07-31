@@ -6,22 +6,19 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef X11_INPUT_DEVICE_H
-#define X11_INPUT_DEVICE_H
+#ifndef SDL_INPUT_DEVICE_H
+#define SDL_INPUT_DEVICE_H
 
-#include <X11/Xlib.h>
+#include <SDL.h>
 
-typedef struct X11InputDeviceTag
+typedef struct
 {
-	Display* display;
-	Window window;
-	Window root_window;
-	XIC input_context;
+	SDL_Window* window;
 
 	void (*construct)( void* device );
-	void (*handle_x11_event)( void* device, XEvent event );
+	void (*handle_sdl_event)( void* device, SDL_Event* event );
 	/* TODO: Add destruct callback */
-} X11InputDevice;
+} SDLInputDevice;
 
 #endif
 

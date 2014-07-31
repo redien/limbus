@@ -7,45 +7,29 @@
 */
 
 #include <limbus/screen.h>
+#include "../sdl_screen.h"
 
-#include "../x11_screen.h"
-
-#include <X11/Xlib.h>
-#include <X11/extensions/Xrandr.h>
+#include <SDL.h>
 #include <stdlib.h>
 #include <assert.h>
 
-typedef struct _X11ScreenImpl
+typedef struct SDLScreenImpl
 {
-    X11Screen base;
-
-    int config_at_construction,
-        current_config;
-    int size_count;
-    XRRScreenSize* sizes;
-    XRRScreenConfiguration* screen_config;
-    Rotation current_rotation;
-} X11ScreenImpl;
+    SDLScreen base;
+} SDLScreenImpl;
 
 void* lb_screen_construct( int screen_id )
 {
-	X11ScreenImpl* screen;
+	SDLScreenImpl* screen;
 	int default_id;
 	
-	screen = (X11ScreenImpl*)malloc( sizeof *screen );
+	screen = (SDLScreenImpl*)malloc( sizeof *screen );
 	if (!screen)
 		return NULL;
 
-	screen->base.display = XOpenDisplay( 0 );
-	if (!screen->base.display)
-	{
-		free( screen );
-		return NULL;
-	}
-
     /* Make sure we can assign every screen id, even
        if LBScreenDefault is not the system's default */
-	default_id = XDefaultScreen( screen->base.display );
+	default_id = 0;
 	if (screen_id == LBScreenDefault)
 	{
 		screen->base.screen = default_id;
@@ -59,57 +43,13 @@ void* lb_screen_construct( int screen_id )
 		screen->base.screen = screen_id;
 	}
 
-    /* Get information on the available screen modes */
-    {
-        int not_used;
-
-        screen->size_count = 0;
-        screen->sizes = NULL;
-        screen->screen_config = NULL;
-
-        if (XQueryExtension( screen->base.display, "RANDR",
-                             &not_used, &not_used, &not_used ))
-        {
-            screen->screen_config = XRRGetScreenInfo(
-                screen->base.display,
-                XRootWindow( screen->base.display,
-                             screen->base.screen )
-            );
-
-            if (screen->screen_config)
-            {
-                screen->current_config = XRRConfigCurrentConfiguration(
-                    screen->screen_config,
-                    &screen->current_rotation
-                );
-
-                screen->config_at_construction = screen->current_config;
-
-                screen->sizes = XRRConfigSizes( screen->screen_config,
-                                                &screen->size_count );
-            }
-        }
-    }
-
 	return screen;
 }
 
 void* lb_screen_destruct( void* scr )
 {
-	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
+	SDLScreenImpl* screen = (SDLScreenImpl*)scr;
 	assert( screen );
-
-    if (screen->sizes && screen->current_config != screen->config_at_construction)
-    {
-        lb_screen_change_mode( screen, screen->config_at_construction );
-    }
-
-    if (screen->screen_config)
-    {
-        XRRFreeScreenConfigInfo( screen->screen_config );
-    }
-
-	XCloseDisplay( screen->base.display );
 	free( screen );
 	
 	return NULL;
@@ -125,63 +65,31 @@ int lb_screen_constructed( void* scr )
 
 int lb_screen_get_width( void* scr )
 {
-	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
-	assert( screen );
-	/* We don't want these to depend on any extensions */
-	return XDisplayWidth( screen->base.display, screen->base.screen );
+	return 0;
 }
 
 int lb_screen_get_height( void* scr )
 {
-	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
-	assert( screen );
-	return XDisplayHeight( screen->base.display, screen->base.screen );
+	return 0;
 }
 
 int lb_screen_modes( void* scr )
 {
-	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
-	assert( screen );
-    return screen->size_count;
+    return 0;
 }
 
 int lb_screen_get_mode_width( void* scr, int mode )
 {
-	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
-	assert( screen );
-	/* If RANDR is not availiable or an error occured,
-	   screen->size_count should be 0 */
-	assert( screen->sizes );
-    return screen->sizes[mode].width;
+    return 0;
 }
 
 int lb_screen_get_mode_height( void* scr, int mode )
 {
-	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
-	assert( screen );
-	assert( screen->sizes );
-    return screen->sizes[mode].height;
+    return 0;
 }
 
 enum LBScreenError lb_screen_change_mode( void* scr, int mode )
 {
-    int error;
-	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
-	assert( screen );
-	assert( screen->sizes );
-
-    error = XRRSetScreenConfig( screen->base.display,
-                                screen->screen_config,
-                                RootWindow( screen->base.display,
-                                            screen->base.screen ),
-                                mode,
-                                screen->current_rotation,
-                                CurrentTime );
-
-    if (error == BadValue)
-        return LBScreenInvalidMode;
-
-    screen->current_config = mode;
     return LBScreenNoError;
 }
 

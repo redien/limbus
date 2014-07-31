@@ -6,21 +6,18 @@
           http://www.boost.org/LICENSE_1_0.txt)
 */
 
-#ifndef X11_WINDOW_H
-#define X11_WINDOW_H
+#ifndef SDL_WINDOW_H
+#define SDL_WINDOW_H
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include "x11_screen.h"
+#include <SDL.h>
+#include "sdl_screen.h"
 
 typedef struct
 {
-	X11Screen* screen;
-	Window window;
-	Window root_window;
-	void (*create_window_impl)(void*, XVisualInfo*);
+    SDL_Window *window;
+	SDLScreen* screen;
+	void (*create_window_impl)(void*, Uint32 flags);
 	void (*destroy_window_impl)(void*);
-} X11Window;
+} SDLWindow;
 
 #endif
-
