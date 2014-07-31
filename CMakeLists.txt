@@ -143,24 +143,26 @@ if (UNIX)
 endif (UNIX)
 
 
-set(
-	ENABLE_TABLET_SUPPORT
-	OFF
-	CACHE BOOL "Enable support for pressure-sensitive tablets."
-)
-if(ENABLE_TABLET_SUPPORT)
-	set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/tablet.h )
-	set(
-		BIND_SOURCES
-			${BIND_SOURCES}
-			tablet.cdef
-	)
-	set(
-		GENERATED_CPP_SOURCES
-			${GENERATED_CPP_SOURCES}
-			${CPP_DIR}/Tablet.cpp
-	)
-endif(ENABLE_TABLET_SUPPORT)
+if (LINUX OR WIN32)
+    set(
+        ENABLE_TABLET_SUPPORT
+        OFF
+        CACHE BOOL "Enable support for pressure-sensitive tablets."
+    )
+    if(ENABLE_TABLET_SUPPORT)
+        set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/tablet.h )
+        set(
+            BIND_SOURCES
+                ${BIND_SOURCES}
+                tablet.cdef
+        )
+        set(
+            GENERATED_CPP_SOURCES
+                ${GENERATED_CPP_SOURCES}
+                ${CPP_DIR}/Tablet.cpp
+        )
+    endif(ENABLE_TABLET_SUPPORT)
+endif (LINUX OR WIN32)
 
 if (LINUX OR WIN32)
     set(
@@ -295,7 +297,30 @@ if(WIN32)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/audio_stream/winapi_audio_stream.c )
 	endif(ENABLE_AUDIO_STREAM_SUPPORT)
 
-elseif(UNIX)
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	set(
+		SHARED_LIBRARIES
+            SDL
+			GL
+	)
+
+	set(
+		SOURCE_FILES
+			${SOURCE_FILES}
+			source/platform/sdl/opengl_context/opengl_context_sdl.c
+			source/platform/sdl/screen/screen_sdl.c
+			source/platform/sdl/window/window_sdl.c
+	)
+
+	if(ENABLE_MOUSE_SUPPORT)
+		set( SOURCE_FILES ${SOURCE_FILES} source/platform/sdl/mouse/sdl_mouse.c )
+	endif(ENABLE_MOUSE_SUPPORT)
+
+	if(ENABLE_KEYBOARD_SUPPORT)
+		set( SOURCE_FILES ${SOURCE_FILES} source/platform/sdl/keyboard/sdl_keyboard.c )
+	endif(ENABLE_KEYBOARD_SUPPORT)
+
+elseif(LINUX)
 	set(
 		SHARED_LIBRARIES
 			X11
@@ -303,40 +328,13 @@ elseif(UNIX)
 			GL
 	)
 
-	target_link_libraries( lua m )
-
-    if (FREEBSD)
-        link_directories(
-              /usr/local/lib/
-        )
-        include_directories(
-              /usr/local/include/
-        )
-    endif (FREEBSD)
-
 	set(
 		SOURCE_FILES
 			${SOURCE_FILES}
-			source/platform/unix/timing/timing_unix.c
 			source/platform/x11/opengl_context/opengl_context_glx.c
 			source/platform/x11/screen/screen_x11.c
 			source/platform/x11/window/window_x11.c
 	)
-
-	if(ENABLE_FILESYSTEM_SUPPORT)
-		set( SOURCE_FILES ${SOURCE_FILES} source/platform/unix/filesystem/unix_filesystem.c )
-
-		if (FREEBSD)
-		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/freebsd/filesystem/freebsd_filesystem.c )
-		elseif (LINUX)
-		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/linux/filesystem/linux_filesystem.c )
-		endif (FREEBSD)
-	endif(ENABLE_FILESYSTEM_SUPPORT)
-
-	if(ENABLE_SOCKET_SUPPORT)
-		set( SOURCE_FILES ${SOURCE_FILES} source/platform/unix/socket/unix_socket.c )
-	endif(ENABLE_SOCKET_SUPPORT)
-
 
 	if(ENABLE_JOYSTICK_SUPPORT)
 		if(LINUX)
@@ -371,6 +369,38 @@ elseif(UNIX)
 	endif(ENABLE_AUDIO_STREAM_SUPPORT)
 endif(WIN32)
 
+if (UNIX)
+	target_link_libraries( lua m )
+
+    if (FREEBSD)
+        link_directories(
+              /usr/local/lib/
+        )
+        include_directories(
+              /usr/local/include/
+        )
+    endif (FREEBSD)
+
+	set(
+		SOURCE_FILES
+			${SOURCE_FILES}
+			source/platform/unix/timing/timing_unix.c
+	)
+
+	if(ENABLE_FILESYSTEM_SUPPORT)
+		set( SOURCE_FILES ${SOURCE_FILES} source/platform/unix/filesystem/unix_filesystem.c )
+
+		if (FREEBSD)
+		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/freebsd/filesystem/freebsd_filesystem.c )
+		elseif (LINUX)
+		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/linux/filesystem/linux_filesystem.c )
+		endif (FREEBSD)
+	endif(ENABLE_FILESYSTEM_SUPPORT)
+
+	if(ENABLE_SOCKET_SUPPORT)
+		set( SOURCE_FILES ${SOURCE_FILES} source/platform/unix/socket/unix_socket.c )
+	endif(ENABLE_SOCKET_SUPPORT)
+endif (UNIX)
 
 
 set( BUILD_SHARED_DESC "Build as a shared library" )

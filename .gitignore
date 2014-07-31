@@ -17,4 +17,3 @@ generated/csharp/*
 generated/go/*
 commit_log.txt
 dependencies/lua*
-
