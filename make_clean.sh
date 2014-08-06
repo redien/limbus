@@ -9,12 +9,12 @@
 # You should have received a copy of the CC0 Public Domain Dedication along with this software.
 # If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
-rm -f bin/*
-rm -f -R build/*
-rm -f -R doc/*
+rm -fR bin/*
+rm -fR build/*
+rm -fR doc/*
 rm -f generated/*.*
-rm -f -R generated/cpp/*
-rm -f generated/lua/*
-rm -f generated/ruby/*
-rm -f generated/python/*
-rm -f lib/*
+rm -fR generated/cpp/*
+rm -fR generated/lua/*
+rm -fR generated/ruby/*
+rm -fR generated/python/*
+rm -fR lib/*
