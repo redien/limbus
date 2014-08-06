@@ -1,8 +1,5 @@
 Limbus
 ======
-
-Project description
-------
 A cross-platform multimedia library aimed at supporting a wide range of programming languages. It exposes a set of C APIs used to generate high-level object-oriented bindings for supported languages at compile-time.
 
 Currently binding generators exists for C++, C#, Lua, Python and Ruby
