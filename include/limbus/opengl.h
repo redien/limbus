@@ -20,6 +20,8 @@ extern "C"
 	#define glGetProcAddress wglGetProcAddress
 #elif __APPLE__
     #include <OpenGL/gl.h>
+    #include <OpenGL/glext.h>
+    #define APIENTRY
 
     void* glGetProcAddress( const char* name );
 #else
