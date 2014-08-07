@@ -51,7 +51,13 @@ set(
 )
 if(COMPILE_EXAMPLES)
 	add_c_example( screen_example )
-	
+    add_c_example( opengl_example )
+    add_c_example( timing_example )
+
+	if (ENABLE_TABLET_SUPPORT)
+		add_c_example( tablet_example )
+	endif (ENABLE_TABLET_SUPPORT)
+
 	if (ENABLE_AUDIO_STREAM_SUPPORT)
 		add_c_example( audio_stream_example )
 	endif (ENABLE_AUDIO_STREAM_SUPPORT)
@@ -64,4 +70,3 @@ if(COMPILE_EXAMPLES)
 		endif(GENERATE_CPP_BINDING)
 	endif(ENABLE_MOUSE_SUPPORT AND ENABLE_KEYBOARD_SUPPORT)
 endif(COMPILE_EXAMPLES)
-

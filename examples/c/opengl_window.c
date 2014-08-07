@@ -15,14 +15,9 @@
 #include <limbus/keyboard.h>
 #include <limbus/mouse.h>
 #include <limbus/opengl_context.h>
+#include <limbus/opengl.h>
 
 #include <stdio.h>
-
-#ifdef _WIN32
-	#include <windows.h>
-#endif
-
-#include <GL/gl.h>
 
 int main( int argc, char** argv )
 {

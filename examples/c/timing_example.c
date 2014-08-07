@@ -24,8 +24,8 @@ int main( int argc, char** argv )
 	while (counter > 0)
 	{
 		printf( "%d\n", counter );
-		start = time_count_in_seconds();
-		while (time_count_in_seconds() < (start + 1.0)) {}
+		start = lb_time_count_in_seconds();
+		while (lb_time_count_in_seconds() < (start + 1.0)) {}
 		counter--;
 	}
 
