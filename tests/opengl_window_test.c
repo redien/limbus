@@ -15,16 +15,11 @@
 #include <limbus/screen.h>
 #include <limbus/window.h>
 #include <limbus/opengl_context.h>
+#include <limbus/opengl.h>
 
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-
-#ifdef _WIN32
-	#include <windows.h>
-#endif
-
-#include <GL/gl.h>
 
 int main( int argc, char** argv )
 {

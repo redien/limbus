@@ -26,8 +26,8 @@
 typedef void (APIENTRY *GLGENBUFFERSPROC)( GLsizei, GLuint* );
 typedef void (APIENTRY *GLDELETEBUFFERSPROC)( GLsizei, const GLuint* );
 typedef void (APIENTRY *GLBINDBUFFERPROC)( GLenum, GLuint );
-typedef void (APIENTRY *GLBUFFERDATAPROC)( GLenum, ptrdiff_t, const GLvoid*, GLenum );
-typedef void (APIENTRY *GLBUFFERSUBDATAPROC)( GLenum, ptrdiff_t, ptrdiff_t, const GLvoid* );
+typedef void (APIENTRY *GLBUFFERDATAPROC)( GLenum, GLsizeiptr, const GLvoid*, GLenum );
+typedef void (APIENTRY *GLBUFFERSUBDATAPROC)( GLenum, GLintptr, GLsizeiptr, const GLvoid* );
 
 #define BUFFER_OFFSET( x ) (((char*)0) + x)
 
