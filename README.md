@@ -20,6 +20,7 @@ Feel free to email me (jesosk@gmail.com) if you're having trouble compiling the 
 Copying
 ------
 Limbus - A cross-platform multimedia library.
+
 Written in 2014 by Jesper Oskarsson jesosk@gmail.com
 
 To the extent possible under law, the author(s) have dedicated all copyright
