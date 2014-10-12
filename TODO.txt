@@ -13,6 +13,7 @@
 List of things to do:
 -----------------------
 
+- Fully implement the filesystem API for WinAPI & OS X
 - Make input devices' event loops independent from the window's polling.
 - Produce an error if window is polled for events before it is created.
 - Move from CMake to Premake4 (or progen.lua?)
@@ -26,7 +27,7 @@ List of things to do:
 - Replace asserts with real error handling.
 	- Have lb_*_constructed return an error message when
 	  constructing an object fails.
-- Look over the LBAudioStrean API
+- Look over the LBAudioStream API
 - Look over the LBTablet API and make sure it compiles on all platforms.
 	- Fix X11 implementation.
 - Implement custom_context.h for X11.

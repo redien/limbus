@@ -51,7 +51,7 @@ typedef enum LBWindowEvent LBWindowEvent;
   * since a graphics context is needed before the window can be fully created.
   * @return a pointer to the newly created window object if successful,
   * else returns a pointer identifying a non-constructed window object.
-  * Use lb_window_constructed to find out if a window object was
+  * Use lb_window_constructed to find out if an object was
   * constructed or not.
   */
 LBWindow lb_window_construct( void );
@@ -67,7 +67,6 @@ LBWindow lb_window_destruct( LBWindow window );
 
 /** Check for successfully constructed window objects.
   * @param window a pointer returned by lb_window_construct
-  * or lb_window_destruct
   * @return 1 if window points to a successfully constructed
   * window object or 0 if it doesn't.
   */

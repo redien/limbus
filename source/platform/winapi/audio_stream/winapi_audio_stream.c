@@ -140,7 +140,7 @@ int lb_audio_stream_get_channels( LBAudioStream audio_stream )
 	return self->format.nChannels;
 }
 
-int lb_audio_stream_get_rate( LBAudioStream audio_stream )
+int lb_audio_stream_get_sample_rate( LBAudioStream audio_stream )
 {
 	AudioStreamWinAPI* self = (AudioStreamWinAPI*)audio_stream;
 	return self->format.nSamplesPerSec;
@@ -161,21 +161,19 @@ unsigned int lb_audio_stream_get_buffer_size( LBAudioStream audio_stream )
 int lb_audio_stream_write( LBAudioStream audio_stream )
 {
 	AudioStreamWinAPI* self = (AudioStreamWinAPI*)audio_stream;
-	int result = waveOutWrite(self->handle, &self->headers[self->current_buffer], sizeof(WAVEHDR));
+	waveOutWrite(self->handle, &self->headers[self->current_buffer], sizeof(WAVEHDR));
 
 	EnterCriticalSection(&self->buffers_available_mutex);
 	self->buffers_available -= 1;
 	LeaveCriticalSection(&self->buffers_available_mutex);
 
 	self->current_buffer = (self->current_buffer + 1) % NUMBER_OF_BUFFERS;
-
-	return 0;
 }
 
 void lb_audio_stream_drop( LBAudioStream audio_stream )
 {
 	AudioStreamWinAPI* self = (AudioStreamWinAPI*)audio_stream;
-	int result = waveOutReset(self->handle);
+	waveOutReset(self->handle);
 }
 
 LBAudioStreamError lb_audio_stream_wait_for_available_buffers( LBAudioStream audio_stream )

@@ -44,7 +44,7 @@ typedef enum LBMouseButton LBMouseButton;
 /** Constructs a new mouse object.
   * @return a pointer to the newly created mouse object if successful,
   * else returns a pointer identifying a non-constructed mouse object.
-  * Use lb_mouse_constructed to find out if a mouse object was
+  * Use lb_mouse_constructed to find out if an object was
   * constructed or not.
   */
 LBMouse lb_mouse_construct( void );
@@ -58,7 +58,6 @@ void lb_mouse_destruct( LBMouse mouse );
 
 /** Check for successfully constructed mouse objects.
   * @param mouse a pointer returned by lb_mouse_construct
-  * or lb_mouse_destruct
   * @return 1 if mouse points to a successfully constructed
   * mouse object or 0 if it doesn't.
   */

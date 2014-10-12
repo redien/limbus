@@ -28,8 +28,12 @@ extern "C"
 	} LBWindowData;
 #endif
 
+/** Creates the specified window and returns the platform-dependent window data.
+  * @param window a pointer to a window object created with lb_window_construct.
+  * @return a pointer to the platform-dependent window data that may be used to create a
+  * custom context.
+  */
 LBWindowData* lb_custom_context_create_window( LBWindow window );
-void lb_custom_context_bind( LBWindow window, LBWindowData* window_data );
 
 #ifdef __cplusplus
 }

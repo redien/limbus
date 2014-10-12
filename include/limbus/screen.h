@@ -38,7 +38,7 @@ typedef enum LBScreenError LBScreenError;
 /** Constructs a screen object for the given screen.
  *  LBScreenDefault refers to the system's default screen if there is one.
  *  @param lb_screen_id the id of the screen to construct an object for
- *  @return a pointer to the newly created screen object if successful, else returns a pointer identifying a non-constructed screen object. Use lb_screen_constructed to find out if a screen object was constructed or not.
+ *  @return a pointer to the newly created screen object if successful, else returns a pointer identifying a non-constructed screen object. Use lb_screen_constructed to find out if an object was constructed or not.
  */
 LBScreen lb_screen_construct( int screen_id );
 
@@ -51,7 +51,7 @@ LBScreen lb_screen_construct( int screen_id );
 LBScreen lb_screen_destruct( LBScreen screen );
 
 /** Check for successfully constructed screen objects.
- *  @param screen a pointer returned by lb_screen_construct or lb_screen_destruct
+ *  @param screen a pointer returned by lb_screen_construct
  *  @return 1 if screen points to a successfully constructed screen object or 0 if it doesn't.
  */
 int lb_screen_constructed( LBScreen screen );

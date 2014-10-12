@@ -18,13 +18,19 @@ extern "C"
 {
 #endif
 
+/** Returns the time in seconds since program startup as a double. */
 double lb_time_count_in_seconds( void );
+
+/** Returns the time in milliseconds since program startup as a double. */
 unsigned long lb_time_count_in_milliseconds( void );
-void lb_msleep( unsigned int msec );
-void lb_usleep( unsigned int usec );
+
+/** Puts the current thread to sleep for a number of milliseconds. */
+void lb_msleep( unsigned int milliseconds );
+
+/** Puts the current thread to sleep for a number of microseconds. */
+void lb_usleep( unsigned int microseconds );
 
 #ifdef __cplusplus
 }
 #endif
 #endif
-

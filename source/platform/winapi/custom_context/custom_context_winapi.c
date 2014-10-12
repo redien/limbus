@@ -22,7 +22,3 @@ LBWindowData* lb_custom_context_create_window( LBWindow win )
 	window->construct_impl( window );
 	return (LBWindowData*)window;
 }
-
-void lb_custom_context_bind( LBWindow win, LBWindowData* window_data )
-{
-}

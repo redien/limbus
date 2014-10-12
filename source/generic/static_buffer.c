@@ -29,6 +29,11 @@ void lb_static_buffer_destruct( void* buffer )
     free( buffer );
 }
 
+int lb_static_buffer_constructed( void* buffer )
+{
+    return (buffer) ? 1 : 0;
+}
+
 #define DEFINE_TYPE( name, type )\
     void lb_static_buffer_set##name( void* buffer, unsigned int offset, type value ) {\
         memcpy( &((char*)buffer)[offset], &value, sizeof value );\

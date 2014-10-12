@@ -54,7 +54,7 @@ typedef enum LBKey LBKey;
 /** Constructs a new keyboard object.
   * @return a pointer to the newly created keyboard object if successful,
   * else returns a pointer identifying a non-constructed keyboard object.
-  * Use lb_keyboard_constructed to find out if a keyboard object was
+  * Use lb_keyboard_constructed to find out if an object was
   * constructed or not.
   */
 LBKeyboard lb_keyboard_construct( void );
@@ -68,7 +68,6 @@ void lb_keyboard_destruct( LBKeyboard keyboard );
 
 /** Check for successfully constructed keyboard objects.
   * @param keyboard a pointer returned by lb_keyboard_construct
-  * or lb_keyboard_destruct
   * @return 1 if keyboard points to a successfully constructed
   * keyboard object or 0 if it doesn't.
   */

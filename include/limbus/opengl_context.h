@@ -47,7 +47,7 @@ typedef enum LBOpenglContextColorFormat LBOpenglContextColorFormat;
   * of the window object pointed to by window.
   * @return a pointer to the newly created context object if successful,
   * else returns a pointer identifying a non-constructed context object.
-  * Use lb_opengl_context_constructed to find out if a context object was
+  * Use lb_opengl_context_constructed to find out if an object was
   * constructed or not.
   */
 LBOpenglContext lb_opengl_context_construct( LBWindow window, int use_current );
@@ -69,7 +69,6 @@ void lb_opengl_context_release_ownership( LBOpenglContext context );
 
 /** Check for successfully constructed OpenGL context objects.
   * @param context a pointer returned by lb_opengl_context_construct
-  * or lb_opengl_context_destruct
   * @return 1 if context points to a successfully constructed
   * OpenGL context object or 0 if it doesn't.
   */

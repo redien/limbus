@@ -22,14 +22,56 @@ extern "C"
 
 typedef void* LBStaticBuffer;
 
-LBStaticBuffer lb_static_buffer_construct( unsigned int size );
-void lb_static_buffer_destruct( LBStaticBuffer buffer );
+/** Constructs a new static buffer object.
+  * @param size_in_bytes the size of the buffer in bytes.
+  * @return a pointer to the newly created static buffer object if successful,
+  * else returns a pointer identifying a non-constructed static buffer object.
+  * Use lb_static_buffer_constructed to find out if an object was
+  * constructed or not.
+  */
+LBStaticBuffer lb_static_buffer_construct( unsigned int size_in_bytes );
 
-void lb_static_buffer_setf32( LBStaticBuffer buffer, unsigned int offset, float value );
-void lb_static_buffer_setui8( LBStaticBuffer buffer, unsigned int offset, unsigned char value );
+/** Destructs a previously constructed static buffer object.
+  * Destructing a static buffer object will deallocate all the resources
+  * associated with it.
+  * @param static_buffer a pointer to the static buffer object to destruct.
+  */
+void lb_static_buffer_destruct( LBStaticBuffer static_buffer );
 
-float lb_static_buffer_getf32( LBStaticBuffer buffer, unsigned int offset );
-unsigned char lb_static_buffer_getui8( LBStaticBuffer buffer, unsigned int offset );
+/** Check for successfully constructed static buffer objects.
+  * @param static_buffer a pointer returned by lb_static_buffer_construct
+  * @return 1 if static_buffer points to a successfully constructed
+  * static buffer object or 0 if it doesn't.
+  */
+int lb_static_buffer_constructed( LBFilesystem filesystem );
+
+/** Sets a 32-bit floating-point value at the specified offset.
+  * @param static_buffer a pointer returned by lb_static_buffer_construct
+  * @param offset offset in the buffer to set the value in bytes.
+  * @param value value to set at the specified offset.
+  */
+void lb_static_buffer_setf32( LBStaticBuffer static_buffer, unsigned int offset, float value );
+
+/** Sets a 8-bit unsigned integer value at the specified offset.
+  * @param static_buffer a pointer returned by lb_static_buffer_construct
+  * @param offset offset in the buffer to set the value in bytes.
+  * @param value value to set at the specified offset.
+  */
+void lb_static_buffer_setui8( LBStaticBuffer static_buffer, unsigned int offset, unsigned char value );
+
+/** Gets a 32-bit floating-point value at the specified offset.
+  * @param static_buffer a pointer returned by lb_static_buffer_construct
+  * @param offset offset in the buffer to get the value in bytes.
+  * @return value at the specified offset.
+  */
+float lb_static_buffer_getf32( LBStaticBuffer static_buffer, unsigned int offset );
+
+/** Gets a 8-bit unsigned integer value at the specified offset.
+  * @param static_buffer a pointer returned by lb_static_buffer_construct
+  * @param offset offset in the buffer to get the value in bytes.
+  * @return value at the specified offset.
+  */
+unsigned char lb_static_buffer_getui8( LBStaticBuffer static_buffer, unsigned int offset );
 
 #ifdef __cplusplus
 }

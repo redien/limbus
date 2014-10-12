@@ -163,7 +163,7 @@ int lb_audio_stream_get_channels( LBAudioStream audio_stream )
     return self->channels;
 }
 
-int lb_audio_stream_get_rate( LBAudioStream audio_stream )
+int lb_audio_stream_get_sample_rate( LBAudioStream audio_stream )
 {
     AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
     assert( self );
@@ -184,7 +184,7 @@ unsigned int lb_audio_stream_get_buffer_size( LBAudioStream audio_stream )
     return self->frames;
 }
 
-int lb_audio_stream_write( LBAudioStream audio_stream )
+void lb_audio_stream_write( LBAudioStream audio_stream )
 {
     AlsaAudioStream* self = (AlsaAudioStream*)audio_stream;
     int status;
@@ -194,8 +194,6 @@ int lb_audio_stream_write( LBAudioStream audio_stream )
     {
         snd_pcm_prepare( self->pcm_handle );
     }
-
-    return status;
 }
 
 void lb_audio_stream_drop( LBAudioStream audio_stream )

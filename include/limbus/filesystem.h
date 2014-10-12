@@ -38,32 +38,140 @@ typedef enum LBFilesystemError LBFilesystemError;
 
 typedef void* LBFilesystem;
 
+/* An enumeration of watch events. */
 enum LBFilesystemWatchEvent
 {
+    /* The watched file was modified */
     LBFilesystemWatchEventModified
 };
 typedef enum LBFilesystemWatchEvent LBFilesystemWatchEvent;
 
+/** Constructs a new filesystem object.
+  * @return a pointer to the newly created filesystem object if successful,
+  * else returns a pointer identifying a non-constructed filesystem object.
+  * Use lb_filesystem_constructed to find out if an object was
+  * constructed or not.
+  */
 LBFilesystem lb_filesystem_construct( void );
-void lb_filesystem_destruct( LBFilesystem filesystem );
-LBFilesystemError lb_filesystem_constructed( LBFilesystem filesystem );
 
+/** Destructs a previously constructed filesystem object.
+  * Destructing a filesystem object will deallocate all the resources
+  * associated with it.
+  * @param filesystem a pointer to the filesystem object to destruct.
+  */
+void lb_filesystem_destruct( LBFilesystem filesystem );
+
+/** Check for successfully constructed filesystem objects.
+  * @param filesystem a pointer returned by lb_filesystem_construct
+  * @return 1 if filesystem points to a successfully constructed
+  * filesystem object or 0 if it doesn't.
+  */
+int lb_filesystem_constructed( LBFilesystem filesystem );
+
+
+/** Check if the specified path refers to a file.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @param path a string specifying the path to check.
+  * @return 1 if path refers to a file or 0 if it doesn't.
+  */
 int lb_filesystem_path_is_file( LBFilesystem filesystem, const char* path );
+
+/** Returns the file size of the file at path in bytes.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @param path a string specifying the path to the file.
+  * @return the file size in bytes of the file at path.
+  */
 unsigned int lb_filesystem_file_size( LBFilesystem filesystem, const char* path );
 
+
+/** Check if the specified path refers to a directory.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @param path a string specifying the path to check.
+  * @return 1 if path refers to a directory or 0 if it doesn't.
+  */
 int lb_filesystem_path_is_directory( LBFilesystem filesystem, const char* path );
+
+/** Creates a directory defined by path.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @param path a string specifying the path of the new directory to create.
+  * @return LBFilesystemNoError if a directory was successfully created.
+  * LBFilesystemPathNotFound if the specified path is not valid.
+  * LBFilesystemDirectoryAlreadyExists if the directory already exists.
+  * LBFilesystemUnknownError otherwise.
+  */
 LBFilesystemError lb_filesystem_create_directory( LBFilesystem filesystem, const char* path );
+
+/** Removes the directory defined by path.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @param path a string specifying the path of the directory to remove.
+  * @return LBFilesystemNoError if a directory was successfully removed.
+  * LBFilesystemPathNotFound if the specified path is not valid.
+  * LBFilesystemUnknownError otherwise.
+  */
 LBFilesystemError lb_filesystem_remove_directory( LBFilesystem filesystem, const char* path );
+
+/** Returns the current working directory path.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @return a string with the current working directory path.
+  */
 const char* lb_filesystem_get_working_directory( LBFilesystem filesystem );
+
+/** Lists the files and sub-directories of the specified directory.
+  * The first entry is not read until lb_filesystem_directory_next_entry is called.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @param path a string specifying the path of the directory to list.
+  * @return 1 if successfully listed directory, 0 otherwise.
+  */
 int lb_filesystem_directory_list( LBFilesystem filesystem, const char* path );
+
+/** Reads the next entry in the directory list.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @return 1 if an entry was successfully read, 0 otherwise.
+  */
 int lb_filesystem_directory_next_entry( LBFilesystem filesystem );
+
+/** Returns the current entry in the list.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @return a string with the name of the current directory entry.
+  */
 const char* lb_filesystem_directory_get_entry( LBFilesystem filesystem );
 
+/** Adds a watch on the specified path.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @param path path to watch.
+  * @return an integer specifying the watch ID if successful. If a watch
+  * could not be created, returns -1.
+  */
 int lb_filesystem_watch_path( LBFilesystem filesystem, char* path );
+
+/** Removes the watch with the specified ID.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @param id ID of the watch to remove.
+  */
 void lb_filesystem_remove_watch( LBFilesystem filesystem, int id );
+
+/** Reads the next watch event.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @return 1 if an event was read, otherwise 0. 
+  */
 int lb_filesystem_next_watch_event( LBFilesystem filesystem );
+
+/** Returns the id of the read watch event.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @return the id of the read watch event.
+  */
 int lb_filesystem_get_watch_event_id( LBFilesystem filesystem );
+
+/** Returns a string with the name of the file that the read event concerns.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @return a string with the name of the file that the read event concerns.
+  */
 const char* lb_filesystem_get_watch_event_file( LBFilesystem filesystem );
+
+/** Returns the type of the read event.
+  * @param filesystem a pointer to a successfully constructed filesystem object.
+  * @return the type of the read event.
+  */
 LBFilesystemWatchEvent lb_filesystem_get_watch_event_type( LBFilesystem filesystem );
 
 #ifdef __cplusplus
