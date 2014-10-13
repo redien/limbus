@@ -49,7 +49,7 @@ local function transform_expression( symbol )
 		return "(" .. transform_expression( symbol.left ) .. " " .. transform_operator( symbol.op ) .. " " .. transform_expression( symbol.right ) .. ")"
 	end
 	if symbol.is_enum then
-		return symbol.namespace.token.value .. "." .. camel_to_std( filter_enum( symbol.identifier.token.value ) ):upper()
+		return camel_to_std( symbol.namespace.token.value ) .. "." .. camel_to_std( filter_enum( symbol.identifier.token.value ) ):upper()
 	end
 	if symbol.is_member then
 		local prefix = symbol.object.token.value .. "."
@@ -57,7 +57,7 @@ local function transform_expression( symbol )
 		return prefix .. symbol.name.token.value
 	end
 	if symbol.is_constant then
-		return symbol.namespace.token.value .. "." .. camel_to_std( filter_enum( symbol.name.token.value ) ):upper()
+		return camel_to_std( symbol.namespace.token.value ) .. "." .. camel_to_std( filter_enum( symbol.name.token.value ) ):upper()
 	end
 	if symbol.is_method_call then
 		local prefix = symbol.object.token.value .. "."
@@ -65,10 +65,10 @@ local function transform_expression( symbol )
 		return prefix .. filter_method_name( symbol.name.token.value ) .. call_arguments( symbol.arguments, transform_expression )
 	end
 	if symbol.is_call then
-		return symbol.namespace.token.value .. "." .. symbol.name.token.value .. call_arguments( symbol.arguments, transform_expression )
+		return camel_to_std( symbol.namespace.token.value ) .. "." .. symbol.name.token.value .. call_arguments( symbol.arguments, transform_expression )
 	end
 	if symbol.is_new then
-		return symbol.type.namespace .. "." .. symbol.type.class .. call_arguments( symbol.arguments, transform_expression )
+		return symbol.type.class .. call_arguments( symbol.arguments, transform_expression )
 	end
 	assert( false, "Unknown expression" )
 end
@@ -151,12 +151,26 @@ local function transform_signal( signal )
 	return line( "self." .. signal.name.token.value .. " = []" )
 end
 
-local function transform_module( symbol )
+local function transform_module( symbol, referenced_classes )
 	if symbol.is_class then
 		local signals = list_signals( symbol.statements )
 		local constructor = find_constructor( symbol.statements )
+        
+        local imports = ""
+        for _, reference in pairs( referenced_classes ) do
+            local skip = false
+            if reference.module and reference.module.is_interface then
+                skip = true
+            end
+            if not skip then
+                imports = imports
+                    .. line( "from " .. camel_to_std( reference.class ) .. " import " .. reference.class )
+            end
+        end
+
 		return
-			   line( "class " .. symbol.name.token.value .. "(object):", 1 )
+               imports
+            .. line( "class " .. symbol.name.token.value .. "(object):", 1 )
 			.. list_as_string( symbol.statements, transform_class_statement, "\n" )
 			.. line( "" )
 			.. line( "def __init__" .. arguments( constructor.arguments, transform_identifier_type_pair ), 1 )
@@ -171,6 +185,6 @@ local function transform_module( symbol )
 	assert( false, "Unknown module statement" )
 end
 
-function generate_class_python( class, classes )
-	return transform_module( class )
+function generate_class_python( class, referenced_classes )
+	return transform_module( class, referenced_classes )
 end

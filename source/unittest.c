@@ -14,13 +14,11 @@
 #include <stdio.h>
 
 extern void vector_unittest();
-extern void hashmap_unittest();
 extern void unicode_unittest();
 
 int main( int argc, char** argv )
 {
 	vector_unittest();
-	hashmap_unittest();
 	unicode_unittest();
 
 	printf( "ALL TESTS PASSED!\n" );

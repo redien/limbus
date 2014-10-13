@@ -72,7 +72,6 @@ set( GENERATED_CONFIG ${CMAKE_CURRENT_SOURCE_DIR}/generated/config.lua )
 ##
 set(
 	SOURCE_FILES
-		source/util/hashmap.c
 		source/util/unicode.c
 		source/util/vector.c
 
@@ -135,39 +134,6 @@ if(ENABLE_FILESYSTEM_SUPPORT)
 			${CPP_DIR}/Filesystem.cpp
 	)
 endif(ENABLE_FILESYSTEM_SUPPORT)
-
-if (UNIX)
-    set(
-        ENABLE_SOCKET_SUPPORT
-        ON
-        CACHE BOOL "Enable support for BSD sockets."
-    )
-    if(ENABLE_SOCKET_SUPPORT)
-        set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/socket.h )
-    endif(ENABLE_SOCKET_SUPPORT)
-endif (UNIX)
-
-
-if (LINUX OR WIN32)
-    set(
-        ENABLE_TABLET_SUPPORT
-        OFF
-        CACHE BOOL "Enable support for pressure-sensitive tablets."
-    )
-    if(ENABLE_TABLET_SUPPORT)
-        set( BIND_HEADERS ${BIND_HEADERS} ${INCLUDE_SUB_NAME}/tablet.h )
-        set(
-            BIND_SOURCES
-                ${BIND_SOURCES}
-                tablet.cdef
-        )
-        set(
-            GENERATED_CPP_SOURCES
-                ${GENERATED_CPP_SOURCES}
-                ${CPP_DIR}/Tablet.cpp
-        )
-    endif(ENABLE_TABLET_SUPPORT)
-endif (LINUX OR WIN32)
 
 if (LINUX OR WIN32)
     set(
@@ -294,16 +260,17 @@ if(WIN32)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/keyboard/winapi_keyboard.c )
 	endif(ENABLE_KEYBOARD_SUPPORT)
 
-	if(ENABLE_TABLET_SUPPORT)
-		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/tablet/tablet_windows.c )
-	endif(ENABLE_TABLET_SUPPORT)
-
 	if(ENABLE_AUDIO_STREAM_SUPPORT)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/audio_stream/winapi_audio_stream.c )
 	endif(ENABLE_AUDIO_STREAM_SUPPORT)
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	
+    set(
+        CMAKE_MACOSX_RPATH
+        ON
+    )
+    
     FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
     FIND_LIBRARY(FORCEFEEDBACK_LIBRARY ForceFeedback)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
@@ -312,10 +279,11 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     FIND_LIBRARY(COREAUDIO_LIBRARY CoreAudio)
     FIND_LIBRARY(AUDIOTOOLBOX_LIBRARY AudioToolbox)
     FIND_LIBRARY(AUDIOUNIT_LIBRARY AudioUnit)
+    FIND_LIBRARY(SDL2_LIBRARY SDL2)
     
     set(
 		SHARED_LIBRARIES
-            SDL2
+            ${SDL2_LIBRARY}
             iconv
             ${OPENGL_LIBRARY}
             ${FORCEFEEDBACK_LIBRARY}
@@ -328,7 +296,7 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 	)
     
     include_directories(
-      ../SDL2-2.0.3/include
+        ${SDL2_LIBRARY}/Headers
     )
 
 	set(
@@ -377,15 +345,6 @@ elseif(LINUX)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/x11/keyboard/x11_keyboard.c )
 	endif(ENABLE_KEYBOARD_SUPPORT)
 
-	if(ENABLE_TABLET_SUPPORT)
-		set(
-			SHARED_LIBRARIES
-				${SHARED_LIBRARIES}
-				Xi
-		)
-		set( SOURCE_FILES ${SOURCE_FILES} source/platform/x11/tablet/x11_tablet.c )
-	endif(ENABLE_TABLET_SUPPORT)
-
 	if(ENABLE_AUDIO_STREAM_SUPPORT)
 		set(
 			SHARED_LIBRARIES
@@ -423,10 +382,6 @@ if (UNIX)
 		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/linux/filesystem/linux_filesystem.c )
 		endif (FREEBSD)
 	endif(ENABLE_FILESYSTEM_SUPPORT)
-
-	if(ENABLE_SOCKET_SUPPORT)
-		set( SOURCE_FILES ${SOURCE_FILES} source/platform/unix/socket/unix_socket.c )
-	endif(ENABLE_SOCKET_SUPPORT)
 endif (UNIX)
 
 
@@ -529,7 +484,6 @@ if(RUN_UNITTESTS)
 	add_executable(
 		unittest
 			source/unittest.c
-			source/util/hashmap.c
 			source/util/unicode.c
 			source/util/vector.c
 	)

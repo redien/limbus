@@ -10,14 +10,16 @@
 -- If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
 local function ctype_to_python( t )
-	local result = "c_" .. t.basic_type
+	if t.enum then
+	    return "c_int"
+    else
+        local result = "c_" .. t.basic_type:gsub("unsigned char", "byte"):gsub("unsigned", "u"):gsub(" ", "")
 
-    if t.basic_type:find( "unsigned char" ) then result = "c_ubyte" end
-    if t.basic_type:find( "unsigned int" ) then result = "c_uint" end
+        if t.pointer_depth == 1 then result = result .. "_p" end
+        assert( t.pointer_depth <= 1 )
 
-	if t.pointer_depth == 1 then result = result .. "_p" end
-	assert( t.pointer_depth <= 1 )
-	return result
+        return result
+    end
 end
 
 local function GenerateArgumentTypeList( arguments )
@@ -51,12 +53,14 @@ end
 function generate_binding_python( headers )
 	local bind_source = "\
 from ctypes import *\
-import platform\
-if platform.system() == \"Windows\":\
+import sys\
+if sys.platform == \"win32\":\
 	try:\
 		" .. name .. " = cdll." .. name .. "\
 	except WindowsError:\
 		" .. name .. " = cdll.lib" .. name .. "\
+elif sys.platform == \"darwin\":\
+	" .. name .. " = cdll.LoadLibrary(\"lib" .. name .. ".dylib\")\
 else:\
 	" .. name .. " = cdll.LoadLibrary(\"lib" .. name .. ".so\")"
 

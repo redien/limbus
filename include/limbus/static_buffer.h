@@ -43,7 +43,7 @@ void lb_static_buffer_destruct( LBStaticBuffer static_buffer );
   * @return 1 if static_buffer points to a successfully constructed
   * static buffer object or 0 if it doesn't.
   */
-int lb_static_buffer_constructed( LBFilesystem filesystem );
+int lb_static_buffer_constructed( LBStaticBuffer static_buffer );
 
 /** Sets a 32-bit floating-point value at the specified offset.
   * @param static_buffer a pointer returned by lb_static_buffer_construct

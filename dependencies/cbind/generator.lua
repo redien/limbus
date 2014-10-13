@@ -69,6 +69,18 @@ for _, cdef_file in ipairs( cdef_source_files ) do
 	class_names[#class_names + 1] = cdef_file:match( "^([%w_]+)" )
 end
 
+-- Link the references with the actual modules
+for _, references in pairs( referenced_classes ) do
+    for _, reference in pairs( references ) do
+        for _, parsed_cdef in pairs( parsed_cdef_files_syntax ) do
+            if parsed_cdef.namespace.token.value == reference.namespace and
+                parsed_cdef.name.token.value == reference.class then
+                reference.module = parsed_cdef
+            end
+        end
+    end
+end
+
 for _, language in ipairs( languages ) do
 	if language == "lua" then
 		print_dbg( "Generating Lua binding..." )
@@ -108,8 +120,9 @@ for _, language in ipairs( languages ) do
 
 		require "class_gen.python"
 		for i = 1, #parsed_cdef_files_syntax do
-			local class = generate_class_python( parsed_cdef_files_syntax[i] )
+			local class = generate_class_python( parsed_cdef_files_syntax[i], referenced_classes[i] )
 			if class ~= "" then
+                class = "import " .. name .. "\n" .. class
 				write_file( output_path .. "python/" .. class_names[i] .. ".py", class )
 			end
 		end

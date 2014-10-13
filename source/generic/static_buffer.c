@@ -17,28 +17,28 @@
 #include <string.h>
 #include <assert.h>
 
-void* lb_static_buffer_construct( unsigned int size )
+void* lb_static_buffer_construct( unsigned int size_in_bytes )
 {
-    void* buffer = malloc( size );
+    void* buffer = malloc( size_in_bytes );
     assert( buffer );
     return buffer;
 }
 
-void lb_static_buffer_destruct( void* buffer )
+void lb_static_buffer_destruct( LBStaticBuffer buffer )
 {
     free( buffer );
 }
 
-int lb_static_buffer_constructed( void* buffer )
+int lb_static_buffer_constructed( LBStaticBuffer buffer )
 {
     return (buffer) ? 1 : 0;
 }
 
 #define DEFINE_TYPE( name, type )\
-    void lb_static_buffer_set##name( void* buffer, unsigned int offset, type value ) {\
+    void lb_static_buffer_set##name( LBStaticBuffer buffer, unsigned int offset, type value ) {\
         memcpy( &((char*)buffer)[offset], &value, sizeof value );\
     }\
-    type lb_static_buffer_get##name( void* buffer, unsigned int offset ) {\
+    type lb_static_buffer_get##name( LBStaticBuffer buffer, unsigned int offset ) {\
         return *((type*)&((char*)buffer)[offset]);\
     }
 

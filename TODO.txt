@@ -13,6 +13,7 @@
 List of things to do:
 -----------------------
 
+- Fix Lua binding on OS X
 - Fully implement the filesystem API for WinAPI & OS X
 - Make input devices' event loops independent from the window's polling.
 - Produce an error if window is polled for events before it is created.

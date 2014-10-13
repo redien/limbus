@@ -54,10 +54,6 @@ if(COMPILE_EXAMPLES)
     add_c_example( opengl_example )
     add_c_example( timing_example )
 
-	if (ENABLE_TABLET_SUPPORT)
-		add_c_example( tablet_example )
-	endif (ENABLE_TABLET_SUPPORT)
-
 	if (ENABLE_AUDIO_STREAM_SUPPORT)
 		add_c_example( audio_stream_example )
 	endif (ENABLE_AUDIO_STREAM_SUPPORT)

@@ -189,12 +189,12 @@ void* glGetProcAddress( const char* name )
 {
     NSSymbol symbol;
     char *symbolName;
-    symbolName = malloc (strlen (name) + 2); // 1
-    strcpy(symbolName + 1, name); // 2
-    symbolName[0] = '_'; // 3
+    symbolName = malloc (strlen (name) + 2);
+    strcpy(symbolName + 1, name);
+    symbolName[0] = '_';
     symbol = NULL;
-    if (NSIsSymbolNameDefined (symbolName)) // 4
+    if (NSIsSymbolNameDefined (symbolName))
         symbol = NSLookupAndBindSymbol (symbolName);
-    free (symbolName); // 5
-    return symbol ? NSAddressOfSymbol (symbol) : NULL; // 6
+    free (symbolName);
+    return symbol ? NSAddressOfSymbol (symbol) : NULL;
 }

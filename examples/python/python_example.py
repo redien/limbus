@@ -9,9 +9,10 @@
 # You should have received a copy of the CC0 Public Domain Dedication along with this software.
 # If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 
-import openglwindow, timer
+from opengl_window import *
+from OpenGL.GL import *
 
-window = openglwindow.OpenglWindow()
+window = OpenglWindow()
 window.caption = "Hello from Python!"
 window.width = 800
 window.height = 600
@@ -19,21 +20,15 @@ window.create()
 
 running = True
 
-def onWindowEvent( event ):
-	global running
-	if event == openglwindow.WindowEventClose:
-		running = False
+def on_close():
+    global running
+    running = False
 
-def onKeyEvent( key, pressed ):
-	global running
-	if key == openglwindow.KeyEscape and pressed:
-		running = False
-
-window.onWindowEvent.append( onWindowEvent )
-window.onKeyEvent.append( onKeyEvent )
+window.on_close.append( on_close )
 
 while running:
-	window.swapBuffers()
-	window.sendEvents()
+    window.poll_events()
+    glClear(GL_COLOR_BUFFER_BIT)
+    window.swap_buffers()
 
 window.destruct()
