@@ -25,8 +25,6 @@ enum LBFilesystemError
 {
     /* No error occured */
     LBFilesystemNoError,
-    /* Failed to allocate memory */
-    LBFilesystemAllocationFailure,
 	/* A path that does not exist was passed to a function */
 	LBFilesystemPathNotFound,
 	/* A directory with the specified path already exists */

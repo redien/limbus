@@ -22,16 +22,6 @@ extern "C"
 
 typedef void* LBWindow;
 
-/* An enumeration of the API-specific errors. */
-enum LBWindowError
-{
-    /* No error occured */
-    LBWindowNoError,
-    /* Failed to allocate memory */
-    LBWindowAllocationFailure
-};
-typedef enum LBWindowError LBWindowError;
-
 /** An enumeration of the different window event types. */
 enum LBWindowEvent
 {
