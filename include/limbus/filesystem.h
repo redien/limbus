@@ -38,14 +38,6 @@ typedef enum LBFilesystemError LBFilesystemError;
 
 typedef void* LBFilesystem;
 
-/* An enumeration of watch events. */
-enum LBFilesystemWatchEvent
-{
-    /* The watched file was modified */
-    LBFilesystemWatchEventModified
-};
-typedef enum LBFilesystemWatchEvent LBFilesystemWatchEvent;
-
 /** Constructs a new filesystem object.
   * @return a pointer to the newly created filesystem object if successful,
   * else returns a pointer identifying a non-constructed filesystem object.
@@ -110,12 +102,6 @@ LBFilesystemError lb_filesystem_create_directory( LBFilesystem filesystem, const
   */
 LBFilesystemError lb_filesystem_remove_directory( LBFilesystem filesystem, const char* path );
 
-/** Returns the current working directory path.
-  * @param filesystem a pointer to a successfully constructed filesystem object.
-  * @return a string with the current working directory path.
-  */
-const char* lb_filesystem_get_working_directory( LBFilesystem filesystem );
-
 /** Lists the files and sub-directories of the specified directory.
   * The first entry is not read until lb_filesystem_directory_next_entry is called.
   * @param filesystem a pointer to a successfully constructed filesystem object.
@@ -136,43 +122,11 @@ int lb_filesystem_directory_next_entry( LBFilesystem filesystem );
   */
 const char* lb_filesystem_directory_get_entry( LBFilesystem filesystem );
 
-/** Adds a watch on the specified path.
+/** Returns the current working directory path.
   * @param filesystem a pointer to a successfully constructed filesystem object.
-  * @param path path to watch.
-  * @return an integer specifying the watch ID if successful. If a watch
-  * could not be created, returns -1.
+  * @return a string with the current working directory path.
   */
-int lb_filesystem_watch_path( LBFilesystem filesystem, char* path );
-
-/** Removes the watch with the specified ID.
-  * @param filesystem a pointer to a successfully constructed filesystem object.
-  * @param id ID of the watch to remove.
-  */
-void lb_filesystem_remove_watch( LBFilesystem filesystem, int id );
-
-/** Reads the next watch event.
-  * @param filesystem a pointer to a successfully constructed filesystem object.
-  * @return 1 if an event was read, otherwise 0. 
-  */
-int lb_filesystem_next_watch_event( LBFilesystem filesystem );
-
-/** Returns the id of the read watch event.
-  * @param filesystem a pointer to a successfully constructed filesystem object.
-  * @return the id of the read watch event.
-  */
-int lb_filesystem_get_watch_event_id( LBFilesystem filesystem );
-
-/** Returns a string with the name of the file that the read event concerns.
-  * @param filesystem a pointer to a successfully constructed filesystem object.
-  * @return a string with the name of the file that the read event concerns.
-  */
-const char* lb_filesystem_get_watch_event_file( LBFilesystem filesystem );
-
-/** Returns the type of the read event.
-  * @param filesystem a pointer to a successfully constructed filesystem object.
-  * @return the type of the read event.
-  */
-LBFilesystemWatchEvent lb_filesystem_get_watch_event_type( LBFilesystem filesystem );
+const char* lb_filesystem_get_working_directory( LBFilesystem filesystem );
 
 #ifdef __cplusplus
 }

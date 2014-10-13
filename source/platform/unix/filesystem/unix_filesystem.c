@@ -13,12 +13,29 @@
 
 #include <limbus/filesystem.h>
 
-#include "unix_filesystem.h"
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <unistd.h>
+
+#include <stdlib.h>
+#include <assert.h>
+#include <string.h>
+
+#define MAX_FILENAME 64
+#define MAX_PATH 256
+
+typedef struct UnixFilesystemTag
+{
+	DIR* dir;
+	struct dirent* dir_entry;
+	char cwd[MAX_PATH];
+} UnixFilesystem;
 
 /* TODO: Come up with a better way to support this under ANSI strict */
 /*size_t readlink( const char* path, char* buf, size_t size );*/
 
-void* lb_unix_filesystem_construct()
+void* lb_filesystem_construct()
 {
 	UnixFilesystem* filesystem;
 	void* data;
@@ -37,7 +54,7 @@ void* lb_unix_filesystem_construct()
 	return filesystem;
 }
 
-void lb_unix_filesystem_destruct( void* fs )
+void lb_filesystem_destruct( void* fs )
 {
 	UnixFilesystem* filesystem = (UnixFilesystem*)fs;
 
@@ -52,6 +69,20 @@ int lb_filesystem_constructed( void* filesystem )
 	return (filesystem) ? 1 : 0;
 }
 
+int lb_filesystem_path_is_file( void* fs, const char* path )
+{
+	return (lb_filesystem_path_is_directory( fs, path ) == 1) ? 0 : 1;
+}
+
+unsigned int lb_filesystem_file_size( void* fs, const char* path )
+{
+	struct stat info;
+	if (stat( path, &info ) == 0)
+		return info.st_size;
+	else
+		return 0;
+}
+
 int lb_filesystem_path_is_directory( void* fs, const char* path )
 {
 	struct stat info;
@@ -59,11 +90,6 @@ int lb_filesystem_path_is_directory( void* fs, const char* path )
 		return (S_ISDIR( info.st_mode )) ? 1 : 0;
 	else
 		return 0;
-}
-
-int lb_filesystem_path_is_file( void* fs, const char* path )
-{
-	return (lb_filesystem_path_is_directory( fs, path ) == 1) ? 0 : 1;
 }
 
 int lb_filesystem_directory_list( void* fs, const char* path )
@@ -96,15 +122,6 @@ const char* lb_filesystem_directory_get_entry( void* fs )
 {
 	UnixFilesystem* filesystem = (UnixFilesystem*)fs;
 	return filesystem->dir_entry->d_name;
-}
-
-unsigned int lb_filesystem_file_size( void* fs, const char* path )
-{
-	struct stat info;
-	if (stat( path, &info ) == 0)
-		return info.st_size;
-	else
-		return 0;
 }
 
 const char* lb_filesystem_get_working_directory( void* fs )

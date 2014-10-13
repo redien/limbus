@@ -358,15 +358,6 @@ endif(WIN32)
 if (UNIX)
 	target_link_libraries( lua m )
 
-    if (FREEBSD)
-        link_directories(
-              /usr/local/lib/
-        )
-        include_directories(
-              /usr/local/include/
-        )
-    endif (FREEBSD)
-
 	set(
 		SOURCE_FILES
 			${SOURCE_FILES}
@@ -375,12 +366,6 @@ if (UNIX)
 
 	if(ENABLE_FILESYSTEM_SUPPORT)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/unix/filesystem/unix_filesystem.c )
-
-		if (FREEBSD)
-		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/freebsd/filesystem/freebsd_filesystem.c )
-		elseif (LINUX)
-		    set( SOURCE_FILES ${SOURCE_FILES} source/platform/linux/filesystem/linux_filesystem.c )
-		endif (FREEBSD)
 	endif(ENABLE_FILESYSTEM_SUPPORT)
 endif (UNIX)
 
