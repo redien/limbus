@@ -13,6 +13,7 @@
 List of things to do:
 -----------------------
 
+- make lb_filesystem_get_file_size return a long
 - Fix Lua binding on OS X
 - Fully implement the filesystem API for WinAPI & OS X
 - Make input devices' event loops independent from the window's polling.
@@ -26,11 +27,7 @@ List of things to do:
 - Make it possible to include headers from other projects and have cbind scan them for typedefs.
 - Make it possible to automatically copy enums from C headers to class bindings.
 - Replace asserts with real error handling.
-	- Have lb_*_constructed return an error message when
-	  constructing an object fails.
 - Look over the LBAudioStream API
-- Look over the LBTablet API and make sure it compiles on all platforms.
-	- Fix X11 implementation.
 - Implement custom_context.h for X11.
 - Turn off use of bundled Lua in the repo and make the use of Lua configurable.
 - Add CMake variables for disabling all of the subsystems.
@@ -47,4 +44,3 @@ List of things to do:
 - Make it possible for the users to plug-in their own code for memory handling.
 - Add support for OpenGL 3.0+ contexts.
 - Add clipboard API
-- Write an implementation for MacOS.
