@@ -13,7 +13,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <limbus/screen.h>
+#include <limbus/display.h>
 #include <limbus/window.h>
 
 #include "common.h"

@@ -18,7 +18,7 @@ extern "C"
 {
 #endif
 
-#include <limbus/screen.h>
+#include <limbus/display.h>
 
 typedef void* LBWindow;
 
@@ -36,7 +36,7 @@ typedef enum LBWindowEvent LBWindowEvent;
 
 
 
-/** Constructs a new window object on the default screen.
+/** Constructs a new window object on the default display.
   * Simply calling this function will not create an actual window
   * since a graphics context is needed before the window can be fully created.
   * @return a pointer to the newly created window object if successful,
@@ -62,22 +62,22 @@ LBWindow lb_window_destruct( LBWindow window );
   */
 int lb_window_constructed( LBWindow window );
 
-/** Set the screen object of the screen to associate the window with.
+/** Set the display object of the display to associate the window with.
   * @param window a pointer to a successfully constructed window object.
-  * @param screen a pointer to a successfully constructed screen object
-  * created with lb_screen_construct. The window object does not take
-  * ownership of the screen object pointed to by screen.
+  * @param display a pointer to a successfully constructed display object
+  * created with lb_display_construct. The window object does not take
+  * ownership of the display object pointed to by display.
   */
-void lb_window_set_screen( LBWindow window, LBScreen screen );
+void lb_window_set_display( LBWindow window, LBDisplay display );
 
-/** Get the screen object of the screen that the window is associated with.
+/** Get the display object of the display that the window is associated with.
   * @param window a pointer to a successfully constructed window object.
-  * @return a pointer to the screen object of the screen that the window
+  * @return a pointer to the display object of the display that the window
   * is associated with. The window object retains ownership of the default
-  * screen object even if a new screen object is set. This means that the
-  * default screen should never be destructed manually by the user.
+  * display object even if a new display object is set. This means that the
+  * default display should never be destructed manually by the user.
   */
-LBScreen lb_window_get_screen( LBWindow window );
+LBDisplay lb_window_get_display( LBWindow window );
 
 /** Set whether the window is styled or not. A non-styled window
   * will consist of only the client area, without any titlebar or border.
@@ -155,7 +155,7 @@ int lb_window_get_height( LBWindow window );
   * The default value for the x coordinate is system-specific.
   * @param window a pointer to a successfully constructed window object.
   * @param x the new x coordinate measured in pixels from the left side of
-  * the screen to the left side of the window.
+  * the display to the left side of the window.
   */
 void lb_window_set_x( LBWindow window, int x );
 
@@ -163,7 +163,7 @@ void lb_window_set_x( LBWindow window, int x );
   * The default value for the x coordinate is system-specific.
   * @param window a pointer to a successfully constructed window object.
   * @return the x coordinate measured in pixels from the left side of
-  * the screen to the left side of the window.
+  * the display to the left side of the window.
   */
 int lb_window_get_x( LBWindow window );
 
@@ -171,7 +171,7 @@ int lb_window_get_x( LBWindow window );
   * The default value for the y coordinate is system-specific.
   * @param window a pointer to a successfully constructed window object.
   * @param y the new y coordinate measured in pixels from the top of
-  * the screen to the top of the window.
+  * the display to the top of the window.
   */
 void lb_window_set_y( LBWindow window, int y );
 
@@ -179,7 +179,7 @@ void lb_window_set_y( LBWindow window, int y );
   * The default value for the y coordinate is system-specific.
   * @param window a pointer to a successfully constructed window object.
   * @return the y coordinate measured in pixels from the top of
-  * the screen to the top of the window.
+  * the display to the top of the window.
   */
 int lb_window_get_y( LBWindow window );
 

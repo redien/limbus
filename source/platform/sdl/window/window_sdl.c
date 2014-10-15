@@ -66,8 +66,8 @@ void* lb_window_construct( void )
 	window = (SDLWindowImpl*)malloc( sizeof *window );
 	assert( window != NULL );
 
-	window->base.screen = lb_screen_construct( LBScreenDefault );
-	assert( lb_screen_constructed( window->base.screen ) == 1 );
+	window->base.screen = lb_display_construct( LBDisplayDefault );
+	assert( lb_display_constructed( window->base.screen ) == 1 );
 	window->initial_screen = window->base.screen;
 
 	window->base.create_window_impl = &impl_create_window;
@@ -116,13 +116,13 @@ int lb_window_constructed( LBWindow window )
 }
 
 
-void lb_window_set_screen( LBWindow _window, LBScreen screen )
+void lb_window_set_display( LBWindow _window, LBDisplay screen )
 {
 	SDLWindowImpl* window = (SDLWindowImpl*)_window;
 	window->base.screen = screen;
 }
 
-LBScreen lb_window_get_screen( LBWindow _window )
+LBDisplay lb_window_get_display( LBWindow _window )
 {
 	SDLWindowImpl* window = (SDLWindowImpl*)_window;
 	return window->base.screen;

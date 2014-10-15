@@ -11,7 +11,7 @@
  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
-#include <limbus/screen.h>
+#include <limbus/display.h>
 #include "../sdl_screen.h"
 
 #include <SDL.h>
@@ -23,7 +23,7 @@ typedef struct SDLScreenImpl
     SDLScreen base;
 } SDLScreenImpl;
 
-void* lb_screen_construct( int screen_id )
+void* lb_display_construct( int screen_id )
 {
 	SDLScreenImpl* screen;
 	int default_id;
@@ -33,15 +33,15 @@ void* lb_screen_construct( int screen_id )
 		return NULL;
 
     /* Make sure we can assign every screen id, even
-       if LBScreenDefault is not the system's default */
+       if LBDisplayDefault is not the system's default */
 	default_id = 0;
-	if (screen_id == LBScreenDefault)
+	if (screen_id == LBDisplayDefault)
 	{
 		screen->base.screen = default_id;
 	}
 	else if (screen_id == default_id)
 	{
-		screen->base.screen = LBScreenDefault;
+		screen->base.screen = LBDisplayDefault;
 	}
 	else
 	{
@@ -51,7 +51,7 @@ void* lb_screen_construct( int screen_id )
 	return screen;
 }
 
-void* lb_screen_destruct( void* scr )
+void* lb_display_destruct( void* scr )
 {
 	SDLScreenImpl* screen = (SDLScreenImpl*)scr;
 	assert( screen );
@@ -60,7 +60,7 @@ void* lb_screen_destruct( void* scr )
 	return NULL;
 }
 
-int lb_screen_constructed( void* scr )
+int lb_display_constructed( void* scr )
 {
 	if (scr != NULL)
 		return 1;
@@ -68,33 +68,33 @@ int lb_screen_constructed( void* scr )
 		return 0;
 }
 
-int lb_screen_get_width( void* scr )
+int lb_display_get_width( void* scr )
 {
 	return 0;
 }
 
-int lb_screen_get_height( void* scr )
+int lb_display_get_height( void* scr )
 {
 	return 0;
 }
 
-int lb_screen_modes( void* scr )
+int lb_display_modes( void* scr )
 {
     return 0;
 }
 
-int lb_screen_get_mode_width( void* scr, int mode )
+int lb_display_get_mode_width( void* scr, int mode )
 {
     return 0;
 }
 
-int lb_screen_get_mode_height( void* scr, int mode )
+int lb_display_get_mode_height( void* scr, int mode )
 {
     return 0;
 }
 
-enum LBScreenError lb_screen_change_mode( void* scr, int mode )
+enum LBDisplayError lb_display_change_mode( void* scr, int mode )
 {
-    return LBScreenNoError;
+    return LBDisplayNoError;
 }
 

@@ -11,7 +11,7 @@
  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
-#include <limbus/screen.h>
+#include <limbus/display.h>
 #include <limbus/window.h>
 #include <limbus/opengl_context.h>
 
@@ -19,7 +19,7 @@ int main()
 {
     void *screen, *window, *context;
 
-    screen = lb_screen_construct( LBScreenDefault );
+    screen = lb_display_construct( LBDisplayDefault );
 
     window = lb_window_construct( screen );
     lb_window_set_width( window, 100 );
@@ -44,7 +44,7 @@ int main()
 
     lb_opengl_context_destruct( context );
     lb_window_destruct( window );
-    lb_screen_destruct( screen );
+    lb_display_destruct( screen );
     return 0;
 }
 

@@ -11,7 +11,7 @@
  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
-#include <limbus/screen.h>
+#include <limbus/display.h>
 #include <limbus/window.h>
 #include <limbus/opengl_context.h>
 #include <limbus/keyboard.h>
@@ -33,8 +33,8 @@ int main( int argc, char** argv )
 	void *screen, *window, *context, *keyboard, *mouse, *tablet;
 	int running;
 
-	screen = lb_screen_construct( LBScreenDefault );
-	assert( lb_screen_constructed( screen ) == 1 );
+	screen = lb_display_construct( LBDisplayDefault );
+	assert( lb_display_constructed( screen ) == 1 );
 
 	window = lb_window_construct( screen );
 	assert( lb_window_constructed( window ) == 1 );
@@ -174,7 +174,7 @@ int main( int argc, char** argv )
 	window = lb_window_destruct( window );
 	assert( lb_window_constructed( window ) == 0 );
 
-	screen = lb_screen_destruct( screen );
-	assert( lb_screen_constructed( screen ) == 0 );
+	screen = lb_display_destruct( screen );
+	assert( lb_display_constructed( screen ) == 0 );
 }
 

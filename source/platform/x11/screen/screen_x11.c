@@ -11,7 +11,7 @@
  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
-#include <limbus/screen.h>
+#include <limbus/display.h>
 
 #include "../x11_screen.h"
 
@@ -32,7 +32,7 @@ typedef struct _X11ScreenImpl
     Rotation current_rotation;
 } X11ScreenImpl;
 
-void* lb_screen_construct( int screen_id )
+void* lb_display_construct( int screen_id )
 {
 	X11ScreenImpl* screen;
 	int default_id;
@@ -49,15 +49,15 @@ void* lb_screen_construct( int screen_id )
 	}
 
     /* Make sure we can assign every screen id, even
-       if LBScreenDefault is not the system's default */
+       if LBDisplayDefault is not the system's default */
 	default_id = XDefaultScreen( screen->base.display );
-	if (screen_id == LBScreenDefault)
+	if (screen_id == LBDisplayDefault)
 	{
 		screen->base.screen = default_id;
 	}
 	else if (screen_id == default_id)
 	{
-		screen->base.screen = LBScreenDefault;
+		screen->base.screen = LBDisplayDefault;
 	}
 	else
 	{
@@ -99,14 +99,14 @@ void* lb_screen_construct( int screen_id )
 	return screen;
 }
 
-void* lb_screen_destruct( void* scr )
+void* lb_display_destruct( void* scr )
 {
 	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
 	assert( screen );
 
     if (screen->sizes && screen->current_config != screen->config_at_construction)
     {
-        lb_screen_change_mode( screen, screen->config_at_construction );
+        lb_display_change_mode( screen, screen->config_at_construction );
     }
 
     if (screen->screen_config)
@@ -120,7 +120,7 @@ void* lb_screen_destruct( void* scr )
 	return NULL;
 }
 
-int lb_screen_constructed( void* scr )
+int lb_display_constructed( void* scr )
 {
 	if (scr != NULL)
 		return 1;
@@ -128,7 +128,7 @@ int lb_screen_constructed( void* scr )
 		return 0;
 }
 
-int lb_screen_get_width( void* scr )
+int lb_display_get_width( void* scr )
 {
 	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
 	assert( screen );
@@ -136,21 +136,21 @@ int lb_screen_get_width( void* scr )
 	return XDisplayWidth( screen->base.display, screen->base.screen );
 }
 
-int lb_screen_get_height( void* scr )
+int lb_display_get_height( void* scr )
 {
 	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
 	assert( screen );
 	return XDisplayHeight( screen->base.display, screen->base.screen );
 }
 
-int lb_screen_modes( void* scr )
+int lb_display_modes( void* scr )
 {
 	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
 	assert( screen );
     return screen->size_count;
 }
 
-int lb_screen_get_mode_width( void* scr, int mode )
+int lb_display_get_mode_width( void* scr, int mode )
 {
 	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
 	assert( screen );
@@ -160,7 +160,7 @@ int lb_screen_get_mode_width( void* scr, int mode )
     return screen->sizes[mode].width;
 }
 
-int lb_screen_get_mode_height( void* scr, int mode )
+int lb_display_get_mode_height( void* scr, int mode )
 {
 	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
 	assert( screen );
@@ -168,7 +168,7 @@ int lb_screen_get_mode_height( void* scr, int mode )
     return screen->sizes[mode].height;
 }
 
-enum LBScreenError lb_screen_change_mode( void* scr, int mode )
+enum LBDisplayError lb_display_change_mode( void* scr, int mode )
 {
     int error;
 	X11ScreenImpl* screen = (X11ScreenImpl*)scr;
@@ -184,9 +184,9 @@ enum LBScreenError lb_screen_change_mode( void* scr, int mode )
                                 CurrentTime );
 
     if (error == BadValue)
-        return LBScreenInvalidMode;
+        return LBDisplayInvalidMode;
 
     screen->current_config = mode;
-    return LBScreenNoError;
+    return LBDisplayNoError;
 }
 

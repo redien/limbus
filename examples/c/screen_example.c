@@ -15,29 +15,29 @@
 	#define _CRT_SECURE_NO_WARNINGS
 #endif
 
-#include <limbus/screen.h>
+#include <limbus/display.h>
 
 #include <stdio.h>
 
 int main( int argc, char** argv )
 {
-	LBScreen screen;
+	LBDisplay screen;
 
-	screen = lb_screen_construct( LBScreenDefault );
-	if (lb_screen_constructed( screen ) == 0)
+	screen = lb_display_construct( LBDisplayDefault );
+	if (lb_display_constructed( screen ) == 0)
 		return -1;
 
-	printf( "current resolution: (%d, %d)\n", lb_screen_get_width( screen ),
-											  lb_screen_get_height( screen ) );
+	printf( "current resolution: (%d, %d)\n", lb_display_get_width( screen ),
+											  lb_display_get_height( screen ) );
 
 	{
-		int screen_modes = lb_screen_modes( screen );
+		int screen_modes = lb_display_modes( screen );
 		int i;
 		for (i = 0; i < screen_modes; ++i)
 		{
 			printf( "%d - (%d, %d)\n", i,
-									   lb_screen_get_mode_width( screen, i ),
-									   lb_screen_get_mode_height( screen, i ) );
+									   lb_display_get_mode_width( screen, i ),
+									   lb_display_get_mode_height( screen, i ) );
 		}
 
 		{
@@ -45,13 +45,13 @@ int main( int argc, char** argv )
 			printf( "Pick a screen mode. " );
 			scanf( "%d", &mode );
 
-			if (lb_screen_change_mode( screen, mode ) != LBScreenNoError)
+			if (lb_display_change_mode( screen, mode ) != LBDisplayNoError)
 			{
 				printf( "Could not change mode...\n" );
 			}
 		}
 	}
 
-	lb_screen_destruct( screen );
+	lb_display_destruct( screen );
 	return 0;
 }

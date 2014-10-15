@@ -12,20 +12,20 @@
 class Limbus::OpenglWindow : Limbus::InputDispatcher
 	var created : bool,
 	      window : ptr,
-	      impl_screen : Limbus::Screen,
-	      initial_screen : Limbus::Screen,
+	      implementation_display : Limbus::Display,
+	      initial_display : Limbus::Display,
 	      context : ptr
 
 	signal on_close()
 	signal on_file_drop( filepath : string, x : int, y : int )
 	signal on_resize()
 
-	property screen : Limbus::Screen
+	property display : Limbus::Display
 	get
-		return this.impl_screen
+		return this.implementation_display
 	set
-		this.impl_screen = value
-		limbus::lb_window_set_screen( this.window, value.get_impl() )
+		this.implementation_display = value
+		limbus::lb_window_set_display( this.window, value.get_impl() )
 	end
 	
 	property styled : bool
@@ -100,11 +100,11 @@ class Limbus::OpenglWindow : Limbus::InputDispatcher
 		this.window = limbus::lb_window_construct()
 		assert( limbus::lb_window_constructed( this.window ) == 1 )
 		
-		var new_screen : Limbus::Screen
-		new_screen = new Limbus::Screen()
-		this.impl_screen = new_screen
-		this.initial_screen = new_screen
-		limbus::lb_window_set_screen( this.window, new_screen.get_impl() )
+		var new_display : Limbus::Display
+		new_display = new Limbus::Display()
+		this.implementation_display = new_display
+		this.initial_display = new_display
+		limbus::lb_window_set_display( this.window, new_display.get_impl() )
 	end
 
 	def destroy!() : void
@@ -118,7 +118,7 @@ class Limbus::OpenglWindow : Limbus::InputDispatcher
 			this.destroy!()
 		end
 
-		delete this.initial_screen
+		delete this.initial_display
 		limbus::lb_window_destruct( this.window )
 	end
 

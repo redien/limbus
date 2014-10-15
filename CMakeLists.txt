@@ -86,7 +86,7 @@ set(
 	BIND_HEADERS
 		${INCLUDE_SUB_NAME}/timing.h
 		${INCLUDE_SUB_NAME}/window.h
-		${INCLUDE_SUB_NAME}/screen.h
+		${INCLUDE_SUB_NAME}/display.h
 		${INCLUDE_SUB_NAME}/opengl_context.h
 		${INCLUDE_SUB_NAME}/static_buffer.h
 )
@@ -96,7 +96,7 @@ set(
 		timer.cdef
 		input_device.cdef
 		input_dispatcher.cdef
-		screen.cdef
+		display.cdef
 		window.cdef
 		opengl_context.cdef
 		opengl_window.cdef

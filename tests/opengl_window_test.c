@@ -12,7 +12,7 @@
 */
 
 #include <limbus/timing.h>
-#include <limbus/screen.h>
+#include <limbus/display.h>
 #include <limbus/window.h>
 #include <limbus/opengl_context.h>
 #include <limbus/opengl.h>

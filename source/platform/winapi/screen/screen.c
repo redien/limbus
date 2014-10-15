@@ -11,7 +11,7 @@
  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 */
 
-#include <limbus/screen.h>
+#include <limbus/display.h>
 
 #include <windows.h>
 #include <stdlib.h>
@@ -22,7 +22,7 @@ typedef struct WinapiScreen_
 	DEVMODE mode, mode_at_construction;
 } WinapiScreen;
 
-void* lb_screen_construct( int screen_num )
+void* lb_display_construct( int screen_num )
 {
 	WinapiScreen* self;
 	DWORD default_device;
@@ -44,13 +44,13 @@ void* lb_screen_construct( int screen_num )
 		}
 	}
 
-	if (screen_num == LBScreenDefault)
+	if (screen_num == LBDisplayDefault)
 	{
 		screen_num = default_device;
 	}
 	else if (screen_num == default_device)
 	{
-		screen_num = LBScreenDefault;
+		screen_num = LBDisplayDefault;
 	}
 
 	/* Fetch info from the specified screen */
@@ -69,7 +69,7 @@ void* lb_screen_construct( int screen_num )
 	return NULL;
 }
 
-void* lb_screen_destruct( LBScreen screen )
+void* lb_display_destruct( LBDisplay screen )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 
@@ -89,24 +89,24 @@ void* lb_screen_destruct( LBScreen screen )
 	return NULL;
 }
 
-int lb_screen_constructed( LBScreen screen )
+int lb_display_constructed( LBDisplay screen )
 {
 	return (screen != NULL) ? 1 : 0;
 }
 
-int lb_screen_get_width( LBScreen screen )
+int lb_display_get_width( LBDisplay screen )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	return self->mode.dmPelsWidth;
 }
 
-int lb_screen_get_height( LBScreen screen )
+int lb_display_get_height( LBDisplay screen )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	return self->mode.dmPelsHeight;
 }
 
-int lb_screen_modes( LBScreen screen )
+int lb_display_modes( LBDisplay screen )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	DWORD count = 0;
@@ -120,7 +120,7 @@ int lb_screen_modes( LBScreen screen )
     return count;
 }
 
-int lb_screen_get_mode_width( LBScreen screen, int mode )
+int lb_display_get_mode_width( LBDisplay screen, int mode )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	DEVMODE devmode;
@@ -133,7 +133,7 @@ int lb_screen_get_mode_width( LBScreen screen, int mode )
     return devmode.dmPelsWidth;
 }
 
-int lb_screen_get_mode_height( LBScreen screen, int mode )
+int lb_display_get_mode_height( LBDisplay screen, int mode )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	DEVMODE devmode;
@@ -146,7 +146,7 @@ int lb_screen_get_mode_height( LBScreen screen, int mode )
     return devmode.dmPelsHeight;
 }
 
-LBScreenError lb_screen_change_mode( LBScreen screen, int mode )
+LBDisplayError lb_display_change_mode( LBDisplay screen, int mode )
 {
 	WinapiScreen* self = (WinapiScreen*)screen;
 	LONG result;
@@ -156,7 +156,7 @@ LBScreenError lb_screen_change_mode( LBScreen screen, int mode )
 
 	if (!EnumDisplaySettings( self->device.DeviceName, mode, &devmode ))
 	{
-		return LBScreenInvalidMode;
+		return LBDisplayInvalidMode;
 	}
 
 	result = ChangeDisplaySettingsEx( self->device.DeviceName,
@@ -168,8 +168,8 @@ LBScreenError lb_screen_change_mode( LBScreen screen, int mode )
 	if (result == DISP_CHANGE_SUCCESSFUL)
 	{
 		self->mode = devmode;
-		return LBScreenNoError;
+		return LBDisplayNoError;
 	}
 
-    return LBScreenInvalidMode;
+    return LBDisplayInvalidMode;
 }
