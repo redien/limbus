@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include <stdlib.h>
 #include <assert.h>
@@ -74,7 +75,7 @@ int lb_filesystem_path_is_file( void* fs, const char* path )
 	return (lb_filesystem_path_is_directory( fs, path ) == 1) ? 0 : 1;
 }
 
-unsigned int lb_filesystem_file_size( void* fs, const char* path )
+unsigned long lb_filesystem_file_size( void* fs, const char* path )
 {
 	struct stat info;
 	if (stat( path, &info ) == 0)
@@ -130,3 +131,32 @@ const char* lb_filesystem_get_working_directory( void* fs )
 	return filesystem->cwd;
 }
 
+LBFilesystemError lb_filesystem_create_directory( LBFilesystem filesystem, const char* path )
+{
+    int result = mkdir(path, 777);
+    if (result == 0) {
+        return LBFilesystemNoError;
+    } else {
+        if (errno == EEXIST) {
+            return LBFilesystemDirectoryAlreadyExists;
+        } else if (errno == ENOENT) {
+            return LBFilesystemPathNotFound;
+        } else {
+            return LBFilesystemUnknownError;
+        }
+    }
+}
+
+LBFilesystemError lb_filesystem_remove_directory( LBFilesystem filesystem, const char* path )
+{
+    int result = rmdir(path);
+    if (result == 0) {
+        return LBFilesystemNoError;
+    } else {
+        if (errno == ENOENT) {
+            return LBFilesystemPathNotFound;
+        } else {
+            return LBFilesystemUnknownError;
+        }
+    }
+}

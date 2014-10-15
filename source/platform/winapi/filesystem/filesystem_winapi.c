@@ -51,11 +51,11 @@ int lb_filesystem_path_is_file( void* filesystem, const char* path )
     return !lb_filesystem_path_is_directory( filesystem, path );
 }
 
-unsigned int lb_filesystem_file_size( void* filesystem, const char* path )
+unsigned long lb_filesystem_file_size( void* filesystem, const char* path )
 {
 	WinAPIFilesystem* fs = (WinAPIFilesystem*)filesystem;
 	FindFirstFile( path, &fs->find_data );
-	return fs->find_data.nFileSizeLow;
+	return (fs->find_data.nFileSizeHigh * (MAXDWORD + 1)) + fs->find_data.nFileSizeLow;
 }
 
 int lb_filesystem_path_is_directory( void* filesystem, const char* path )

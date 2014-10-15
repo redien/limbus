@@ -13,7 +13,6 @@
 List of things to do:
 -----------------------
 
-- make lb_filesystem_get_file_size return a long
 - Fix Lua binding on OS X
 - Fully implement the filesystem API for WinAPI & OS X
 - Make input devices' event loops independent from the window's polling.
@@ -44,3 +43,4 @@ List of things to do:
 - Make it possible for the users to plug-in their own code for memory handling.
 - Add support for OpenGL 3.0+ contexts.
 - Add clipboard API
+- Load shared libraries for APIs dynamically similarly to SDL 

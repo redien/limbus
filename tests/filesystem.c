@@ -24,7 +24,7 @@ int main( int argc, char** argv )
 	filesystem = lb_filesystem_construct();
 	ASSERT( lb_filesystem_constructed( filesystem ) == LBFilesystemNoError, "A filesystem object could not be constructed" );
 	
-	ASSERT( lb_filesystem_path_is_directory( filesystem, "../tests/" ) == 1, "Failed to identify a directory with a prefixed slash" );
+	ASSERT( lb_filesystem_path_is_directory( filesystem, "../tests/" ) == 1, "Failed to identify a directory with a suffixed slash" );
 	ASSERT( lb_filesystem_path_is_directory( filesystem, "../tests" ) == 1, "Failed to identify a directory" );
 	ASSERT( lb_filesystem_path_is_directory( filesystem, "../tests/filesystem.c" ) == 0, "Identified a file as a directory" );
 	ASSERT( lb_filesystem_path_is_file( filesystem, "../tests/filesystem.c" ) == 1, "Failed to identify a file" );

@@ -14,6 +14,7 @@ require "common"
 local type_to_string_tbl = {
 	ptr = "void*",
 	uint = "unsigned int",
+    ulong = "unsigned long",
 	string = "const char*",
 }
 

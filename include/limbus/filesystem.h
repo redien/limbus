@@ -71,7 +71,7 @@ int lb_filesystem_path_is_file( LBFilesystem filesystem, const char* path );
   * @param path a string specifying the path to the file.
   * @return the file size in bytes of the file at path.
   */
-unsigned int lb_filesystem_file_size( LBFilesystem filesystem, const char* path );
+unsigned long lb_filesystem_file_size( LBFilesystem filesystem, const char* path );
 
 
 /** Check if the specified path refers to a directory.

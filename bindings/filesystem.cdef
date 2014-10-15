@@ -49,7 +49,7 @@ class Limbus::Filesystem
 		return limbus::lb_filesystem_directory_get_entry( this.fs )
 	end
 
-	def file_size( path : string ) : uint
+	def file_size( path : string ) : ulong
 		return limbus::lb_filesystem_file_size( this.fs, path )
 	end
 

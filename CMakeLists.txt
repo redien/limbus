@@ -264,7 +264,7 @@ if(WIN32)
 		set( SOURCE_FILES ${SOURCE_FILES} source/platform/winapi/audio_stream/winapi_audio_stream.c )
 	endif(ENABLE_AUDIO_STREAM_SUPPORT)
 
-elseif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+elseif (APPLE)
 	
     set(
         CMAKE_MACOSX_RPATH
