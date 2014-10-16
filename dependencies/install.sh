@@ -11,18 +11,25 @@
 
 cd dependencies
 
-echo Fetching Lua 5.1.4...
+echo -n "Which Lua version should be downloaded? (5.2.3) "
+read version
+
+if [ -z "$version" ]; then
+    version="5.2.3"
+fi
+
+echo Fetching Lua $version...
 
 unamestr=`uname`
 if [[ "$unamestr" == 'Darwin' ]]; then
-    curl "http://www.lua.org/ftp/lua-5.1.4.tar.gz" -o "lua-5.1.4.tar.gz"
+    curl "http://www.lua.org/ftp/lua-$version.tar.gz" -o "lua-$version.tar.gz"
 else
-    wget -q http://www.lua.org/ftp/lua-5.1.4.tar.gz
+    wget -q "http://www.lua.org/ftp/lua-$version.tar.gz"
 fi
 
-gzip -d lua-5.1.4.tar.gz
-tar -xf lua-5.1.4.tar
-rm lua-5.1.4.tar
+gzip -d "lua-$version.tar.gz"
+tar -xf "lua-$version.tar"
+rm "lua-$version.tar"
 
 if [[ "$unamestr" == 'Darwin' ]]; then
     echo Nothing more to install.

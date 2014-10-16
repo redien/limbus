@@ -53,7 +53,7 @@ set( TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests )
 
 set(
 	LUA_VERSION
-	"5.1.4"
+	"5.2.3"
 	CACHE STRING "Lua version"
 )
 

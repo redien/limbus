@@ -14,12 +14,6 @@
 ##
 
 set(
-	USE_LUA_5_2
-	OFF
-	CACHE BOOL "Assume Lua version 5.2."
-)
-
-set(
 	USE_BUNDLED_LUA
 	ON
 	CACHE BOOL "Compile and use the bundled lua version."
@@ -56,18 +50,11 @@ if (USE_BUNDLED_LUA)
 		    ${LUA_SRC_PATH}/lstrlib.c
 		    ${LUA_SRC_PATH}/loadlib.c
 		    ${LUA_SRC_PATH}/linit.c
+            ${LUA_SRC_PATH}/lbitlib.c
+            ${LUA_SRC_PATH}/lcorolib.c
+            ${LUA_SRC_PATH}/lctype.c
     )
 
-	if (USE_LUA_5_2)
-		set(
-			LUA_LIB_FILES
-				${LUA_LIB_FILES}
-				${LUA_SRC_PATH}/lbitlib.c
-				${LUA_SRC_PATH}/lcorolib.c
-				${LUA_SRC_PATH}/lctype.c
-		)
-	endif(USE_LUA_5_2)
-	
     add_library(
 	    lua_lib
 		    ${LUA_LIB_FILES}

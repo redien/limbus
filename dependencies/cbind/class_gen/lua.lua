@@ -141,14 +141,27 @@ local function transform_signal( signal )
 	return line( "local __" .. signal.name.token.value .. " = {}" )
 end
 
-local function transform_module( symbol )
+local function transform_module( symbol, referenced_classes )
 	if symbol.is_class then
 		local namespace = camel_to_std( symbol.namespace.token.value )
 		local signals = list_signals( symbol.statements )
 		local properties = list_properties( symbol.statements )
+        
+        local imports = ""
+        for _, reference in pairs( referenced_classes ) do
+            local skip = false
+            if reference.module and reference.module.is_interface then
+                skip = true
+            end
+            if not skip then
+                imports = imports
+                    .. line( "require '" .. reference.class .. "'" )
+            end
+        end
 
 		local str =
-			   line( namespace .. " = " .. namespace .. " or {}" )
+               imports
+            .. line( namespace .. " = " .. namespace .. " or {}" )
 			.. line( "function " .. namespace .. "." .. symbol.name.token.value .. "( ... )", 1 )
 			.. line( "local this = {}" )
 			.. line( "" )
@@ -208,6 +221,6 @@ local function transform_module( symbol )
 	assert( false, "Unknown module statement" )
 end
 
-function generate_class_lua( class, classes )
-	return transform_module( class )
+function generate_class_lua( class, referenced_classes )
+	return transform_module( class, referenced_classes )
 end

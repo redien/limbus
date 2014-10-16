@@ -13,23 +13,22 @@ package.cpath = package.cpath .. ";?.dylib"
 
 require "limbus"
 require "OpenglWindow"
-require "Timer"
 
-local window = OpenglWindow();
-window.width = 800;
-window.height = 600;
-window.caption = "Window";
-window.create();
+local window = limbus.OpenglWindow()
+window.width = 800
+window.height = 600
+window.caption = "Window"
+window:create()
 
 local running = true
 
-window.onClose(function()
+window:onClose(function()
 	running = false
 end)
 
 while running do
-	window.pollEvents()
-	window.swapBuffers()
+	window:pollEvents()
+	window:swapBuffers()
 end
 
-window.destruct()
+window:destruct()

@@ -92,7 +92,7 @@ for _, language in ipairs( languages ) do
 
 		require "class_gen.lua"
 		for i = 1, #parsed_cdef_files_syntax do
-			local class = generate_class_lua( parsed_cdef_files_syntax[i] )
+			local class = generate_class_lua( parsed_cdef_files_syntax[i], referenced_classes[i] )
 			if class ~= "" then
 				write_file( output_path .. "lua/" .. std_to_camel( class_names[i] ) .. ".lua", class )
 			end
