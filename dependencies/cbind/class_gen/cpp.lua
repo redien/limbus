@@ -61,7 +61,18 @@ local function transform_expression( symbol )
 		return symbol.token.value
 	end
 	if symbol.is_infix_op then
-		return "(" .. transform_expression( symbol.left ) .. " " .. transform_operator( symbol.op ) .. " " .. transform_expression( symbol.right ) .. ")"
+        local left_expression = transform_expression( symbol.left )
+        local right_expression = transform_expression( symbol.right )
+        
+        if symbol.left.is_infix_op then
+            left_expression = "(" .. left_expression .. ")"
+        end
+        
+        if symbol.right.is_infix_op then
+            right_expression = "(" .. right_expression .. ")"
+        end
+        
+		return left_expression .. " " .. transform_operator( symbol.op ) .. " " .. right_expression
 	end
 	if symbol.is_enum then
 		return symbol.identifier.token.value
