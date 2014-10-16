@@ -105,7 +105,7 @@ set(
 set(
 	GENERATED_CPP_SOURCES
 		${CPP_DIR}/Timer.cpp
-		${CPP_DIR}/Screen.cpp
+		${CPP_DIR}/Display.cpp
 		${CPP_DIR}/Window.cpp
 		${CPP_DIR}/OpenglContext.cpp
 		${CPP_DIR}/OpenglWindow.cpp
