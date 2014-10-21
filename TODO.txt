@@ -13,8 +13,8 @@
 List of things to do:
 -----------------------
 
-- Fix Lua binding on OS X
 - Fully implement the filesystem API for WinAPI & OS X
+- Make sure all APIs have consistent naming of functions
 - Make input devices' event loops independent from the window's polling.
 - Produce an error if window is polled for events before it is created.
 - Move from CMake to Premake4 (or progen.lua?)
