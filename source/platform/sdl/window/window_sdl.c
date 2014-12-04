@@ -104,7 +104,7 @@ void* lb_window_destruct( LBWindow win )
 	vector_destruct( &window->events );
 	vector_destruct( &window->devices );
 	
-	free( window->initial_screen );
+	lb_display_destruct( window->initial_screen );
 
 	free( window );
 	return NULL;
