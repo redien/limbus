@@ -18,4 +18,5 @@ rm -fR generated/lua/*
 rm -fR generated/ruby/*
 rm -fR generated/python/*
 rm -fR lib/*
-rm -fR dependencies/lua-*/
+rm -fR dependencies/lua-*
+rm -fR dependencies/cbind
