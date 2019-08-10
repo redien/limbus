@@ -13,13 +13,5 @@ build
 bin/*
 lib/*
 doc/*
-generated/config.lua
-generated/lua/*
-generated/ruby/*
-generated/cpp/*
-generated/python/*
-generated/csharp/*
-generated/go/*
 commit_log.txt
-dependencies/lua*
 *.DS_Store
