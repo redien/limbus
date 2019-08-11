@@ -37,7 +37,6 @@ typedef struct SDLKeyboard
 
 static void construct( void* kbd )
 {
-	SDLKeyboard* keyboard = (SDLKeyboard*)kbd;
 }
 
 static int translate_sdl_keycode( SDL_Keycode keycode )

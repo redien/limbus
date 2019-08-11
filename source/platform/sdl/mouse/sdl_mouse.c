@@ -131,7 +131,6 @@ void lb_mouse_set_y( void* m, int y )
 
 int lb_mouse_get_x( void* m )
 {
-	SDLMouse* mouse = (SDLMouse*)m;
 	int x;
     SDL_GetMouseState(&x, NULL);
 	return x;
@@ -139,7 +138,6 @@ int lb_mouse_get_x( void* m )
 
 int lb_mouse_get_y( void* m )
 {
-	SDLMouse* mouse = (SDLMouse*)m;
 	int y;
     SDL_GetMouseState(NULL, &y);
 	return y;

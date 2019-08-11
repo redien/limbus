@@ -90,7 +90,6 @@ void lb_opengl_context_swap_buffers( void* con )
 
 int lb_opengl_context_pixelformats( void* con )
 {
-    SDLOpenglContextImpl* context = (SDLOpenglContextImpl*)con;
 	return 2 /* double buffering enable/disable */
          * 3 /* 16, 24, 32 bit depth buffer */;
 }
